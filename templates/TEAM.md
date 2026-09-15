@@ -1,11 +1,10 @@
 # TEAM — R2Team configuration
 
-Template for 2.1 package revision 1. PM fills it during setup; empty configuration is not ready. Never commit real thread IDs, other machines' absolute paths or credentials.
+Template for protocol version 2.2. PM fills it during setup; empty configuration is not ready. Never commit real thread IDs, other machines' absolute paths or credentials.
 
 ```yaml
 protocol_name: R2Team
-protocol_version: "2.1"
-protocol_package_revision: 1
+protocol_version: "2.2"
 integration_revision: 0
 setup_status: NOT_CONFIGURED
 project:

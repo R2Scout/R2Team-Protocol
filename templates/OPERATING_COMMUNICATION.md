@@ -1,4 +1,4 @@
-# Operational communication and durable state — R2Team 2.1
+# Operational communication and durable state — R2Team 2.2
 
 This policy applies equally to local chats, remote participants and authorized subagents. Execution location changes the available communication channel, not the persistence boundary. It becomes effective only through an approved project adoption; it does not override an existing 1.10 project.
 

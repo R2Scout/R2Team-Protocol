@@ -1,6 +1,6 @@
-# Setup — R2Team 2.1 guided wizard
+# Setup — R2Team 2.2 guided wizard
 
-Package revision 1. Run only when requested; reading/editing the distribution does not start a project. Full rules: [protocol](CODEX_TEAM_PROTOCOL.md). Entry prompts: [CODEX_TEAM_SETUP.md](CODEX_TEAM_SETUP.md).
+Protocol version 2.2. Run only when requested; reading/editing the distribution does not start a project. Full rules: [protocol](CODEX_TEAM_PROTOCOL.md). Entry prompts: [CODEX_TEAM_SETUP.md](CODEX_TEAM_SETUP.md).
 
 ## Wizard rules
 
@@ -35,7 +35,7 @@ If intent is clear, state the mode and proceed. An invitee is not starting anoth
 1. Confirm package source/path, target project, applicable instructions and shell.
 2. Check Git root/status/branch/HEAD/remote/worktrees without printing credential-bearing URLs.
 3. Read current TEAM/legacy state, PM, affected active writers/tasks and scoped automations. Leave unrelated projectless schedules alone.
-4. Verify exact package commit or trusted bundle manifest hash before payload hashes. Integrity without a trusted source is not provenance. HEAD/tag does not identify dirty files. Target package revision must match the requested revision.
+4. Verify exact package commit or trusted bundle manifest hash before payload hashes. Integrity without a trusted source is not provenance. HEAD/tag does not identify dirty files. The target protocol version must match the requested version.
 5. If code and organizational files are split or the root is not Git, agree canonical placement and remote. Local files are not remotely published state.
 6. Missing source is BLOCKED; do not reconstruct the package from memory.
 7. Audit can be read-only without an assignment; TEAM/assignment changes require PM authority.
@@ -116,7 +116,7 @@ Run the audit below. Report ready/NOT_RUN, first TASK, owner and next action. Th
 <a id="migrate"></a>
 ## 3. MIGRATE
 
-Use [MIGRATE_TO_2.1.md](MIGRATE_TO_2.1.md), then applicable N5-N7. Preserve active work by default. A user-approved fresh organizational queue may retain specs/chats while retiring old tasks/messages; it must not erase OpenSpec tasks.md or falsely mark unfinished work DONE. Each retained role must actually adopt the cutover.
+Use [MIGRATE_TO_2.2.md](MIGRATE_TO_2.2.md), then applicable N5-N7. Preserve active work by default. A user-approved fresh organizational queue may retain specs/chats while retiring old tasks/messages; it must not erase OpenSpec tasks.md or falsely mark unfinished work DONE. Each retained role must actually adopt the cutover.
 
 For an MVP, map capabilities/sources/gaps and cover the next changed area, not a speculative full import. Existing documents are evidence, not automatically correct requirements.
 

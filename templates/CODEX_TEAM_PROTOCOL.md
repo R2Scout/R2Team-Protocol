@@ -1,4 +1,4 @@
-# R2Team 2.1
+# R2Team 2.2
 
 Git-first teamwork for one person, local role chats, remote participants, and hybrids. PM is the only mandatory coordinating function. GitHub and generic Azure DevOps Server/TFS Git are supported; specialized process profiles are separate.
 
@@ -18,6 +18,8 @@ Git preserves accepted contracts, people/functions/rights, assigned work, materi
 At any time an authorized fresh executor should determine what the product must do, what is active, who owns it, which candidate/evidence is current, what remains open, and the next safe action.
 
 Use one canonical Git provider per project, one current PM, recoverable access procedures, and explicit permissions. Automation is optional and separately authorized.
+
+`protocol_version` is the sole distribution release identifier. Its major number identifies the protocol generation; increment the minor number for each published protocol revision. Do not add a separate package revision. A project's `integration_revision` remains a distinct local counter for adopted configuration changes.
 
 <a id="sources"></a>
 ## 2. Basis and sources
@@ -145,7 +147,7 @@ Supported modes: one PM with helpers; one person with local role chats; remote p
 Independent work creates/reuses one TASK, provider item, branch, and PR where applicable. Bounded consultation inside an accepted TASK creates no extra mandatory TASK/Issue/PR/MSG. Reuse the TASK across discovery, design, implementation, QA, integration, and handoff. Separate deployment TASK only for an independent lifecycle/owner/authority.
 
 ~~~yaml
-protocol_version: "2.1"
+protocol_version: "2.2"
 task_id: TASK-042
 task_revision: 3
 status: IN_PROGRESS
@@ -254,7 +256,7 @@ Disconnect after publishing affected checkpoints and replacement ownership. Pres
 | Discussion | Issue/PR | Work Item/PR |
 | Recovery | Git TASK/spec/code | Git TASK/spec/code |
 
-Tracker is a projection of TASK in R2Team 2.1. Summarize provider-only continuation facts into Git.
+Tracker is a projection of TASK in R2Team 2.2. Summarize provider-only continuation facts into Git.
 
 Verify repo/default branch/policies/checks/permissions and merge/deploy effects. For Server also verify version/API, actual Work Item types/states, and tool compatibility; do not assume cloud-only CLI/MCP.
 
@@ -346,11 +348,11 @@ Ready means source/TEAM/rights known, tools verified or blocked, and a safe next
 <a id="migration"></a>
 ## 15. Migration
 
-Use [MIGRATE_TO_2.1.md](MIGRATE_TO_2.1.md). Preserve refs, code, filled specs, active OpenSpec changes/tasks, roles, evidence, dirty/unpublished work, and material requests.
+Use [MIGRATE_TO_2.2.md](MIGRATE_TO_2.2.md). Preserve refs, code, filled specs, active OpenSpec changes/tasks, roles, evidence, dirty/unpublished work, and material requests.
 
 Existing TASKs remain by default. User-approved fresh organizational queue may retire old message/task artifacts while explicitly preserving product/OpenSpec/current work. Never erase OpenSpec tasks.md.
 
-For 1.10, mandatory MSG rules remain until approved per-task/coordinated cutover. Retained chats individually cross-check/adopt 2.1; replacing files alone is not chat migration. Resolve higher-priority instruction conflicts explicitly.
+For 1.10, mandatory MSG rules remain until approved per-task/coordinated cutover. Retained chats individually cross-check/adopt 2.2; replacing files alone is not chat migration. Resolve higher-priority instruction conflicts explicitly.
 
 <a id="feature-example"></a>
 ## 16. Feature example
@@ -428,7 +430,7 @@ Structural validation does not prove provider integration, behavioral skill qual
 First PM:
 
 ~~~text
-Read START.md from verified R2Team 2.1 and run setup new or migrate for <project>.
+Read START.md from verified R2Team 2.2 and run setup new or migrate for <project>.
 Confirm root, provider, instructions, PM, functions, permissions and specs.
 Show proposed diff before writes. Do not enable automation or start product
 work merely by finishing setup.

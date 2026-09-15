@@ -1,4 +1,4 @@
-# R2Team 2.1 scenarios
+# R2Team 2.2 scenarios
 
 These are acceptance scenarios for setup, team lifecycle, communication, recovery, and distribution behavior. Document review is not evidence that access, roles, integrations, or skills work on every machine.
 
@@ -10,11 +10,11 @@ These are acceptance scenarios for setup, team lifecycle, communication, recover
 | GitHub, one PM with helpers | One participant/executor, needed functions/helpers, first real TASK | Create six mandatory chats/issues |
 | Brownfield MVP without OpenSpec | Preserve code/docs, assess coverage/gaps, baseline changed area incrementally | Rewrite whole project or claim complete specs |
 | Existing OpenSpec | Preserve config/specs/active changes/tasks; use version-compatible CLI | Reinitialize/reset/archive to fit protocol |
-| 1.10 with active MSG/PR | Preserve history; choose per-task/coordinated cutover; roles adopt 2.1 | Stop old transport before cutover |
+| 1.10 with active MSG/PR | Preserve history; choose per-task/coordinated cutover; roles adopt 2.2 | Stop old transport before cutover |
 | 1.10 with retained chats and fresh queue authorized | Re-run setup around current specs; cross-check each chat; explicitly retire only approved old org artifacts | Recreate chats or erase OpenSpec tasks |
 | One retained chat rejects/does not understand | Mark its adoption BLOCKED/PENDING; other roles continue only in their scope | Declare universal migration |
 | Organizational docs outside Git | Agree canonical Git root/placement and publish | Treat local folder as remotely recoverable |
-| Trusted target package unavailable | SOURCE_BLOCKED with exact missing source | Reconstruct 2.1 from memory/latest |
+| Trusted target package unavailable | SOURCE_BLOCKED with exact missing source | Reconstruct 2.2 from memory/latest |
 | Proposal accepted but apply not authorized | Stop at installed workflow gate | Begin product implementation during setup |
 | Existing custom skills | Inventory, backup, diff, ask before replacement | Overwrite through init/update |
 | Audit requested | Read-only scoped evidence report | Repair files, enable heartbeat, or migrate |
@@ -109,13 +109,13 @@ These are acceptance scenarios for setup, team lifecycle, communication, recover
 | Check | Expected |
 | --- | --- |
 | Public language | All maintained distribution files, help, commits, release notes in English |
-| Manifest | Protocol 2.1, package revision 1, required paths and matching SHA-256 |
+| Manifest | Protocol 2.2 as the sole release identifier, required paths and matching SHA-256 |
 | Links/anchors | Structural validator PASS |
 | Validator suite | 17/17 PASS |
 | Skills | Four skill directories pass official quick_validate |
 | Help copies | templates/COMMANDS.md and skills/r2team/references/commands.md byte-identical |
 | Specialized CMMI | Absent from main package; maintained in separate TFS repository |
-| Publication | main and annotated v2.1 resolve to exact release commit |
+| Publication | main and annotated v2.2 resolve to exact release commit |
 | Fresh clone | Exact tag validates independently |
 | Runtime claims | Direct messaging, provider writes, migration, deployment, heartbeat remain NOT_RUN unless separately tested |
 

@@ -19,12 +19,12 @@ else:
 
 class PackageTests(unittest.TestCase):
     def setUp(self):
-        self.temp = tempfile.TemporaryDirectory(prefix="r2team-200-test-")
+        self.temp = tempfile.TemporaryDirectory(prefix="r2team-220-test-")
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         (self.root / "templates").mkdir()
         (self.root / "package.json").write_text(json.dumps({
-            "protocol_version": "2.1",
+            "protocol_version": "2.2",
             "required_files": ["START.md", "templates/Setup.md"],
             "template_root": "templates"
         }), encoding="utf-8")
@@ -76,9 +76,16 @@ class PackageTests(unittest.TestCase):
 
     def test_wrong_version_is_rejected(self):
         config = json.loads((self.root / "package.json").read_text())
-        config["protocol_version"] = "2.0"
+        config["protocol_version"] = "2.1"
         self.put("package.json", json.dumps(config))
-        self.assertTrue(any("Expected protocol_version 2.1" in e for e in validate(self.root)))
+        self.assertTrue(any("Expected protocol_version 2.2" in e for e in validate(self.root)))
+
+    def test_separate_package_revision_is_rejected(self):
+        config = json.loads((self.root / "package.json").read_text())
+        config["package_revision"] = 1
+        self.put("package.json", json.dumps(config))
+        self.assertTrue(any("protocol_version is the sole release identifier" in e
+                            for e in validate(self.root)))
 
     def test_invalid_utf8_is_rejected(self):
         (self.root / "START.md").write_bytes(b"\xff")
@@ -86,14 +93,14 @@ class PackageTests(unittest.TestCase):
 
     def test_manifest_cannot_escape_root(self):
         self.put("package.json", json.dumps({
-            "protocol_version": "2.1", "required_files": ["../outside.md"],
+            "protocol_version": "2.2", "required_files": ["../outside.md"],
             "template_root": "templates"
         }))
         self.assertTrue(any("Unsafe manifest path" in e for e in validate(self.root)))
 
     def test_duplicate_required_paths_rejected(self):
         self.put("package.json", json.dumps({
-            "protocol_version": "2.1", "required_files": ["START.md", "START.md"],
+            "protocol_version": "2.2", "required_files": ["START.md", "START.md"],
             "template_root": "templates"
         }))
         self.assertTrue(any("Duplicate required file" in e for e in validate(self.root)))

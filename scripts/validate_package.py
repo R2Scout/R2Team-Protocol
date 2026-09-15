@@ -1,4 +1,4 @@
-"""Read-only structural checks for the distributable R2Team 2.1 package."""
+"""Read-only structural checks for the distributable R2Team 2.2 package."""
 import argparse
 import hashlib
 import json
@@ -19,8 +19,10 @@ def validate(root):
             raise ValueError("template_root must be a path")
     except (OSError, ValueError, KeyError, TypeError) as exc:
         return [f"Invalid package manifest: {exc}"]
-    if manifest.get("protocol_version") != "2.1":
-        errors.append("Expected protocol_version 2.1")
+    if manifest.get("protocol_version") != "2.2":
+        errors.append("Expected protocol_version 2.2")
+    if "package_revision" in manifest:
+        errors.append("Remove package_revision: protocol_version is the sole release identifier")
     template_root = (root / template_name).resolve()
     if not template_root.is_relative_to(root):
         return errors + ["Unsafe manifest path: template_root"]

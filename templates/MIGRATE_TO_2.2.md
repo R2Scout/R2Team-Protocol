@@ -1,11 +1,11 @@
-# Migration prompt: R2Team/Codex Team Protocol 1.10 to R2Team 2.1
+# Migration prompt: R2Team/Codex Team Protocol 1.10 to R2Team 2.2
 
 Give this complete document to the existing project PM. It is a migration procedure, not authorization to rewrite product code, deploy or publish. Start with read-only preflight and wait for approval of the exact migration plan before writes.
 
 ## Inputs and source-version guard
 
 Required source: **1.10**.
-Target: **R2Team**, `protocol_version: "2.1"`, `package_revision: 1`.
+Target: **R2Team**, `protocol_version: "2.2"`. This version is the sole release identifier.
 
 Inspect the project's actual AGENTS, protocol, setup and state files before planning:
 
@@ -31,8 +31,8 @@ Never execute placeholders. Confirm actual paths, refs and identities.
 ## 1. Verify the exact target package
 
 1. Obtain the full trusted package, not just this prompt or one protocol file.
-2. Verify manifest identity, protocol version 2.1 and package revision 1. Reject another protocol/revision, a differently named profile or any unverified substitute.
-3. The old v2.0 tag is not a 2.1 source. Resolve v2.1 to its commit and inspect the manifest. A dirty working tree is not identified by its HEAD SHA.
+2. Verify manifest identity and protocol version 2.2. Reject another protocol version, a differently named profile or any unverified substitute.
+3. The old v2.1 tag is not a 2.2 source. Resolve v2.2 to its commit and inspect the manifest. A dirty working tree is not identified by its HEAD SHA.
 4. For a bundle, compare package.json with the independently supplied trusted hash, then verify its payload hashes. A self-reported hash without a trusted source proves consistency, not provenance.
 5. Run the package structural validator and its tests when available. Read VERIFICATION.md; distinguish structural PASS from blocked tests, untested skill behavior and unverified provider operations.
 6. Read the package START, [Setup.md](Setup.md), [CODEX_TEAM_PROTOCOL.md](CODEX_TEAM_PROTOCOL.md), [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md), [TEAM.md](TEAM.md), [SKILLS.md](SKILLS.md), [TRACKER_GUIDE.md](TRACKER_GUIDE.md) and relevant role instructions.
@@ -89,7 +89,7 @@ Present a concise plan containing:
 
 Then ask:
 
-"Approve this exact migration plan, the confirmed source version, target package revision 1 and the listed write scope?"
+"Approve this exact migration plan, the confirmed target protocol version 2.2 and the listed write scope?"
 
 Wait for a separate affirmative response. General approval does not grant unlisted commit/push, account administration, deployment, installation or automation rights.
 
@@ -103,8 +103,7 @@ Record separately in the project's adopted configuration:
 
 ```yaml
 protocol_name: R2Team
-protocol_version: "2.1"
-protocol_package_revision: 1
+protocol_version: "2.2"
 integration_revision: <previous project value plus one, or 1 for first adoption>
 protocol_source:
   repository_url: <trusted URL, when applicable>
@@ -112,7 +111,7 @@ protocol_source:
   package_sha256: <trusted bundle manifest hash, when applicable>
 ```
 
-These are distinct: package revision identifies the distribution; integration_revision identifies the project's adaptation. Resolve placeholders before readiness. Never publish another machine's absolute path or local thread ID.
+These are distinct: protocol_version identifies the distribution contract; integration_revision identifies the project's local adaptation. Resolve placeholders before readiness. Never publish another machine's absolute path or local thread ID.
 
 PM remains the sole mandatory coordinating function. Preserve existing names and combined roles unless a rename is explicitly approved. Local/remote chats and authorized subagents are execution modes, not different persistence rules.
 
@@ -135,7 +134,7 @@ One owner publishes each task branch. TEAM on the accepted default branch govern
 
 Legacy MSG/REPORT records remain history. Bring their material current contents into the TASK with provenance; do not replicate the complete archive. No new mandatory message registry, ACK file, role report or separate helper-task queue.
 
-## 7. Adopt R2Team 2.1 communication explicitly
+## 7. Adopt R2Team 2.2 communication explicitly
 
 Explain and demonstrate the three-way rule to each affected executor:
 
@@ -165,7 +164,7 @@ If specification coverage is incomplete, record gaps and propose a bounded basel
 
 Inventory each participant's R2Team, OpenSpec and relevant Superpowers skills. Read the actual required SKILL.md files. Do not install or replace skills without machine-owner approval; show differences first.
 
-Installed R2Team 2.0 skills are not proof that R2Team 2.1 is installed. Use the verified v2.1 release source when an update is authorized; otherwise follow adopted project documents and report conflicting installed instructions. Do not silently claim that editing the distribution updated other machines.
+Installed R2Team 2.1 skills are not proof that R2Team 2.2 is installed. Use the verified v2.2 release source when an update is authorized; otherwise follow adopted project documents and report conflicting installed instructions. Do not silently claim that editing the distribution updated other machines.
 
 Use relevant OpenSpec explore/propose/update/apply/verify/sync/archive and Superpowers TDD/debugging/verification, not all skills for every operational question. Missing capability requires an approved equivalent or BLOCKED, not invented evidence.
 
@@ -190,7 +189,7 @@ Keep unavailable roles as PENDING/BLOCKED, not migrated. Do not create replaceme
 Run applicable package/project checks and inspect the exact diff. Record PASS, BLOCKED or NOT_RUN individually.
 
 Required review:
-- Exact package revision 1 verified; protected state preserved.
+- Exact protocol version 2.2 verified; protected state preserved.
 - Source-version discrepancy and instruction conflicts resolved.
 - One PM; valid people/executors/functions/permissions.
 - Active tasks have current owner, scope, evidence and next action.
@@ -211,7 +210,7 @@ Document tests are not live integration acceptance. If a mandatory check is bloc
 Commit/push/PR/tracker writes require explicit authority. If authorized, publish the exact reviewed changes and verify remote refs and recipient access. If not, leave local changes and report NOT_PUBLISHED; a remote rollout is not complete.
 
 Return:
-- confirmed source version and target 2.1/package revision 1;
+- confirmed source version and target protocol version 2.2;
 - trusted package ref/hash and project integration revision;
 - changed files, preserved state and any approved retirements;
 - per-role accepted/pending/blocked status;

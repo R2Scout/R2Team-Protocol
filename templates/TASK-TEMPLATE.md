@@ -1,10 +1,10 @@
-# TASK template — R2Team 2.1
+# TASK template — R2Team 2.2
 
 Use the body below for Tasks/TASK-<id>-<name>.md, removing these explanatory instructions. Choose a collision-free ID. Role handoff alone does not create another TASK; bounded helper requests remain inside the parent TASK.
 
 ```yaml
 ---
-protocol_version: "2.1"
+protocol_version: "2.2"
 id: "<unique-task-id>"
 revision: 1
 status: DRAFT

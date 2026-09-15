@@ -1,4 +1,4 @@
-# R2Team 2.1 — Command Help
+# R2Team 2.2 — Command Help
 
 These are Codex skill prompts, not shell commands. Install the four skills first. Natural-language requests are supported; arguments describe intent and never grant permissions. Help is always shown in English. For task conversations, use the participant's preferred language.
 
@@ -30,7 +30,7 @@ Confirm the target directory and guide me through setup. This chat will be PM.
 
 This routes to Setup mode `new`. A new project is not expected to have TEAM/TASK yet. The wizard confirms the initial PM and creates the agreed configuration. For an existing MVP or older protocol use Setup mode `migrate`; do not initialize a new project over its files.
 
-The full template package is needed for setup. Installing SKILL.md alone does not copy project templates. Provide a verified package path or repository URL and full commit SHA. The distribution is https://github.com/R2Scout/R2Team-Protocol. Resolve release v2.1 to its actual commit and verify the source; do not silently use main/latest.
+The full template package is needed for setup. Installing SKILL.md alone does not copy project templates. Provide a verified package path or repository URL and full commit SHA. The distribution is https://github.com/R2Scout/R2Team-Protocol. Resolve release v2.2 to its actual commit and verify the source; do not silently use main/latest.
 
 ## Add → register → connect
 

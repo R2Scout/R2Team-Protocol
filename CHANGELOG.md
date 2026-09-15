@@ -1,5 +1,11 @@
 # R2Team change history
 
+## 2.2
+
+- Make `protocol_version` the sole release identifier: major is the protocol generation and minor increments for each protocol revision.
+- Remove `package_revision` and `protocol_package_revision` from the distribution and project templates.
+- Rename the candidate and migration source to 2.2 without rewriting the immutable 2.1 release.
+
 ## 2.1 — package revision 1
 
 - Make bounded local/remote role communication and internal helper delegation first-class transient coordination inside an accepted TASK.

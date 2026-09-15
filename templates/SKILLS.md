@@ -1,4 +1,4 @@
-# OpenSpec and Superpowers — R2Team 2.1 integration
+# OpenSpec and Superpowers — R2Team 2.2 integration
 
 This is required routing by work, not a declaration that all skills are installed. Do not invoke every workflow for a minor task. Read the complete selected SKILL.md before acting. Missing required skills need an agreed installation or explicit equivalent.
 
