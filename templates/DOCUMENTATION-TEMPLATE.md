@@ -1,30 +1,30 @@
-# Заготовка карты документации
+# Documentation map template
 
-При setup интегрируй в существующий README/docs index; новый файл создавай только при необходимости. Не веди две конкурирующие карты.
+During setup, merge into the existing README/docs index; create another file only when needed. Do not maintain competing maps.
 
-## Проект
+## Project
 
-Цель, пользователи, границы, система в целом, текущая стадия.
+Purpose, users, boundaries, overall system and current stage.
 
-## Где искать
+## Where to look
 
-- Протокол/TEAM и роли:
-- Текущие OpenSpec specs:
-- Активные changes и Tasks:
-- Архитектура и значимые ADR:
-- UX/исследования, если есть:
-- Команды запуска/build/test:
-- Эксплуатация/deployment/rollback:
-- Доступы: процедура получения, без секретов:
+- Protocol/TEAM and role contracts:
+- Current OpenSpec specifications:
+- Active changes and TASKs:
+- Architecture and significant ADRs:
+- UX/research, if present:
+- Run/build/test commands:
+- Operations/deployment/rollback:
+- Access-request procedure, without secrets:
 
-## Покрытие спецификацией
+## Specification coverage
 
-| Возможность | Источник текущего знания | Spec / change | Evidence | Статус покрытия / пробел | Следующий приоритет |
+| Capability | Current knowledge source | Spec/change | Evidence | Coverage/gap | Next priority |
 | --- | --- | --- | --- | --- | --- |
-| Реальная возможность | Проверенный документ/код/ref | Ссылка либо отсутствует | Проверка либо NOT_RUN | Covered / Partial / Unknown | Следующий срез |
+| Actual capability | Verified document/code/ref | Reference or absent | Check or NOT_RUN | Covered / Partial / Unknown | Next slice |
 
-Не объявляй весь MVP документированным по одному успешному OpenSpec change. Наблюдаемое поведение не автоматически правильное требование. Для изменяемой области specs, design, tests и docs обновляются совместно.
+One completed OpenSpec change does not document an entire MVP. Observed behavior is not automatically the intended requirement. Update specs, design, tests and documentation together for the affected area.
 
-## Правило поддержки
+## Maintenance
 
-Исполнитель обновляет затронутую документацию в том же PR. PM проверяет покрытие принятого scope; существенные архитектурные решения получают ADR по необходимости. Пользовательские инструкции и runbook не заменяются requirements/scenarios.
+The executor updates affected documentation in the same PR. PM checks coverage of the accepted scope. Record significant architectural decisions as ADRs when needed. Requirements/scenarios do not replace user instructions or an operational runbook.

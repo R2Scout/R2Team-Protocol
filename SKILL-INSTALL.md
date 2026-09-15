@@ -1,81 +1,84 @@
-# Установка R2Team 2.0
+# Installing R2Team 2.1
 
-Поставляются четыре skills: r2team, r2team-work, r2team-coo, r2team-audit. Skills — папки с SKILL.md, не shell-команды/служба. OpenSpec/Superpowers устанавливаются отдельно по [проектной инструкции](templates/SKILLS.md).
+Four instruction skills are supplied: r2team, r2team-work, r2team-coo and r2team-audit. They are folders with SKILL.md, not shell commands or a service. OpenSpec/Superpowers are separate dependencies described in [SKILLS.md](templates/SKILLS.md).
 
-## Вариант A. Из GitHub
+## A. From GitHub
 
-Репозиторий R2Team публичный: приглашение для установки не нужно. PM передаёт URL и полный commit SHA проверенного релиза. Доступ к проектному репозиторию, если он приватный, проверяется отдельно. В Codex участника:
+The distribution repository is public; installation needs no invitation. PM supplies its URL and the full verified release commit SHA. Access to a private project repository is a separate check.
 
 ```text
-$skill-installer Установи из R2Scout/R2Team-Protocol
-на ref <полный-commit-SHA-релиза-2.0> четыре пути:
+$skill-installer Install from R2Scout/R2Team-Protocol
+at ref <verified-full-commit-SHA-for-v2.1>:
 skills/r2team
 skills/r2team-work
 skills/r2team-coo
 skills/r2team-audit
-Не заменяй ref на main/latest.
-Существующие одноимённые skills не заменяй без показа diff и согласования.
+Do not substitute main/latest.
+If same-name skills exist, show the differences and ask before replacing them.
+Do not migrate projects or enable automations.
 ```
 
-Инсталлятор использует свой install-skill-from-github.py с --repo, --ref и четырьмя --path. Точный commit можно получить, разрешив v2.0 и проверив его против опубликованной владельцем ссылки; tag сам по себе не защита от подмены. Не передавать токены в приглашении.
+The installer uses its supported repo/ref/path interface. Resolve `v2.1` and verify its full commit against the published release. Never include tokens in invitations.
 
-Назначение по умолчанию: `$CODEX_HOME/skills` либо `~/.codex/skills`. На Windows обычно `C:\Users\<user>\.codex\skills`. У каждого участника свой каталог.
+Default destination: $CODEX_HOME/skills or ~/.codex/skills; typically C:\Users\<user>\.codex\skills on Windows. Each participant has their own installation.
 
-## Вариант B. Из проверенного clone/bundle
+## B. From a verified clone or bundle
 
-Передайте весь репозиторий без .git/runtime/секретов, либо clone точного SHA. Для bundle отдельно передайте доверенный SHA-256 package.json.
+Transfer the complete distribution without .git, runtime data or secrets, or clone the exact commit. Supply a trusted independent SHA-256 for package.json when transferring a bundle.
 
 ```text
-Проверь пакет R2Team 2.0 в <абсолютный-путь>.
-Сверь package.json с переданным hash и запусти scripts/validate_package.py.
-Установи только четыре папки из skills/ в пользовательский каталог
-навыков Codex. Проверь дубли в пользовательском и проектном scope,
-не перезаписывай имеющееся без согласования. Сверь SHA-256 копий.
-Не запускай регистрацию, миграцию, heartbeat или задачи при установке.
+Verify R2Team 2.1 package revision 1 at <absolute-path>.
+Compare package.json to the supplied trusted hash and run scripts/validate_package.py.
+Install only the four skills/ folders into this machine's Codex skill directory.
+Check user/project scope duplicates, show differences and obtain approval before replacement.
+Verify the copied payload hashes.
+Do not register, migrate, enable heartbeat or execute product tasks during installation.
 ```
 
-Этот способ подходит и для поставки из Azure DevOps Server/TFS Git. GitHub-инсталлятор не является TFS-инсталлятором.
+This option also supports a package distributed through Azure DevOps Server/TFS Git. A GitHub installer is not a TFS installer.
 
-Вариант команды — положить четыре папки в .agents/skills/ проектного репозитория по согласованному diff. Не создавайте дубли одних имён в нескольких scopes. Не нужно устанавливать заново для каждого чата на одной машине.
+Alternatively, a team can approve the four folders under its project's .agents/skills/. Avoid duplicate names across scopes. Reinstallation for every chat on the same machine is unnecessary.
 
-## Проверка
+## Verify discovery
 
-Следующим ходом:
+In a subsequent turn:
 
 ```text
 $r2team help
 ```
 
-Навык должен обнаружиться и показать help без записи в проект. Если не появился, проверить путь/scope/имя и перезапустить Codex. Файловая проверка не равна поведенческой проверке. Механизм описан в [OpenAI Docs](https://learn.chatgpt.com/docs/build-skills).
+The skill should be discovered and show help without project writes. If unavailable, check path/scope/name and restart Codex only when needed. File checks are not behavioral tests. See [OpenAI skill documentation](https://learn.chatgpt.com/docs/build-skills).
 
-## Новый проект
+## Start a project
 
-Нужен полный пакет шаблонов, не только четыре установленных SKILL.md:
-
-```text
-$r2team Начни новый проект через START.md из <путь-к-пакету-2.0>.
-Подтверди целевой каталог и проведи wizard. Этот чат будет PM.
-```
-
-Если локального пакета нет, передайте Git URL этого репозитория и полный SHA. Skill сначала получает проверенный комплект в согласованный свободный каталог, затем читает START/Setup. Отсутствие TEAM в новом проекте нормально: её создаёт wizard после подтверждения, не требуется фиктивная предварительная регистрация.
-
-## Участник существующего проекта
-
-PM выполняет add и публикует назначение. Затем даёт приглашение:
+The full template package is required, not only four installed SKILL.md files.
 
 ```text
-$r2team register repo <Git-URL-проекта> participant ken executor ken-ops
-TEAM: <путь>, ref <полный-SHA>.
-Протокол: <путь>, ref <полный-SHA>.
-Канал ответа PM: <Issue/Work-Item-URL>, адресат <account/executor>.
-Пройди cross-check назначенных QA+DevOps. Если TASK не назначен,
-запроси первый. Не начинай продуктовую работу при регистрации.
+$r2team Start a new project using START.md from <verified-package-path>.
+Confirm the target directory and guide the wizard. This chat will be PM after confirmation.
 ```
 
-Одна регистрация человека, несколько функций/чатов при необходимости. В другом чате: `$r2team connect QA executor ken-qa`. Register включает connect, если executor однозначен. Новые права не возникают из параметров приглашения; проверяются текущая TEAM и provider identity.
+Without a local package, supply its Git URL and verified full commit. The skill obtains the package into an approved safe directory, then reads START/Setup. Missing TEAM is normal for a new project; the wizard creates it after approval, without fictitious preregistration.
 
-Дальнейшая работа: `$r2team-work start`; обновления без уведомлений: `$r2team-coo update`; полный [help](templates/COMMANDS.md). Heartbeat по умолчанию выключен.
+## Join an existing project
 
-## Обновление с 1.20
+PM runs add and publishes the assignment, then provides:
 
-Сравните установленные SKILL.md с новой поставкой и согласуйте замену, сохраняя пользовательские изменения. Номер skill-процедуры 2.0 не переключает проект автоматически: старый проект продолжает свои правила до [явной миграции](templates/MIGRATE_TO_2.0.md). Не выполнять init/archive OpenSpec ради установки навыка.
+```text
+$r2team register repo <project-Git-URL> participant ken executor ken-ops
+TEAM: <path>, ref <full-SHA>.
+Protocol: <path>, ref <full-SHA>.
+PM response channel: <Issue/Work-Item-URL>, recipient <account/executor>.
+Cross-check the assigned QA+DevOps functions.
+If no TASK is assigned, request the first. Do not start product work during registration.
+```
+
+One participant can have multiple functions/chats. Another chat may use $r2team connect QA executor ken-qa. Register includes connect when the executor is unambiguous. Invitation parameters grant no rights: verify current TEAM and provider identity.
+
+Continue with $r2team-work start; read-only updates with $r2team-coo update; see [command help](templates/COMMANDS.md). Heartbeat is off by default.
+
+## Update an older installation
+
+Compare installed skills with the exact new package and approve replacement while preserving local customizations. This applies to older 1.20 and R2Team 2.0 skills.
+
+Updating procedure skills does not switch a project's protocol. Existing rules continue until [explicit migration](templates/MIGRATE_TO_2.1.md). Do not run OpenSpec init/archive merely to install skills.

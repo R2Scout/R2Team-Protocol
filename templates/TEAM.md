@@ -1,10 +1,11 @@
-# TEAM — конфигурация R2Team
+# TEAM — R2Team configuration
 
-Шаблон 2.0. Заполняет PM при setup; пустая конфигурация не готова к работе. Не копируйте личные thread IDs, абсолютные пути других машин и credentials в Git.
+Template for 2.1 package revision 1. PM fills it during setup; empty configuration is not ready. Never commit real thread IDs, other machines' absolute paths or credentials.
 
 ```yaml
 protocol_name: R2Team
-protocol_version: "2.0"
+protocol_version: "2.1"
+protocol_package_revision: 1
 integration_revision: 0
 setup_status: NOT_CONFIGURED
 project:
@@ -33,11 +34,11 @@ toolchain:
   skill_install_method: null
 ```
 
-В source заполняется реальный commit+package path либо hash точного локального bundle. Не выдавай HEAD за полный источник dirty working tree. Для уже принятой конфигурации увеличивай integration_revision при изменении правил/состава.
+Use a real commit and repository-relative package path, or the trusted hash of an exact bundle. HEAD does not identify a dirty working tree. Increment project integration_revision when adopting changed rules/team configuration.
 
-## Участники и исполнители
+## Participants and executors
 
-Заполняемый образец для замены participants/pm_executor_id, не действительное назначение:
+Replace the placeholders; this is not an actual assignment:
 
 ```yaml
 pm_executor_id: john-main
@@ -62,13 +63,13 @@ participants:
           deploy: false
 ```
 
-При заполнении спроси нужные права и помощников, не оставляй все false и одновременно не объявляй автономную работу включённой. Допустимы permissions для конкретных refs/сред/действий; одного deploy=true без target/scope недостаточно.
+Ask about actual needed rights/helpers; do not leave every permission false while declaring autonomous execution ready. Rights may be scoped to refs, environments and operations; deploy=true without a target/scope is insufficient.
 
-Кен может быть только DevOps либо QA+DevOps; один человек может иметь несколько executors с разными функциями. PM-роли у других executors не активируются одновременно с текущим pm_executor_id.
+Ken may hold only DevOps or combined QA+DevOps, using one or several executors. Only the current pm_executor_id performs team coordination.
 
-## Профили и обязанности
+## Function contracts
 
-| Функция | Инструкция |
+| Function | Instructions |
 | --- | --- |
 | PM | [ROLE-PM.md](ROLE-PM.md) |
 | Brain | [ROLE-BRAIN.md](ROLE-BRAIN.md) |
@@ -76,41 +77,32 @@ participants:
 | Dev | [ROLE-DEV.md](ROLE-DEV.md) |
 | QA | [ROLE-QA.md](ROLE-QA.md) |
 | DevOps | [ROLE-DEVOPS.md](ROLE-DEVOPS.md) |
-| COO (опциональная организационная функция) | [ROLE-COO.md](ROLE-COO.md) |
+| COO, optional | [ROLE-COO.md](ROLE-COO.md) |
 
-Профиль не создаёт отдельный чат. Удалённые и локальные executor используют тот же TASK. Реальный local routing — [локальный шаблон](LOCAL_REGISTRY_TEMPLATE.md), опционально и вне Git.
+A profile creates no chat. Local/remote executors use the same TASK. Optional physical routing uses the [local registry template](LOCAL_REGISTRY_TEMPLATE.md), never committed once populated.
 
-Таблица содержит классические профили, не enum. PM вправе добавить любую функцию, например Tester, Analyst или Architect, по [ROLE-TEMPLATE.md](ROLE-TEMPLATE.md). Зарегистрируй её описание/ссылку здесь, добавь имя в roles нужного executor и назначай active_role в TASK. Один executor может совмещать базовые и новые функции. Tester не автоматически QA: различия/совпадения определяет профиль. Только текущий pm_executor_id выполняет функцию координатора PM.
+This list is not an enum. PM may add Tester, Analyst, Architect or another function using [ROLE-TEMPLATE.md](ROLE-TEMPLATE.md) or a short contract here. Register its purpose/link, add it to executor.roles and use the appropriate TASK active_role. Combining functions is allowed. A new name does not automatically imply equivalence to an existing function or new permissions.
 
-## Provider и проектные команды
+## Provider and project commands
 
-Настройки GitHub/TFS — по [TRACKER_GUIDE.md](TRACKER_GUIDE.md). Записать:
-- проверенный remote/default branch, identity, state mapping;
-- branch policies, required checks, reviewer independence, merge strategy;
-- эффекты push/merge и кто разрешает их;
-- команды build/test/run с источником и ограничениями;
-- среды, данные, runbook/rollback, правила секретов;
-- ссылка на карту документации и known gaps.
+Use [TRACKER_GUIDE.md](TRACKER_GUIDE.md). Record verified remote/default branch, identity/state mappings, policies/checks, reviewer independence, merge strategy, push/merge side effects and approvals, build/test/run commands and evidence/limits, environments/data/runbook/rollback/secrets policy, documentation map and known gaps.
 
-Если process_template = CMMI, применить [SETUP-TFS-CMMI.md](SETUP-TFS-CMMI.md): согласовать карту типов Requirement/Task/Bug, состояния каждого типа, Bugs as tasks и связи Parent–Child/Development. Заменить одиночный work_item_type картой work_item_types из профиля. Конкретный серверный процесс и поля проверяются, не выводятся только из названия CMMI.
+## People, agreement and updates
 
-## Люди, согласование и каналы обновлений
+For actual needed functions, record:
+- Product/technical respondents and authorized scope deciders.
+- Human setup/visual acceptance responsibilities and environment boundaries.
+- Verified provider identities; multiple executors under one account remain logically distinguished.
+- Subscriptions/update-check method and optional local routing, without physical thread IDs.
+- Required independence, dispute resolution and escalation route.
 
-PM фиксирует для реально нужных функций, без второго реестра участников:
+Task-specific material questions and human actions belong in that TASK under [interaction rules](CODEX_TEAM_PROTOCOL.md#interaction), not a duplicate team registry. Asking a question does not transfer ownership. Provider notifications guarantee neither reading nor remote Codex execution.
 
-- кто отвечает на продуктовые/технические вопросы и кто вправе менять scope;
-- кто выполняет человеческие настройки и визуальную приёмку, для каких сред и с какими границами;
-- проверенный provider account каждого человека; несколько executors одного аккаунта различаются по logical ID/функции в обращении;
-- выбранные подписки/способ проверки обновлений каждым участником и опциональный local routing; реальные thread IDs остаются вне Git;
-- требуемая независимость/согласования для спорных решений и маршрут эскалации.
+## Optional COO configuration
 
-Не записывай сюда каждое ожидание: конкретные вопросы, ответы и помощь человеку ведутся в текущем TASK по [циклу взаимодействия](CODEX_TEAM_PROTOCOL.md#interaction). Назначение вопроса не меняет владельца TASK. GitHub-уведомления не гарантируют прочтение или запуск удалённого Codex; heartbeat не включается автоматически.
+An internal PM/parent helper gets bounded scope in its delegation, defaults to read-only, and returns facts; the parent wakes. A standalone COO is a registered executor with roles: [COO]. The profile's presence does not authorize creating or starting one.
 
-## COO: форма, scope и права при необходимости
-
-COO не обязателен. Для внутреннего помощника PM/родителя задай scope в его разрешённом поручении/subagents: по умолчанию read-only, факты возвращаются родителю, wake выполняет родитель. Для самостоятельного COO зарегистрируй обычного executor с `roles: [COO]` у соответствующего участника. Нельзя автоматически регистрировать/запускать его только из-за наличия профиля.
-
-Пример дополнительных настроек **этого executor**, не действительное назначение. Объедини permissions с существующими, не перезаписывай их пустой заготовкой:
+Merge actual permissions; do not overwrite existing settings with this example:
 
 ```yaml
 coo:
@@ -126,22 +118,26 @@ permissions:
   manage_automations: false
 ```
 
-При настройке заполни точные ID и границы проекта/действий. `wake_dispatcher` для наблюдаемого набора — `sender`, `none` либо logical executor ID конкретного самостоятельного COO: выбирается один, чтобы не было двойного wake. `notify_local: true` требует согласованного local routing/маршрутов на машине участника; это не Git/provider write. Разрешения на Git-публикацию/PR и остальные операции остаются отдельными.
+Fill exact IDs and boundaries. Select one dispatcher for the watched recipient set: sender, none, or a specific standalone COO executor. notify_local requires approved machine-side routing; it is not Git/provider write authority. Other permissions remain separate.
 
-Права меняет PM/уполномоченный владелец с подтверждением владельца среды. COO не редактирует собственные права, не расширяет список наблюдаемых ролей и не включает расписание себе. Даже при разрешённой записи сохраняются назначенный scope, единственный publisher и необходимые approvals. Флаги описывают договорённость, а не технически настроенные разрешения инструментов: фактические ограничения среды проверяются отдельно.
+PM/authorized owner and local environment owner approve rights. COO cannot change its own authority/scope or schedule. Configuration describes agreed policy, not proof that tool permissions were technically applied.
 
-Ручная проверка и heartbeat используют один ограниченный цикл [ROLE-COO.md](ROLE-COO.md). Heartbeat по умолчанию false и включается только отдельной настройкой; для внутреннего помощника расписание относится к родителю, а не к субагенту. Локальные cursor/dedup допустимы только ignored и не являются Git-источником состояния проекта.
+Manual passes and separately enabled heartbeat use the same [COO procedure](ROLE-COO.md). Internal helper scheduling belongs to the parent. Local cursor/dedup is ignored technical state, not the Git project source.
 
-## Фактическая готовность инструментов
+## Actual tool readiness
 
-| Executor / машина без личных путей | CLI version / skill source ref | Нужные skills обнаружены | Проверка и дата | Ограничения |
+| Executor/machine without private paths | CLI version / skill ref | Required skills discovered | Check/date | Limits |
 | --- | --- | --- | --- | --- |
-| Не зарегистрирован | UNKNOWN | NOT_RUN | NOT_RUN | Setup не выполнен |
+| Not registered | UNKNOWN | NOT_RUN | NOT_RUN | Setup not performed |
 
-Не дублируй каждый результат работы здесь: фактические tests/build/deploy находятся в TASK. Таблица фиксирует readiness окружения. См. [SKILLS.md](SKILLS.md).
+This table records environment readiness, not each task's tests/build/deploy. See [SKILLS.md](SKILLS.md).
 
-Регистрация в TEAM не означает принятия роли. При новом самостоятельном входе/новой функции требуется [cross-check](CODEX_TEAM_PROTOCOL.md#role-cross-check) самого executor и подтверждение назначенного TASK либо запрос первого у PM. В приглашении PM даёт существующий канал подключения. Открытые вопросы и итог сохраняются в организационном TASK, не в новом журнале; отсутствие назначения отличается от неисправности окружения.
+TEAM registration alone does not establish role adoption. A new standalone executor/function performs [cross-check](CODEX_TEAM_PROTOCOL.md#role-cross-check), confirms assigned work or requests the first from PM. PM supplies the existing onboarding channel; material questions/results enter the organizational TASK. No assignment is different from a broken environment.
 
-## Cutover и история изменений
+## Cutover and history
 
-Кратко: источник предыдущего протокола; какие TASK ещё по старым правилам; момент принятия новой редакции и ответственные. Не удаляй inactive participants или старую историю только ради чистого списка.
+Record prior source, tasks still on old rules, accepted cutover and responsible people. Do not delete inactive participants or history merely to tidy the list.
+
+## Operational communication
+
+Apply [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md). Record approved channels/direct working-exchange permissions per executor. No new messaging authority is assumed before configuration. Working-exchange permission differs from notify_local wake permission. Bounded assistance keeps the parent owner/publisher; ownership changes require published handoff. Locality does not change persistence rules. Heartbeat stays off unless separately enabled.

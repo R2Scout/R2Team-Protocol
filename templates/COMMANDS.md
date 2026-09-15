@@ -1,4 +1,4 @@
-# R2Team 2.0 — Command Help
+# R2Team 2.1 — Command Help
 
 These are Codex skill prompts, not shell commands. Install the four skills first. Natural-language requests are supported; arguments describe intent and never grant permissions. Help is always shown in English. For task conversations, use the participant's preferred language.
 
@@ -30,7 +30,7 @@ Confirm the target directory and guide me through setup. This chat will be PM.
 
 This routes to Setup mode `new`. A new project is not expected to have TEAM/TASK yet. The wizard confirms the initial PM and creates the agreed configuration. For an existing MVP or older protocol use Setup mode `migrate`; do not initialize a new project over its files.
 
-The full template package is needed for setup. Installing SKILL.md alone does not copy project templates. Provide a verified package path or repository URL and full commit SHA. The distribution is https://github.com/R2Scout/R2Team-Protocol. Resolve release v2.0 to its actual commit and verify the source; do not silently use main/latest.
+The full template package is needed for setup. Installing SKILL.md alone does not copy project templates. Provide a verified package path or repository URL and full commit SHA. The distribution is https://github.com/R2Scout/R2Team-Protocol. Resolve release v2.1 to its actual commit and verify the source; do not silently use main/latest.
 
 ## Add → register → connect
 
@@ -102,7 +102,13 @@ For configured multi-repository work, qualify TASK IDs with repo URLs, pin exter
 - Git holds authoritative project state; installation does not create TEAM or migrate older projects.
 - Project/global instructions and real permissions remain binding. Commit/push, tracker writes, merge, deploy, costs and schedules are separate capabilities.
 - Retain one publisher per TASK branch. Do not overwrite another role's changes or take over an active assignment implicitly.
-- Use GitHub or Azure DevOps Server/TFS Git as configured; verify server-specific APIs and CMMI mapping rather than assuming GitHub behavior.
+- Use GitHub or Azure DevOps Server/TFS Git as configured; verify server-specific APIs, item types and state mappings rather than assuming GitHub behavior.
 - Never put secrets, personal machine paths or actual thread IDs in committed templates or invitations.
 - Report what was actually done, exact references, limitations and next action. Notification success is not acceptance.
 - R2Team command names are a project convention, not built-in OpenAI commands. Skills use the mechanism described in [OpenAI Docs](https://learn.chatgpt.com/docs/build-skills).
+
+## Bounded working requests
+
+Within an existing assigned TASK, authorized chats may exchange small requests, clarifications and answers directly. Keep the current accountable owner/publisher; no new TASK/Issue/PR/MSG or duplicate provider comment is needed merely for assistance. Use the agreed provider channel when direct communication is unavailable.
+
+Product contract/significant design changes go to OpenSpec; responsibility, blockers and material continuation facts go to the existing TASK. Publish before ownership transfer, reliance on new material decisions/results, blocking stops or changed-session end, and completion/acceptance. Preserve code, tests and meaningful evidence; do not archive transcripts. This is the same rule locally, remotely and for helpers. Direct messages grant no new authority; uncertain delivery must not be blindly retried.

@@ -1,218 +1,189 @@
-# Setup — пошаговый мастер R2Team 2.0
+# Setup — R2Team 2.1 guided wizard
 
-Комплект 2.0. Этот файл выполняется только по запросу пользователя. Чтение/редактирование пакета не запускает проект. Полные правила — [протокол](CODEX_TEAM_PROTOCOL.md), стартовые поручения — [CODEX_TEAM_SETUP.md](CODEX_TEAM_SETUP.md).
+Package revision 1. Run only when requested; reading/editing the distribution does not start a project. Full rules: [protocol](CODEX_TEAM_PROTOCOL.md). Entry prompts: [CODEX_TEAM_SETUP.md](CODEX_TEAM_SETUP.md).
 
-## Правила мастера
+## Wizard rules
 
-- Задавай один следующий существенный вопрос; до трёх связанных — только если это удобно пользователю. Прочитай доступные факты прежде, чем спрашивать.
-- Разделяй подтверждённое, предлагаемое и UNKNOWN. Молчание не согласие.
-- Не угадывай Git root, remote, выбранный TASK, аккаунт, среду или PM.
-- Существующие AGENTS, docs, навыки, код, TASK, MSG, отчёты и uncommitted changes сохраняй.
-- План → согласованный diff → запись → проверка. Значимые полномочия, расходы, внешняя публикация и конфликты требуют решения человека.
-- После каждого завершённого блока сохраняй короткий checkpoint в одном setup/организационном TASK: режим, принятые ответы, ссылки, проверки, blockers, следующий вопрос. Не создавай второй реестр состояния.
-- До разрешения первой записи достаточно резюме в чате. После создания Git root и TASK перенеси существенные решения туда.
-- Точки остановки выбранных SKILL.md обязательны. Мастер не разрешает обходить explore/propose/update approval или автоматически переходить к apply.
-- Повторный запуск читает checkpoint и изменённые входы. Не переустанавливает инструменты и не плодит TASK/Issue/PR.
-- С первого рабочего TASK применяй [цикл взаимодействия](CODEX_TEAM_PROTOCOL.md#interaction): бриф до действий, сопровождение человека, адресные вопросы и согласование. Setup не завершается обещанием, что все чаты уже приняли правила.
+- Ask the next material question, preferably one at a time; verify accessible facts first.
+- Distinguish confirmed, proposed and UNKNOWN; silence is not consent.
+- Do not guess root, remote, TASK, account, environment or PM.
+- Preserve existing AGENTS, docs, skills, code, TASKs, historical messages/reports and dirty work.
+- Plan -> approved diff -> write -> verify. New authority, expense, publication and conflicts need a decision.
+- Preserve material setup state in one organizational TASK: mode, answers, refs, checks, blockers and next question. Do not create another registry or a checkpoint for every trivial reply.
+- Before first-write approval, a conversational summary is sufficient. Move material decisions into Git once its root/TASK exist.
+- Honor the selected skill's approval/implementation gates.
+- Resume from checkpoint and changed inputs; do not reinstall tools or duplicate TASK/item/PR.
+- Use [interaction rules](CODEX_TEAM_PROTOCOL.md#interaction) from the first task. Setup does not prove every role adopted the rules.
 
 <a id="modes"></a>
-## 0. Выбери режим
+## 0. Choose a mode
 
-| Mode | Когда | Кто выполняет |
+| Mode | Purpose | Executor |
 | --- | --- | --- |
-| `new` | Новый продукт/репозиторий и первая команда | Начальный PM после подтверждения |
-| `migrate` | Существующий проект/MVP, с протоколом или без | Действующий PM/уполномоченный мигратор |
-| `team` | Добавить, объединить, разделить, отключить участника/чат/функцию | Действующий PM |
-| `join` | Новый человек/чат на своей машине | Уже зарегистрированный executor |
-| `resume` | Продолжить TASK или заменить утраченный чат | Назначенный executor; переназначение делает PM |
-| `audit` | Проверить готовность без изменений | Read-only; исправления отдельно |
+| new | New product/repository and initial team | Initial PM after confirmation |
+| migrate | Existing project/MVP | Existing PM or authorized migrator |
+| team | Add/change/combine/transfer/disconnect people/functions/chats | Current PM |
+| join | Participant or new chat adopts an assignment | Registered executor |
+| resume | Continue work or replace a lost chat | Assigned executor; PM authorizes takeover |
+| audit | Read-only readiness check | Repairs separately authorized |
 
-Если из запроса режим понятен, назови его и продолжай. Не предлагай создание нового проекта человеку, который пришёл по приглашению в существующий.
+If intent is clear, state the mode and proceed. An invitee is not starting another project.
 
 <a id="preflight"></a>
-## 1. Общая проверка перед действиями
+## 1. Read-only preflight
 
-1. Подтверди абсолютный путь пакета, целевой проект, применимые AGENTS и shell.
-2. Read-only проверь repository root, status, текущую ветку, HEAD, remote и рабочие деревья. Не печатай credential-bearing URL; обнаруженный секрет не копируй в отчёт.
-3. Проверь TEAM/старое состояние, активного PM, текущих писателей/задачи и наличие автоматизаций в scope. Не трогай чужие projectless-расписания.
-4. Сверь источник пакета: commit-pinned Git URL или локальный путь + SHA-256 package.json, который содержит хэши payload, список файлов и результат validator. Сначала сверить ожидаемый hash manifest с переданным источником, затем файлы; hash без доверенного источника доказывает только целостность. Tag/HEAD не описывает незакоммиченный пакет; честно зафиксируй это.
-5. Если корень не Git или код/docs живут в разных местах, сначала согласуй канонический root и remote. Не объявляй локальные файлы Git-first до push.
-6. Если исходник недоступен, сохрани точный blocker и не восстанавливай пакет из памяти.
-7. Read-only audit возможен без назначения. Любые изменения TEAM/назначений — только в полномочиях PM.
+1. Confirm package source/path, target project, applicable instructions and shell.
+2. Check Git root/status/branch/HEAD/remote/worktrees without printing credential-bearing URLs.
+3. Read current TEAM/legacy state, PM, affected active writers/tasks and scoped automations. Leave unrelated projectless schedules alone.
+4. Verify exact package commit or trusted bundle manifest hash before payload hashes. Integrity without a trusted source is not provenance. HEAD/tag does not identify dirty files. Target package revision must match the requested revision.
+5. If code and organizational files are split or the root is not Git, agree canonical placement and remote. Local files are not remotely published state.
+6. Missing source is BLOCKED; do not reconstruct the package from memory.
+7. Audit can be read-only without an assignment; TEAM/assignment changes require PM authority.
 
-Без repo можно подготовить согласованные файлы локально, но готовность будет `LOCAL_ONLY`. Создание нового remote/repository — отдельное явное разрешение владельца.
+Local preparation can be approved without a remote, but is LOCAL_ONLY. Creating a remote repository requires explicit authorization.
 
 <a id="new"></a>
-## 2. NEW — новый проект
+## 2. NEW
 
-### Шаг N1. Цель и первый результат
+### N1. Goal and first result
 
-Уточни: для кого продукт, какую проблему решает, первый небольшой проверяемый результат, out-of-scope, критические ограничения данных/безопасности/сроков. Сохрани краткий обзор; не заставляй писать полный PRD до первого TASK.
+Clarify users/problem, first small verifiable outcome, out-of-scope and important data/security/time constraints. Keep a short overview; do not demand a full PRD before the first task.
 
-### Шаг N2. Git и рабочая очередь
+### N2. Git and work queue
 
-Если есть несколько самостоятельных приложений/репозиториев с собственными PM, подключай [MULTI_REPO.md](MULTI_REPO.md) только для реальных SDK/API-зависимостей. Зафиксируй владельца контракта и точные внешние ссылки; не объединяй команды/трекеры автоматически.
+For real SDK/API dependencies across applications, use [MULTI_REPO.md](MULTI_REPO.md). Preserve each project's PM/authority; do not merge teams/trackers automatically.
 
-Уточни точный Git URL либо кто разрешает создать репозиторий. Выбери один provider:
-GitHub с Git или Azure DevOps Server/TFS с Git. Используй [TRACKER_GUIDE.md](TRACKER_GUIDE.md).
+Confirm exact Git URL or authorization to create one. Choose GitHub or generic Azure DevOps Server/TFS Git using [TRACKER_GUIDE.md](TRACKER_GUIDE.md).
 
-Спроси основную ветку, права людей, существующие branch policies/checks, эффекты push/merge (например автодеплой). Для TFS уточни collection, project, repo ID, версию Server/API, Work Item type и процесс состояний. TFVC не является Git: его миграция — отдельная задача.
+Confirm default branch, account rights, policies/checks and push/merge side effects such as deployment. For Server confirm collection/project/repo ID, server/API version, Work Item type and actual state mapping. TFVC migration is separate work.
 
-Если выбран CMMI, до создания Work Items пройди [SETUP-TFS-CMMI.md](SETUP-TFS-CMMI.md): Requirement → Task → PR либо Requirement → Bug → PR. Проверь типы/поля, Parent–Child, Bugs as tasks, отображение на досках и mapping состояний отдельно для каждого типа. Затем продолжи N3–N7; отдельный мастер/PM не создаётся.
+Creating task-related items/branches/PRs/comments may be approved as standard project operations. Merge, tags/releases, deploy, database changes and spending remain separate authority.
 
-Создание Issue/Work Item, branch, PR и comments можно согласовать как стандартные действия Codex для этого проекта; merge, tag/release, deploy, DB changes и расходы согласуются отдельно. Отсутствующее разрешение не выдумывай.
+Read [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md). Confirm approved direct working-exchange routes/permissions or use provider discussion. Bounded assistance creates no additional TASK/Issue/PR. Record actual routing policy in TEAM without secrets/thread IDs. Do not enable heartbeat.
 
-### Шаг N3. Минимальная команда
+### N3. Minimum team
 
-Сначала один человек и один PM executor. Пользователь выбирает имя/ID; примеры John/john-main не обязательные значения.
+Start with one participant and one PM executor; user chooses identity. John/john-main are examples.
 
-Для каждой нужной функции спроси: выполнять PM самому, разрешить внутреннего субагента, создать отдельный локальный чат или назначить другого человека? Не создавай участников «на будущее».
+For each needed function choose PM execution, authorized helper, separate local chat or another person. Do not create speculative future participants. Standard profiles are not a closed list; use [ROLE-TEMPLATE.md](ROLE-TEMPLATE.md) or concise TEAM entries for custom functions.
 
-Классические профили не ограничивают выбор. Спроси, нужны ли дополнительные функции — например Tester или Analyst. Для любой новой функции заполни [ROLE-TEMPLATE.md](ROLE-TEMPLATE.md) либо короткое описание в TEAM: цель, результат, границы/права, навыки, приёмка и субагенты. Не создавай отдельный чат автоматически.
+For each executor ask about functions/prohibitions, helpers/purposes/paths, combined/separate chats, QA independence, environments and Git/tracker rights. Ken can combine QA+DevOps.
 
-Спроси для каждого executor:
-- доступные функции и запреты;
-- разрешены ли субагенты, для каких целей и путей;
-- один совмещённый чат или несколько;
-- требования независимости QA;
-- разрешённые Git/tracker/средовые операции.
+Fill [TEAM.md](TEAM.md). Internal subagents are not separately registered participants. Create chats only on explicit request. Confirm human-action/visual-acceptance respondents, scope deciders, provider accounts, update-check subscriptions and escalation. Locality is relative; remote auto-start is not promised.
 
-Заполни [TEAM.md](TEAM.md). Субагенты не являются отдельными участниками. Чаты создаются человеком или доступным механизмом Codex только после явного запроса создать их.
+If COO is needed, choose internal read-only helper or registered standalone executor. Separately scope reads, wake and organizational writes; choose one wake dispatcher. See [ROLE-COO.md](ROLE-COO.md). Scheduling and chat creation require explicit requests.
 
-Уточни, кто отвечает на вопросы/даёт человеческую приёмку и кто решает конфликт вариантов; запиши границы в TEAM. Для каждого человека проверь provider account, подписку/доступ к рабочим обсуждениям и способ проверки обновлений. Несколько чатов одного аккаунта различай executor ID. Direct wake опционален, remote auto-start без отдельной автоматизации не обещай.
+### N4. Project entry files
 
-Если нужен COO, спроси: внутренний read-only помощник родителя или самостоятельный чат участника? Для самостоятельного согласуй точные роли/участников в scope, права чтения/wake/организационных записей по отдельности и единственного dispatcher для этих адресатов. Настройки — TEAM и [ROLE-COO.md](ROLE-COO.md). Ручной проход по умолчанию; heartbeat и создание чата требуют отдельных явных запросов. Само копирование профиля не включает COO.
+Show and approve the actual file diff:
+1. AGENTS, full protocol, OPERATING_COMMUNICATION and TEAM.
+2. Setup, CODEX_TEAM_SETUP, SKILLS and TRACKER_GUIDE.
+3. PM and used role profiles or equivalent TEAM contracts.
+4. One organizational setup TASK using [TASK-TEMPLATE.md](TASK-TEMPLATE.md).
+5. Existing documentation index or [DOCUMENTATION-TEMPLATE.md](DOCUMENTATION-TEMPLATE.md), filled with facts.
 
-### Шаг N4. Создай рабочую точку входа
+A full template copy may retain unused role examples; they create no roles. Selective installation must keep links and future team/join instructions usable.
 
-Покажи список создаваемых/изменяемых файлов и согласуй запись:
+Create Tasks when needed; Researches/Design/Decisions only for real content. No empty Reports/Messages/cursors system.
 
-1. AGENTS, полный протокол и TEAM;
-2. Setup, CODEX_TEAM_SETUP, SKILLS и TRACKER_GUIDE;
-3. профиль PM и используемые ROLE-профили либо эквивалентные инструкции в TEAM;
-4. один setup TASK из [TASK-TEMPLATE.md](TASK-TEMPLATE.md);
-5. существующий обзор/docs index либо [DOCUMENTATION-TEMPLATE.md](DOCUMENTATION-TEMPLATE.md), заполненный фактами.
+Before local registration, merge .codex-local/ into .gitignore and verify git check-ignore. Preserve other ignore rules. Never copy credentials/runtime data into published payload.
 
-Полная установка может сохранить все файлы templates в корне; неактивные ROLE-шаблоны сами не создают роли. При выборочной установке исправь ссылки и сохрани доступные инструкции для повторного team/join.
+For an empty repository, authorize a bootstrap commit/default branch first; then use task branches/item/PR. Do not try opening a PR without a base branch.
 
-Создавай Tasks при первом TASK; Researches/Design/Decisions и отдельные артефакты только когда есть содержимое. Не создавай пустые Reports/Messages/cursors в новом 2.0.
+### N5. Tools, skills and OpenSpec
 
-До создания local registry добавь или объедини правило `.codex-local/` в проектном `.gitignore` и проверь `git check-ignore`. Не перезаписывай остальные ignore-правила. Копирование всего пакета внутрь проекта не должно включать локальные credentials или runtime-данные в commit.
+Follow [SKILLS.md](SKILLS.md): inventory -> source/version/scope approval -> installation if needed -> discovery checks.
 
-Для пустого Git-репозитория согласуй начальный commit/основную ветку. После этого setup использует нормальные branch + tracker item + PR. Не пытайся открыть PR без базовой ветки.
+Check CLI, skills and openspec content separately. Initialize only with explicit authorization when absent. Default to the canonical repo-local root; no unnecessary external store.
 
-### Шаг N5. Инструменты, навыки и OpenSpec
+Use actual CLI help/output/schema paths; do not invent metadata or specs for nonexistent behavior. Preserve legacy commands/custom skills through a reviewed diff. Context contains stack, verified commands, constraints and document/task references, not the entire protocol.
 
-Выполни [SKILLS.md](SKILLS.md): inventory → согласование источника/версии/области → установка при необходимости → проверка обнаружения.
+### N6. First real change
 
-Проверь отдельно CLI, skills и проектную структуру. Если openspec отсутствует, получи явное разрешение на init. Проектный openspec по умолчанию располагается в каноническом Git root; не подключай внешнее beta-store без необходимости и согласования.
+1. Clarify with openspec-explore and relevant brainstorming.
+2. When asked to capture a new plan, use openspec-propose and its actual schema.
+3. Respect any required stop/new request before apply; "start the project" does not bypass it.
+4. Link change and the single detailed plan from TASK. A small restoration of accepted behavior needs no artificial change.
+5. Authorized implementation uses apply/TDD; failures use systematic-debugging.
+6. Acceptance uses verify and actual tests; integration includes sync/docs; archive waits for full scope.
 
-Сначала проверь CLI help/version. Запусти разрешённый init и выбери Codex. Для точной схемы и путей используй вывод CLI, не нарисованные вручную фиктивные артефакты. Не записывай выдуманные specs о ещё не существующей системе.
+### N7. Publication and entry
 
-Заполни project context: стек, проверенные команды, ограничения, ссылка на TASK как контракт, место документации. Не копируй весь протокол в context.
+Publish approved setup through the chosen provider and verify refs/assignments. Missing push authority/access means no remote-ready claim.
 
-### Шаг N6. Первый реальный change
-
-1. Уточнение задачи — `openspec-explore`, при необходимости `brainstorming`.
-2. По запросу на сохранение плана — `openspec-propose`: requirement/scenario, design и tasks по фактической схеме.
-3. Если выбранный propose требует завершить ход после планирования, представь артефакты и дождись нового запроса на apply. Общая фраза «запусти проект» этот барьер не снимает.
-4. В TASK свяжи change и его единственный подробный план. Для простой правки уже принятого поведения новый change не нужен.
-5. После решения начать реализацию — `openspec-apply-change` + TDD. При дефекте — systematic-debugging.
-6. До приёмки — OpenSpec verify + фактические проверки; до merge — sync и документация; после полного scope — archive. Подробная карта в SKILLS.
-
-### Шаг N7. Публикация и начало работы
-
-Опубликуй согласованный setup через выбранный provider, проверь фактические ссылки/refs и назначения. Если push/доступ не разрешены или недоступны — не объявляй remote-готовность.
-
-Проведи audit ниже. Покажи оператору: что готово, что NOT_RUN, первый TASK, его владельца и next_action. После setup продолжай как PM в этом же чате. Не создавай обязательного COO или heartbeat.
+Run the audit below. Report ready/NOT_RUN, first TASK, owner and next action. The confirmed initial chat continues as PM; no mandatory COO/heartbeat.
 
 <a id="migrate"></a>
-## 3. MIGRATE — существующий проект
+## 3. MIGRATE
 
-Если для GitHub явно выбран повторный setup с сохранением готовой спецификации и существующих чатов, но без переноса старых TASK/MSG, выполни [отдельный патч 1.10 → 2.0](MIGRATE_TO_2.0.md). Это исключение по решению пользователя: завершение требует принятия новых правил всеми сохраняемыми чатами, не только обновления файлов. Иначе выполни [MIGRATE_TO_2.0.md](MIGRATE_TO_2.0.md), затем N5–N7 только в применимой части.
+Use [MIGRATE_TO_2.1.md](MIGRATE_TO_2.1.md), then applicable N5-N7. Preserve active work by default. A user-approved fresh organizational queue may retain specs/chats while retiring old tasks/messages; it must not erase OpenSpec tasks.md or falsely mark unfinished work DONE. Each retained role must actually adopt the cutover.
 
-Для существующего TFS+CMMI также пройди [профиль CMMI](SETUP-TFS-CMMI.md), сохранив реальные IDs, родителей, настройки Bugs и ссылки PR. Не создавай дубликаты Work Items и не переключай процесс/доски автоматически.
+For an MVP, map capabilities/sources/gaps and cover the next changed area, not a speculative full import. Existing documents are evidence, not automatically correct requirements.
 
-Не конвертируй весь MVP в specs разом. Сначала карта возможностей/источников/пробелов и ближайшая изменяемая область. Существующие требования служат источниками для exploration, не материалом слепого импорта.
+With existing OpenSpec, resolve root/config/changes; preserve schema/metadata/capability paths/checkbox state; clarify ambiguous change selection; use update for existing planning within its gates and status/instructions for missing artifacts. Do not init/update/upgrade over customizations without comparison.
 
-Если OpenSpec уже есть:
-- resolve context; прочитай config и список активных changes;
-- сохрани схему, metadata, полный capability path и состояние checkboxes;
-- выбери нужный change явно, при неоднозначности спроси;
-- `openspec-update-change` — для корректировки существующих артефактов с предусмотренными подтверждениями;
-- отсутствующие артефакты формируй по status/instructions, не выдавай update за их создание;
-- не запускай init/update/upgrade поверх кастомных skills без сравнения.
-
-Первый цикл проходит на реальном небольшом TASK. Миграция протокола сама по себе не разрешает рефакторинг, перенос БД, production-deploy или смену tracker.
+The first cycle uses a small real TASK. Protocol migration authorizes no product refactor, database move, deployment or tracker replacement.
 
 <a id="team"></a>
-## 4. TEAM — изменение состава и функций
+## 4. TEAM
 
-1. Прочитай принятую TEAM основной ветки и только TASK затрагиваемых executors.
-2. Уточни действие: добавить человека, добавить/заменить чат, создать произвольную новую функцию (например Tester/Analyst), расширить/сузить функции, разделить/объединить чаты, отключить участника или передать PM.
-3. Для нового человека выясни identity provider и доступ. Для нового чата — устойчивый executor ID. Реальные thread IDs не помещай в Git.
-4. Для каждой функции спроси задачи, границы, навыки, субагенты, среды и независимость. Кен может иметь один executor с QA+DevOps, два чата или один чат с двумя внутренними помощниками.
-   Подтверди также адресатов вопросов/человеческой приёмки, каналы обновлений и правило брифа/пошагового сопровождения; не создавай новый журнал под это.
-5. Local/remote определяется относительно отправителя. Назначение TASK не зависит от direct wake; локальный маршрут регистрируется опционально на соответствующей машине.
-6. Подготовь минимальный diff TEAM, нового ROLE-профиля при необходимости и affected TASK. Разрешённые active_role проверяются по TEAM, не по закрытому списку классических ролей. Малое изменение можно включить в текущий организационный TASK; отдельный создаётся только при самостоятельном scope.
-7. До отключения/переименования executor получи checkpoint активной работы и назначь преемника. Недоступный остаток — UNKNOWN, не «всё передано».
-8. Проверь отсутствие двух текущих писателей task-ветки. Для того же logical executor при замене чата прежний писатель должен прекратить запись.
-9. Прими TEAM через существующий Git-процесс. Обнови владельцев TASK, assignee и ссылки/комментарии provider. Не создавай дубли задач ради передачи.
-10. Выдай участнику join-промпт, TASK при наличии и существующий канал подключения/ответа PM. Получи его собственный cross-check: понятность обязанностей, проверенные входы, вопросы и готовность. Если TASK ещё нет, роль запрашивает первый у PM. Регистрация человека не доказывает, что он установил skills или принял роль.
-11. Отключение не стирает историю: active=false; доступы и локальные уведомления отзываются в пределах разрешения.
-12. После изменения выполните audit. Сжатие команды обратно до одного PM использует ту же процедуру.
+1. Read accepted default-branch TEAM and only affected TASKs.
+2. Clarify add/remove/replace participant/chat/function, combine/split functions, or transfer PM.
+3. Verify provider identity/access; choose stable executor IDs; keep real chat IDs local.
+4. For each function clarify work, rights, skills, helpers, environments and independence. Record respondents, channels, intake and human-guidance rules without another journal.
+5. Local/remote placement does not change TASK ownership rules. Optional local mapping belongs on the relevant machine.
+6. Show the minimum TEAM/ROLE/affected-TASK diff. Custom functions are valid; a role name grants no authority.
+7. Secure active work/checkpoints before transfer/deactivation. Preserve IDs, branches, evidence and unresolved requests.
+8. Obtain appropriate approval, publish through the normal workflow, then send a complete invitation/current assignment. Provider membership/access is separately administered.
+9. New/changed standalone functions cross-check their contract. Do not claim adoption from registration alone.
 
-При добавлении/изменении самостоятельного COO используй те же team/cross-check процедуры. При отключении наблюдаемой роли обнови scope и локальный routing, при смене ответственного за wake исключи двойную отправку и проверь предыдущие неизвестные доставки. Перед расширением прав COO покажи точный diff; он не утверждает его сам. Несвязанные расписания не изменяются.
-
-Добавление участника само по себе не требует OpenSpec product change. Его первая содержательная работа использует нужный workflow. Нельзя ради «все skills применены» генерировать бессмысленный продуктовый change.
+Adding a participant does not itself require a product OpenSpec change.
 
 <a id="join"></a>
-## 5. JOIN — подключение на другой машине или в новый чат
+## 5. JOIN
 
-Короткие входы и приглашение описаны в [COMMANDS.md](COMMANDS.md): `register` подключает участника по уже опубликованному назначению PM; `connect` принимает назначенный executor в текущем чате. При однозначном выборе register включает connect, без обязательного второго вызова. Проверяй фактический provider account и текущую TEAM, а не только ID/SHA из приглашения. Если запись отсутствует или права изменились, запроси PM; не регистрируй себя в TEAM самостоятельно. Это интерфейс процедуры join; наличие/обнаружение skills проверяется на машине участника.
+Use register/connect from [COMMANDS.md](COMMANDS.md). Verify current TEAM and provider identity, not just an invitation's stale SHA. An absent/inactive entry is a PM question, not permission to add yourself.
 
-1. Получи repo URL, принятую TEAM ref, executor ID, канал подключения и TASK/branch при наличии. Отсутствие TASK не мешает входному cross-check: после него запроси первое назначение у PM, не назначай себя.
-2. Проверь собственный доступ и клонируй/получи подтверждённый Git remote. Существующую папку с правками не перезаписывай.
-3. Прочитай AGENTS, текущую TEAM основной ветки, protocol, нужные ROLE и SKILLS; затем назначенную task-ветку.
-4. Установи/проверь инструменты и skills этой машины с её владельцем. Наличие CLI у PM не означает его наличие здесь.
-5. Проверь приоритетные документационные gaps, команды, права, границы QA/DevOps и allowed subagents.
-   Прочитай общий цикл общения с человеком и ролями; проверь доступ к назначенным Issue/PR и уведомления собственного аккаунта. Регистрация executor не означает, что другой человек получил уведомление или его Codex запущен.
-6. Если executor уже зарегистрирован, не переписывай TEAM ради нового физического чата. Опциональный local mapping сохраняется только ignored.
-7. Выполни [cross-check роли](CODEX_TEAM_PROTOCOL.md#role-cross-check): своими словами обязанности/границы, проверенные входы, оставшиеся вопросы и готовность. Для новой функции существующего executor проверь изменившуюся часть, не запускай полный setup заново. Опубликуй итог/запрос по данному PM каналу в пределах разрешений.
-   Если TASK назначен, сверь revision/current owner/current remote head и покажи intake 3–5 строк по CODEX_TEAM_SETUP. Иначе явно запроси первый TASK и не начинай продуктовую работу. Если канал недоступен, попроси своего человека передать запрос, сохранив факт NOT_DELIVERED.
-8. Заверши register/join готовностью или blocker. Продуктовую работу продолжай по отдельному start/явному поручению: одна active_role, checkpoint и результат через Git + provider. PM решает переназначение.
-9. Не создавай второго PM, второго tracker или новую копию задачи.
+1. Obtain repo URL, TEAM ref, executor, onboarding channel and TASK/branch if assigned. No TASK is needed to cross-check; request one afterward.
+2. Confirm local destination and access; preserve existing work.
+3. Read AGENTS, current default-branch TEAM, relevant protocol/ROLE/SKILLS, then assigned task branch.
+4. Verify needed tools on this machine; installation/replacement needs owner permission.
+5. Check documentation gaps, boundaries, permissions, allowed helpers and shared-provider account routing. Notification is not guaranteed chat execution.
+6. Reuse the registered identity for a replacement physical chat; do not rewrite TEAM merely for a local thread ID.
+7. Perform [role cross-check](CODEX_TEAM_PROTOCOL.md#role-cross-check): duties, bounds, verified inputs, questions and readiness. For added functions, check only changed responsibilities.
+8. Confirm a current assigned TASK or request the first through the approved channel. If unavailable ask the person to relay and mark NOT_DELIVERED. Product execution requires start/explicit instruction and intake.
+9. Do not create a second PM, tracker or duplicate task.
 
 <a id="resume"></a>
-## 6. RESUME — продолжение и подхват
+## 6. RESUME
 
-Прочитай актуальные TEAM/TASK, разрешённый scope, candidate/verified SHA, changed paths, PR и next_action. Не читай весь архив чужих чатов.
+Read current TEAM/TASK, permitted scope, candidate/verified refs, changed paths, PR and next action, not all chats.
 
-Если нужно менять владельца, сначала handoff/согласованный takeover PM: сохранить полученные ветки/остатки, проверить remote head, назначить нового owner и обновить provider. Не делай force push, reset чужих правок или новую задачу ради продолжения.
+A change of owner requires an approved handoff/takeover: preserve available work, inspect remote head, assign the new owner and reconcile the provider. No force-push/reset or replacement task just for continuation.
 
-Если задача лишь поставлена на паузу, тот же executor продолжает с checkpoint. Для change используй status/instructions; apply продолжает невыполненные пункты, а не отмечает всё готовым по старому отчёту.
+The same executor resumes a pause from checkpoint. Use OpenSpec status/instructions and unfinished tasks; an old report is not evidence that every step is complete.
 
 <a id="audit"></a>
-## 7. AUDIT — финальная проверка целостности
+## 7. AUDIT
 
-Read-only по умолчанию. PM решает однозначные документные несоответствия в разрешённом diff; содержательные конфликты и новые права согласует.
+Read-only by default. Repairs require an approved diff; material conflicts/new permissions need a decision.
 
-- Один текущий PM; IDs уникальны, owner активен, active_role разрешена.
-- Все активные TASK имеют scope, acceptance, checkpoint, next_action, branch/item/PR по стадии.
-- Канонические docs/TASK/specs реально находятся в Git и доступны другим; main не подменяет активные ветки.
-- Provider проверен, assignee соответствует человеку, нет дубликатов и SYNC_REQUIRED.
-- Для CMMI проверены обе выбранные цепочки: Requirement → Task/Bug через Parent–Child, дочерний Work Item → PR через Development; mapping состояний по типам и Git-ссылки. Непроверенная цепочка отмечена NOT_RUN.
-- Установленные skills доступны нужному чату; версия/ref и результаты проверок сохранены.
-- OpenSpec context/root верен; существующие changes/specs валидируются выбранной версией. Нет ложного заявления о полной спецификации.
-- Команды проекта проверены либо NOT_RUN с причиной. Evidence привязано к версии.
-- Migration cutover понятен; старые писатели и project-specific автоматизации не конфликтуют.
-- Local registry игнорируется; thread ID/секретов в TEAM нет.
-- PM heartbeat выключен по умолчанию; direct wake опционален и не нужен remote-работе.
-- Если COO настроен, различаются внутренний и самостоятельный варианты; scope/права и один dispatcher wake подтверждены, ручная проверка проведена либо NOT_RUN. Heartbeat COO тоже выключен без отдельной настройки; нет широких опросов и self-escalation.
-- Новый чистый чат может найти задачу по Git URL/executor ID и продолжить.
-- Новая самостоятельная роль/функция выполнила собственный cross-check; вопросы адресованы, назначенный TASK подтверждён либо первый запрошен у PM. Нет ложной готовности по одной регистрации в TEAM.
-- Бриф и помощь человеку понятны; открытые вопросы/действия, адресаты и спорные варианты восстанавливаются из TASK, а не только из комментариев. У каждого решения есть уполномоченный принимающий; молчание не принято за согласие.
-- Адресное обращение/ответ проверены в выбранном provider и, если настроен, local wake; иначе NOT_RUN. Не выполняй внешний тест уведомления без согласованного scope. Inbox read/Done не считается завершением TASK.
-- CODEX_TEAM_PROTOCOL, AGENTS, TEAM, ROLE и setup не противоречат друг другу.
+Check:
+- One PM; unique active identities; permitted owner/function.
+- TASK scope/acceptance/checkpoint/next action and stage-appropriate item/branch/PR.
+- Docs/specs/work state actually available in Git, including active branches.
+- Provider identity/status consistent; no hidden duplicate or SYNC_REQUIRED.
+- Required skill source/discovery and actual tool checks, or NOT_RUN.
+- Correct OpenSpec root/schema and honest specification gaps.
+- Version-specific evidence and known runtime limits.
+- Clear migration cutover and safe active-writer/automation coordination.
+- Ignored local registry; no committed secrets/thread IDs.
+- Heartbeat off unless explicitly configured; optional COO scoped with one dispatcher and no self-escalation.
+- Fresh-executor recovery without transcripts.
+- Actual role cross-check and first-task confirmation/request.
+- Human actions, material questions and decisions survive in TASK; silence is not agreement.
+- Bounded direct assistance retains ownership; responsibility transfer requires publication.
+- Actual permitted notification test or NOT_RUN; inbox read is not task completion.
+- Protocol, AGENTS, TEAM, roles and setup agree.
 
-Итог в TASK: `READY`, `READY_WITH_LIMITS` либо `BLOCKED`, конкретные evidence/ограничения и следующий шаг. READY относится к организации работы, не к продукту или production. Приёмка пакета статическим validator не заменяет этот audit.
+Record READY, READY_WITH_LIMITS or BLOCKED with exact evidence and next action in the existing organizational TASK. Organizational readiness is not product/production acceptance. Structural package validation is not this live audit.

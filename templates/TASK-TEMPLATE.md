@@ -1,10 +1,10 @@
-# Заготовка TASK — R2Team 2.0
+# TASK template — R2Team 2.1
 
-Используй тело ниже для `Tasks/TASK-<id>-<name>.md`, убрав это пояснение. ID выбирается без коллизий с существующими. Не создавай новую задачу только из-за передачи роли.
+Use the body below for Tasks/TASK-<id>-<name>.md, removing these explanatory instructions. Choose a collision-free ID. Role handoff alone does not create another TASK; bounded helper requests remain inside the parent TASK.
 
 ```yaml
 ---
-protocol_version: "2.0"
+protocol_version: "2.1"
 id: "<unique-task-id>"
 revision: 1
 status: DRAFT
@@ -13,7 +13,6 @@ owner_executor_id: "<registered-executor>"
 active_role: PM
 tracker_item: null
 tracker_item_type: null
-parent_requirement: null
 requirement_ref: null
 branch: null
 pr: null
@@ -28,47 +27,49 @@ next_action: "<one-specific-action>"
 
 ## Outcome
 
-Для [TFS+CMMI](SETUP-TFS-CMMI.md) tracker_item — дочерний Task или Bug; tracker_item_type — его проверенный тип, parent_requirement — URL родителя Requirement, requirement_ref — путь к содержательному требованию в Git. Эти поля заполняются до READY/handoff. Для других профилей дополнительные поля можно не использовать.
-
-Проверяемый результат задачи.
+A verifiable useful result.
 
 ## Scope and boundaries
 
-Включено/исключено; пути/среды; разрешённые действия. Кто меняет scope и назначение.
+Included/excluded work, paths/environments, permitted operations, and who may change scope or assignment.
 
 ## Acceptance
 
-Requirements/scenarios либо короткие критерии. Нужная независимость QA и условия DONE.
+Requirements/scenarios or concise criteria; required QA independence and DONE conditions.
 
 ## Plan
 
-Ссылка на OpenSpec tasks.md при наличии change; иначе несколько шагов. Не копировать подробный план второй раз.
+Link to OpenSpec tasks.md when a change exists, otherwise a short plan. Do not duplicate the detailed plan.
 
 ## Current checkpoint
 
 - Completed:
 - Remaining:
 - Blockers:
-- Open requests, только если есть: кому (человек/executor), какой ответ/действие, версия/среда, что блокирует и ссылка на Issue/PR-thread. Это краткое состояние, не отдельный реестр сообщений.
+- Material open requests, if any: respondent, answer/action, version/environment, blocking impact and next step. Include a provider link if available, but preserve enough context to recover without a transcript. Routine completed exchanges need no entry. Apply [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md).
 
-Для setup сюда входят mode, последний завершённый шаг, подтверждённые ответы/ссылки и следующий вопрос. Не требуется отдельный setup-state файл.
+Setup checkpoints include mode, last completed step, confirmed answers/refs and the next question.
 
 ## Evidence
 
-- Что проверено и на какой версии:
-- Команда/сценарий и фактический результат:
-- Проверяющий и функция:
-- UNKNOWN/NOT_RUN:
-- Ссылки и существенные результаты в Git:
-- Для deployment: environment, source SHA, artifact digest, runtime checks, rollback:
-- Для человеческой приёмки: кто, что и для какой версии подтвердил; что роль проверила сама. Не называть такую приёмку автоматическим тестом.
+- Exact subject/candidate:
+- Environment:
+- Command or scenario:
+- Actual result:
+- Who verified:
+- Limits and NOT_RUN:
+- References to retained artifacts and summaries:
+
+Candidate, verified, merged and deployed versions are not interchangeable. A link to an expiring log is not a durable result summary.
 
 ## Decisions and handoff
 
-Короткие принятые решения и передачи: от кого → кому, active_role, причина, commit. Существенное содержание комментариев переносится сюда или в specs/docs.
+Record material decisions, rationale, authorized decider and remaining objections; who transfers responsibility to whom, function, reason and next step. Preserve open questions/human actions at publication boundaries, not every conversational turn.
 
-Для обсуждения сохрани нужные позиции, существенные варианты/возражения, принятый итог и уполномоченного принимающего; молчание не согласие. Если ответа нет, ожидание остаётся в Current checkpoint. Изменение контракта требует новой revision и согласованных specs до зависимой работы.
+For a handoff, identify the published branch/checkpoint and current owner. Never claim delivery or acceptance merely from a sent message.
 
-Уточнения, действия человека и дискуссии проходят по [общему циклу](CODEX_TEAM_PROTOCOL.md#interaction). Комментарии не входят в Git: перед передачей/паузой сохрани достаточно информации для восстановления без переписки. Публикующий владелец TASK один; остальные отвечают через provider.
+## Completion
 
-`revision` меняется при изменении контракта, не каждый checkpoint. Git commit определяет версию состояния. Реальные task/item/PR links обязательны к самостоятельному handoff; DRAFT без них не готовое поручение.
+Confirm actual DoD, specification/documentation consistency and required verification. Merge alone does not prove a deployment outcome. Preserve incomplete work honestly.
+
+revision tracks contract changes, not every checkpoint. Git commit identifies state. Real tracker/branch/PR links are required for independent handoff; DRAFT without them is not a ready assignment.

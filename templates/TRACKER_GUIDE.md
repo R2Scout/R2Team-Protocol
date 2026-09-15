@@ -1,28 +1,28 @@
-# GitHub и Azure DevOps Server/TFS с Git — R2Team 2.0
+# GitHub and Azure DevOps Server/TFS Git — R2Team 2.1
 
-Один проект — один provider. Git хранит контракт и подтверждённое состояние, tracker показывает очередь, PR связывает diff/review/checks. Реализованного универсального dispatcher в пакете нет: Codex использует доступный CLI/API в пределах согласованных прав.
+One project uses one provider. Git stores the contract and confirmed state; the tracker displays the queue; PRs connect diff/review/checks. No universal dispatcher is implemented here: Codex uses available authorized CLI/API tools.
 
-## Общий цикл
+## Common independent-task cycle
 
-1. Найти существующие item/TASK/PR, не плодить дубли.
-2. Создать или связать item, task-ветку и TASK.
-3. После содержательного commit/push открыть Draft PR (или защищённый от раннего merge обычный PR).
-4. Сохранить возвращённые IDs/URL в TASK и обратные ссылки в provider.
-5. Назначить assignee человеку из TEAM; executor и active_role — в TASK.
-6. Handoff: проверить единственного писателя, обновить owner/checkpoint → push → comment с commit-pinned ссылкой.
-7. QA: evidence для candidate SHA. PM: фактические checks и принятие.
-8. Merge и DONE только по definition of done. Deployment при необходимости отдельно проверяется.
-9. Существенные PR/comments decisions/results перенести в Git до зависимой работы.
+1. Reuse existing item/TASK/PR where appropriate.
+2. Create/link item, task branch and TASK.
+3. After a substantive commit/push, open a Draft PR or clearly block early merge if draft is unsupported.
+4. Preserve returned IDs/URLs in TASK and backlinks in the provider.
+5. Assign the provider account belonging to the TEAM executor; keep exact executor/active_role in TASK.
+6. For ownership handoff, check single publisher, update owner/checkpoint, publish, then notify with a commit-pinned reference.
+7. QA records candidate evidence; PM checks actual acceptance.
+8. Merge and DONE follow DoD; deployment is verified separately when required.
+9. Preserve material discussion outcomes in Git before dependent work.
 
-Отсутствие tracker не превращает локальный TASK в доставленное поручение. Допустим LOCAL_ONLY checkpoint, но готовность отмечается честно.
+No tracker/access does not turn a local TASK into a delivered assignment. Use LOCAL_ONLY and report readiness limits.
 
 ## GitHub
 
-В TEAM фиксируются provider=github, owner/repo, canonical Git URL, default branch, accounts, checks/review, merge strategy.
+Record owner/repository, canonical Git URL, default branch, accounts, required checks/review and merge strategy in TEAM.
 
-Read-only preflight: Git remote/ref/status, `gh auth status` без вывода токена, `gh repo view` либо доступная GitHub-интеграция. API-запросы адресуются только выбранному repo.
+Read-only preflight checks Git refs/status and the installed provider tool, such as gh auth status without exposing tokens and gh repo view. Scope API calls to the selected repo.
 
-После разрешения Codex может выполнить:
+After authorization, examples are:
 
 ```text
 gh issue create --repo <owner/repo> --title "<TASK-id>: <result>" --body-file <prepared-body-file>
@@ -31,56 +31,50 @@ gh issue edit <number> --repo <owner/repo> --add-assignee <account>
 gh pr comment <number> --repo <owner/repo> --body-file <prepared-handoff-file>
 ```
 
-Body из [ISSUE_PR_TEMPLATES.md](ISSUE_PR_TEMPLATES.md); временные body-файлы не становятся дополнительным реестром. Сохранить stdout/ID, проверить созданный объект. Примеры не разрешают выполнять их с placeholders.
+Use [ISSUE_PR_TEMPLATES.md](ISSUE_PR_TEMPLATES.md). Temporary request bodies are not another registry. Preserve and verify returned IDs/results; placeholders are not executable values.
 
-При смене человека reconcile старого и нового assignee, не оставлять случайно две ответственные записи. `Closes #...` только если merge действительно завершает Issue. Комментарий `@codex` может запускать внешнее выполнение: не добавлять без разрешения.
+Reconcile old/new assignees on transfer. Use Closes/Fixes only when merge truly completes the item. An @codex mention can trigger external execution and requires corresponding authority.
 
-### Вопросы, человек и обновления GitHub
+### Questions and updates
 
-Общие уточнения/дискуссии — в связанном Issue, review конкретного diff — в PR-thread. Формы запроса человеку/роли, обсуждения и ответа — [ISSUE_PR_TEMPLATES.md](ISSUE_PR_TEMPLATES.md); правила — [протокол](CODEX_TEAM_PROTOCOL.md#interaction). Назначение вопроса не переназначает TASK и не создаёт новый Issue ради раунда обсуждения.
+Routine coordination can use an authorized direct exchange. Shared requirements discussion uses the existing Issue; code review uses the PR thread. A question changes neither owner nor task identity.
 
-Автор отмечает проверенный @account адресата и logical executor/функцию. Review request используется только для review. В setup участник проверяет свои subscriptions и Notifications; например, фильтры repository, mentions, assignments, review requests и `is:unread`. Несколько ролей под одним аккаунтом не имеют независимого inbox, поэтому открытые обращения в TASK также проверяются. «Прочитано/Done» inbox не изменяет TASK и не означает согласие.
+Mention verified provider accounts and identify the logical executor/function. Review requests are for actual reviews. Participants configure relevant subscriptions/mentions/assignments/review notifications. A shared account has no per-role unread state; also inspect the TASK's material open requests. Inbox read/Done does not complete a TASK or imply agreement.
 
-Комментарии GitHub не клонируются Git. Один текущий владелец публикации сохраняет открытые вопросы, действия человека и существенные ответы в TASK до зависимой работы/паузы/handoff. Полный экспорт стенограммы не требуется. Локальный дополнительный wake допускается только при настройке; remote update без отдельной автоматизации не запускает Codex. Не сканируй все Issue: читай назначенные TASK, адресные уведомления и конкретные новые ответы.
+Comments are not in a clone. The publisher preserves material open questions, human actions and decisions at the publication boundaries. No full transcript or mandatory duplicate comment for direct exchanges. Read exact assignments/events, not every Issue.
 
 ## Azure DevOps Server/TFS Git
 
-Для процесса CMMI обязателен [setup-профиль](SETUP-TFS-CMMI.md): Requirement → Task → PR и Requirement → Bug → PR. Parent–Child связывает Work Items; PR связывается с дочерним Task/Bug через Development. Родительский Requirement не закрывается автоматически по одному PR.
+Also record collection URL, project/repo ID, server/API version, Work Item type/valid states/identity format, policies/build definition, draft support, network access and approved credential mechanism.
 
-В TEAM дополнительно:
-- collection_url, project, repository_id;
-- repository_url и default_branch;
-- установленная версия Server, поддерживаемая api-version;
-- тип Work Item, valid state transitions и identity format;
-- branch policies/build definition, draft support;
-- доступ/VPN и способ auth без секретов.
+The repository must be Git, not TFVC. Cloud Services and on-premises Server are not interchangeable; verify supported tools rather than assuming the cloud CLI works. Use compatible REST/SDK, native Git/GCM and approved authentication.
 
-Первое условие — Git, не TFVC. Azure DevOps Services cloud и локальный Server не взаимозаменяемы: `az devops` официально не поддерживает Server. Для Server использовать совместимый REST API/SDK, штатный Git/Git Credential Manager и разрешённую аутентификацию.
-
-| Операция | Ресурс REST |
+| Operation | REST resource pattern |
 | --- | --- |
-| Создать Work Item Task | `POST {collection}/{project}/_apis/wit/workitems/$Task?api-version={version}` |
-| Изменить item/assignment/state | `PATCH {collection}/{project}/_apis/wit/workitems/{id}?api-version={version}` |
-| Создать PR | `POST {collection}/{project}/_apis/git/repositories/{repoId}/pullrequests?api-version={version}` |
-| PR comment/thread | `POST .../pullrequests/{prId}/threads?api-version={version}` |
-| Builds/evidence | `GET {collection}/{project}/_apis/build/builds?api-version={version}` |
+| Create a Task Work Item | POST {collection}/{project}/_apis/wit/workitems/$Task?api-version={version} |
+| Update item/assignment/state | PATCH {collection}/{project}/_apis/wit/workitems/{id}?api-version={version} |
+| Create PR | POST {collection}/{project}/_apis/git/repositories/{repoId}/pullrequests?api-version={version} |
+| PR thread | POST .../pullrequests/{prId}/threads?api-version={version} |
+| Build evidence | GET {collection}/{project}/_apis/build/builds?api-version={version} |
 
-`$Task` — буквальный URL segment, не PowerShell variable. Тип берётся из процесса и кодируется корректно.
+$Task is a literal URL segment, not a PowerShell variable. Select and encode the actual process type.
 
-Work Item create/update: JSON Patch, `Content-Type: application/json-patch+json`. Показательные поля: `System.Title`, `System.Description`, `System.AssignedTo`, `System.State`; поддерживаемость полей и transitions проверяется на сервере. Не подставлять status REVIEW как System.State без mapping.
+Work Item operations typically use JSON Patch and application/json-patch+json. Verify System.Title/Description/AssignedTo/State fields and transitions on the server; do not submit a protocol REVIEW state without mapping.
 
-При создании PR используются `sourceRefName: refs/heads/<task-branch>`, `targetRefName: refs/heads/<default-branch>` и description со ссылкой на TASK. Связь Work Item/PR делается поддерживаемыми development relations/полями API; формат artifact URI проверить по версии, не выдумывать.
+PR source/target refs use refs/heads/<branch>. Verify the supported Development relation/artifact URI before linking Work Item and PR; do not guess it. Preserve IDs/URLs in TASK, perform supported revision/concurrency checks and read back writes. A conflict requires rereading, not overwriting another actor.
 
-Codex сохраняет возвращённые work item ID, PR ID/URL и связывает их с TASK. Перед PATCH можно использовать revision concurrency check по поддерживаемому API; при конфликте перечитать item, не стирать чужие изменения.
+Never put credentials in URLs, shell history, TEAM, request bodies or logs. Use approved credential storage. Do not promise REST writes before verifying actual rights and capabilities.
 
-Токен/пароль не включать в Git URL, shell history, TEAM, body файлов или logs. Для Windows использовать штатную разрешённую аутентификацию/credential store. Нельзя обещать REST-запись до проверки прав и Server capabilities.
+## Errors, concurrency and retry
 
-## Ошибки, конкурентность и повтор
+- Publish the authoritative checkpoint before ownership handoff/projection notification.
+- On timeout/unknown creation, inspect exact ID or repo+TASK marker before retrying.
+- Rejected push requires checking the remote head/owner, not force-push.
+- TASK/tracker assignment or status drift is SYNC_REQUIRED; reconcile within authority.
+- Preserve limitations/remaining work; do not hide missing PRs or failed delivery.
 
-- Сначала Git checkpoint, затем отображение/уведомление.
-- При ответе timeout/unknown проверь объект по точному ID либо repo+TASK marker. Не повторяй create вслепую.
-- При Git push rejected получи актуальный remote head и выясни владельца; force push не «чинит» handoff.
-- TASK assignee/status vs tracker drift → SYNC_REQUIRED, reconcile в пределах полномочий.
-- Сохрани ограничение/остаток в том же TASK. Не скрывай отсутствующий PR или недоставленное уведомление.
+A provider assignment does not itself start remote Codex. Participants enter manually or separately configure automation. PM heartbeat is off by default.
 
-Назначение Issue/Work Item не запускает удалённый Codex само. Человек входит вручную либо отдельно настраивает разрешённую автоматизацию. PM heartbeat выключен по умолчанию; local direct wake — опциональное ускорение, не отдельный workflow.
+## Bounded working exchanges
+
+The cycle above governs independent tasks and ownership handoffs. [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md) permits authorized bounded assistance through direct exchanges without new items/PRs or duplicate comments. Preserve the parent owner/publisher and material state at the four boundaries. Location does not change those requirements.

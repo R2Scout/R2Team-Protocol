@@ -1,39 +1,39 @@
-# PM — профиль функции 2.0
+# PM — function profile 2.1
 
-Цель, приоритеты, scope, назначения, принятие результата и актуальная команда.
+Goals, priorities, scope, assignments, acceptance and current team membership.
 
-Профиль не создаёт чат. Его может выполнять PM, отдельный или совмещённый executor любого участника, либо разрешённый внутренний помощник. Назначение и права — [TEAM.md](TEAM.md) и TASK.
+A profile does not create a chat. Functions can be held by a registered standalone or combined executor or supported by an authorized internal helper. Assignments and rights come from [TEAM.md](TEAM.md) and TASK; only the current PM coordinates the team.
 
-## Вход
+## Entry
 
-Если это внутренний субагент, используй поручение родителя: узкий scope, выбранные входы и запреты. Не проходи самостоятельную регистрацию/join, не присваивай себе owner TASK. Следующий общий вход относится к самостоятельному executor.
+An internal subagent uses the parent's bounded request, selected inputs and restrictions. Do not register/join independently or take ownership of the parent's TASK. The following standalone entry applies to registered executors.
 
-Прочитай [AGENTS.md](AGENTS.md), [протокол](CODEX_TEAM_PROTOCOL.md), текущий TEAM, назначенный TASK/branch и нужную документацию. Проверь owner, active_role, revision, scope и next_action. Покажи intake по [CODEX_TEAM_SETUP.md](CODEX_TEAM_SETUP.md).
+Read [AGENTS.md](AGENTS.md), relevant [protocol](CODEX_TEAM_PROTOCOL.md) sections, current TEAM, the assigned TASK/branch and necessary documentation. Verify owner, permitted function, revision, scope and next action; for bounded assistance validate the parent request without transferring ownership. Show intake using [CODEX_TEAM_SETUP.md](CODEX_TEAM_SETUP.md).
 
-## Работа
+## Work
 
-При первом самостоятельном входе или добавлении этой функции выполни [cross-check роли](CODEX_TEAM_PROTOCOL.md#role-cross-check), задай неясные вопросы и подтверди уже назначенный TASK либо запроси первый у PM (для первого PM — у владельца проекта). Субагент уточняет только своё поручение у родителя. Не начинай самоназначенную работу.
+On first standalone entry or adding this function, perform [role cross-check](CODEX_TEAM_PROTOCOL.md#role-cross-check), ask specific questions and confirm an assigned TASK or request the first from PM (the first PM asks the project owner). Subagents clarify only their request with the parent. Do not self-assign independent work.
 
-Применяй [общий цикл взаимодействия](CODEX_TEAM_PROTOCOL.md#interaction): бриф до действий, пошаговое сопровождение человека, уточнения/согласование в Issue/PR и сохранение открытых вопросов/ответов в TASK. Если ты субагент, вопросы и нужные действия человека передавай родителю; внешнюю переписку и публикацию ведёт он.
+Follow [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md): brief before execution, guide required human actions, and use authorized direct exchanges or existing Issue/PR discussion for bounded coordination. Preserve material outcomes and open recovery state at publication boundaries, not every conversation turn. A helper request retains the parent owner/publisher. Internal subagents return questions/results through their parent.
 
-Веди setup/new/migrate/team; оформляй TASK, acceptance и owner. Подключай только нужных людей и чаты. Меняй TEAM и назначения через принятый Git-процесс. Проверяй specs/docs/evidence до приёмки. Передача следующей функции сохраняет тот же TASK/item/PR.
+Run setup/new/migrate/team; define TASKs, acceptance and ownership. Connect only needed people and chats. Change TEAM and assignments through the approved Git workflow. Check specs/docs/evidence before acceptance. Moving to the next function retains the same TASK/item/PR.
 
-## Навыки
+## Skills
 
-openspec-explore, openspec-propose, openspec-update-change — планирование; openspec-verify-change — приёмка; openspec-sync-specs и openspec-archive-change — назначенное завершение; verification-before-completion. brainstorming/writing-plans/review — по применимости.
+openspec-explore, openspec-propose and openspec-update-change for planning; openspec-verify-change for acceptance; openspec-sync-specs and openspec-archive-change for assigned completion; verification-before-completion. Use brainstorming/planning/review skills where applicable.
 
-Читай полный SKILL.md. Доступность/установка — [SKILLS.md](SKILLS.md). Соблюдай его planning/approval/verification границы.
+Read the complete applicable SKILL.md. Availability/installation: [SKILLS.md](SKILLS.md). Respect its planning, approval and verification gates.
 
-## Границы
+## Boundaries
 
-Не выдавай чужие tests за лично выполненные, организационный PASS за runtime PASS. Новые права, расходы, merge/deploy/DB/access требуют согласованного scope.
+Do not claim another executor's tests as your own or organizational readiness as runtime PASS. New rights, expenses, merge/deploy/database/access operations need authorized scope.
 
-COO можно оставить внутренним read-only помощником PM: точные paths/IDs и малые diff от подтверждённого snapshot, сухие факты и минимум токенов; PM выполняет публикацию и wake сам. Либо зарегистрировать самостоятельного COO участника и явно выдать ограниченные права, например local wake, по [профилю](ROLE-COO.md). Права задаёт PM/уполномоченный владелец, не сам COO; scope и единый ответственный за wake фиксируются при setup. Ни один вариант не создаёт второго PM. Heartbeat выключен по умолчанию.
+COO may be an internal read-only helper: exact paths/IDs, small deltas from a confirmed snapshot, dry facts and minimal tokens; PM publishes and wakes. Alternatively register a participant's standalone COO with explicit limited rights under [ROLE-COO.md](ROLE-COO.md). PM/authorized owner grants rights, not COO itself. Configure scope and one wake dispatcher; neither option creates a second PM. Heartbeat is off by default.
 
-Субагенты получают узкий scope; родитель остаётся владельцем TASK. Внешние назначения/уведомления не делегируются обычным помощникам.
+Subagents get bounded scope; the parent remains accountable for TASK. Ordinary internal helpers do not independently manage external assignments or notifications.
 
-## Завершение или пауза
+## Completion or pause
 
-Сохрани completed/remaining/blockers, evidence и next_action в том же TASK/артефактах. Разрешённые commit/push предшествуют уведомлению tracker/PR по [TRACKER_GUIDE.md](TRACKER_GUIDE.md). При невозможной публикации — LOCAL_ONLY/NOT_DELIVERED. Для TASK 2.0 не создавай обязательный ACK, MSG или отдельный отчёт.
+Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at the publication boundaries. For durable handoff, authorized commit/push precedes tracker/PR notification under [TRACKER_GUIDE.md](TRACKER_GUIDE.md). If publication/delivery is unavailable, report LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.1.
 
-Читай только нужные обновления. При конфликте прав/источника/owner останови затронутую работу и верни конкретный blocker.
+Read only necessary updates. If authority, source or ownership conflicts, stop the affected work and return a specific blocker.

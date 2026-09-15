@@ -1,97 +1,101 @@
-# Тексты tracker/PR — R2Team 2.0
+# Tracker and PR text templates — R2Team 2.1
 
-Генерируются из TASK. Не становятся вторым местом принятия scope.
+Generate these from TASK; they are not a competing source of scope. Use provider forms when that is the selected channel, not as mandatory copies of transient direct exchanges.
 
 ## Issue / Work Item
 
 ```text
 TASK: <repo-relative path>
-Рабочая ветка: <branch>
-Актуальный опубликованный checkpoint: <full SHA + source link>
-Исполнитель: <executor>, функция: <role>, assignee: <provider identity>
-Результат: <one sentence>
-Acceptance и состояние: см. TASK.
-PR: <URL или pending до первого содержательного commit>
+Working branch: <branch>
+Published checkpoint: <full SHA and source link>
+Executor/function: <executor>/<role>; assignee: <provider identity>
+Outcome: <one sentence>
+Acceptance and state: see TASK.
+PR: <URL or pending before first substantive commit>
 ```
 
-## Основной PR
+## Main PR
 
 ```text
-TASK и Issue/Work Item: <links>
-Изменение: <short result>
-Scope/requirements: <TASK + OpenSpec>
-Проверки: <exact candidate, result and limitations>
-Specs/docs: <paths and updates>
-Deployment входит в Outcome: <yes/no>
-Готовность: <Draft/Review; actual remaining>
+TASK and Issue/Work Item: <links>
+Change: <short outcome>
+Scope/requirements: <TASK and OpenSpec refs>
+Verification: <exact candidate, results and limits>
+Specs/docs: <paths and changes>
+Deployment included in Outcome: <yes/no>
+Readiness: <Draft/Review; actual remaining work>
 ```
 
-Не использовать автоматическое закрытие Issue при merge, если definition of done включает ещё невыполненную выкладку.
+Do not automatically close an item at merge if its DoD includes unfinished deployment.
 
-## Передача / результат
+## Ownership handoff / durable result
 
 ```text
-TASK <id/revision> → <executor> / <role>.
-Checkpoint <full SHA>, branch <name>, TASK <commit-pinned URL>.
-Следующий шаг: <action>. Ограничения и evidence — в TASK.
-Ответ: обновить этот TASK и сообщить результат в <item/PR URL>.
+TASK <id/revision> -> <executor>/<function>.
+Checkpoint <full SHA>, branch <name>, TASK <pinned URL>.
+Next action: <action>. Boundaries and evidence are in TASK.
+Reply: update this TASK through its publishing owner and report via <item/PR URL>.
 ```
 
-Сначала publish TASK, затем уведомление. При частичном сбое сохраняются возвращённые IDs; перед повтором проверяется существующий объект. Handoff не считается выполненным только по сообщению «отправлено».
+Publish first, then notify. Preserve returned IDs on partial failure and inspect before retry. "Sent" is not completed handoff.
 
-## Вопрос по текущему TASK
+## Task clarification
 
 ```text
-Вопрос · TASK <id/revision> · <author-executor> → <executor/function или человек>.
-@<verified-account> · TASK/checkpoint: <Git-ссылка>.
-Нужно уточнить: <один конкретный вопрос и существенный контекст>.
-Предлагаю: <вариант/основание, если есть>.
-До ответа не выполняется: <зависимая часть>; ответ — в этом обсуждении.
+Question: TASK <id/revision>, <author> -> <executor/function/person>.
+@<verified-account>; TASK/checkpoint: <Git reference>.
+Clarify: <specific question and necessary context>.
+Proposal: <option/rationale, if useful>.
+Waiting on this answer: <dependent part>. Reply in this discussion.
 ```
 
-Адресат отвечает в том же канале. Уточнение не меняет owner; изменение контракта требует уполномоченного принятия и записи в Git. Не создавай второй вопрос или ACK-файл только ради отслеживания: используй URL комментария.
+Keep one channel. A question does not change owner; a changed contract requires authorized acceptance and Git persistence. No second question record or ACK merely for tracking.
 
-## Действие или визуальная приёмка человека
+## Human action / visual acceptance
 
 ```text
-Нужен человек · TASK <id/revision> · @<verified-account>.
-Цель и причина: <зачем нужна помощь>.
-Среда/версия/экран: <проверенные входы, безопасная ссылка>.
-Следующий шаг: <конкретное действие>.
-Ожидаю: <наблюдаемый результат или безопасное подтверждение>.
-После ответа: <как роль проверит результат и продолжит>.
+Human input needed: TASK <id/revision>, @<verified-account>.
+Purpose/reason: <why>.
+Environment/version/screen: <verified inputs and safe reference>.
+Next step: <specific action>.
+Expected observation: <result or safe confirmation>.
+After reply: <how the executor checks it and continues>.
 ```
 
-В своём чате роль даёт пошаговое сопровождение, а не только оставляет этот комментарий. Не проси пароль/токен или скриншот с секретами. Значимый ответ из чата сохраняется в TASK; результат остаётся человеческой приёмкой указанной версии, если фактически проверял человек.
+Guide the person in their chat, not just a generic comment. Never request credentials or screenshots exposing secrets. Preserve meaningful confirmation in TASK; label human acceptance separately from automated tests.
 
-## Обсуждение до реализации
+## Discussion before implementation
 
 ```text
-Обсуждение · TASK <id/revision> · @<accounts>.
-Нужные позиции: <executor/function → конкретный вопрос>.
-Выбираем: <предмет, варианты и критерии>.
-Уже известные ограничения: <facts>.
-Принимающий решение: <уполномоченный человек/executor>.
-До принятия не выполняется: <спорная часть>.
+Discussion: TASK <id/revision>, @<accounts>.
+Required positions: <function -> question>.
+Decision: <subject, options, criteria>.
+Known constraints: <facts>.
+Authorized decider: <person/executor>.
+Dependent work held: <disputed part>.
 ```
 
-Участники отвечают вариантами, аргументами и рисками, не переписывая одновременно TASK. Молчание или второй субагент того же автора не создаёт независимого согласия. Существенные расхождения передаются уполномоченному принимающему.
+Participants provide options, evidence and risks without concurrently rewriting TASK. Silence and helpers belonging to the same author do not establish independent consensus. Escalate material disagreement to the authorized decider.
 
-## Ответ / принятое решение
+## Answer / accepted decision
 
 ```text
-Ответ к <comment URL> · TASK <id/revision>.
-Решение/уточнение: <содержание>; основание: <кратко>.
-Принял: <уполномоченный участник/функция либо ещё предложение>.
-Изменение scope: <нет либо что требует принятия>.
-Git: <опубликованный TASK/spec/checkpoint либо SYNC_REQUIRED>.
-Следующий шаг: <действие и адресат> · @<verified-account>.
+Reply to <comment URL or identified exchange>; TASK <id/revision>.
+Decision/clarification: <content>; rationale: <brief>.
+Accepted by: <authorized decider, or still a proposal>.
+Scope change: <none or approval required>.
+Git: <published TASK/spec/checkpoint, or SYNC_REQUIRED>.
+Next action/recipient: <action and executor>; @<account where applicable>.
 ```
 
-Предложение не называется решением до принятия. Владелец TASK сохраняет открытые вопросы и существенные ответы до зависимой работы, handoff/паузы. Сначала checkpoint с известным Issue/PR URL, затем исходящее уведомление; точный URL нового комментария можно сохранить следующим обычным checkpoint. Двойной commit ради формальности не нужен.
+A proposal is not an accepted decision. The publisher preserves material open questions/results before dependent work, handoff or session end. A resulting comment URL can be added at the next ordinary checkpoint; no second immediate commit just for a backlink.
 
-## Уведомление адресатов
+## Notification
 
-Автор уведомляет нужные provider-аккаунты и явно указывает logical executor/функцию. Дополнительный local wake выполняет выбранный в setup dispatcher: автор либо самостоятельный COO с правом notify_local, не оба. Он направляет зарегистрированному чату TASK path, branch, опубликованный SHA и ссылку на обсуждение, без нового scope в direct message. Одно уведомление на событие/адресата; неясная доставка сначала проверяется. Внутренний COO возвращает факты родителю, а не отправляет сам.
+For durable events, notify relevant accounts and logical executors. Optional local wake uses one configured sender or standalone authorized COO, not both. Send TASK path/branch/published SHA and relevant discussion pointer. Verify uncertain delivery before retry. Internal COO returns facts to its parent.
 
-Для удалённого участника обсуждение доступно через provider; автоматический запуск его Codex не предполагается. Вопросы и результат читаются по [общему циклу](CODEX_TEAM_PROTOCOL.md#interaction). Inbox read/Done не означает ответ или завершение TASK.
+Remote provider visibility is not automatic Codex execution. Inbox read/Done proves neither response nor task completion.
+
+## Direct working requests
+
+Under [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md), an authorized direct exchange may contain the bounded request and answer, not just a wake pointer. Include parent TASK/ref, candidate/inputs, limits and return route. Keep the same owner, avoid duplicate entities/provider comments, and preserve material consequences at the four publication boundaries. No new scope or permission arises from the message.

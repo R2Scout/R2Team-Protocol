@@ -1,195 +1,181 @@
-# Запуск и повторный вход — R2Team 2.0
+# Startup and re-entry prompts — R2Team 2.1
 
-[Setup.md](Setup.md) — единый мастер. Достаточно указать режим естественным языком.
+[Setup.md](Setup.md) is the single wizard. Select its mode in natural language. Use the verified package revision; installing skills alone does not adopt project rules.
 
-## Первый PM
+## First PM
 
 ```text
-Прочитай Setup.md, режим new. Этот чат после настройки будет PM.
-Подтверди Git root, цель и источник пакета, затем опрашивай по одному шагу.
-Выбери со мной GitHub или TFS с Git и разрешённые операции.
-Настрой минимальную команду, OpenSpec и Superpowers по SKILLS.md.
-Создай только согласованные файлы. Заверши audit и первой реальной задачей.
-Не переходи из OpenSpec proposal к реализации без требуемого подтверждения.
+Read Setup.md, mode new. This chat becomes PM after confirmation.
+Confirm the target Git root, goal and trusted package source.
+Guide one step at a time; select GitHub or generic TFS Git and permitted operations.
+Configure the minimum team and the applicable OpenSpec/Superpowers skills.
+Create only approved files. Finish with audit, a real TASK and next action.
+Do not bypass the selected OpenSpec approval gate to start implementation.
 ```
 
-## TFS с Git и CMMI
+## Existing MVP / legacy protocol
 
-Для нового или существующего TFS+CMMI можно дополнить любое стартовое поручение:
+Use [MIGRATE_TO_2.1.md](MIGRATE_TO_2.1.md). Preserve active work by default. A fresh organizational queue while retaining specs/chats needs explicit approval and per-chat adoption, not just file replacement.
 
 ```text
-Платформа — TFS / Azure DevOps Server, репозиторий Git, процесс CMMI.
-Пройди SETUP-TFS-CMMI.md в рамках единого Setup.
-Используй Requirement → Task → PR для работы
-и Requirement → Bug → PR для самостоятельных исправлений.
-Проверь Parents, Bugs as tasks, реальные поля и состояния сервера.
-Существующие карточки/связи переиспользуй; настройки меняй после согласования.
+Read Setup.md, mode migrate, and MIGRATE_TO_2.1.md.
+Start read-only: verify source package/ref, actual source version, current rules,
+branches, active TASKs/messages/PRs, OpenSpec and unpublished work.
+Show a minimal diff, state mapping and cutover.
+Wait for approval before writes. Do not change the product or infrastructure.
 ```
 
-## Существующий MVP / 1.10
-
-Для GitHub и явно выбранного старта организационной очереди заново передай действующему PM [отдельный патч 1.10 → 2.0](MIGRATE_TO_2.0.md). Он проводит повторный setup, сохраняет заполненные specs и мигрирует существующие чаты-роли с подтверждением каждого. Ниже — другой вариант: обычная миграция с сохранением активной очереди.
+## Team changes — current PM
 
 ```text
-Прочитай Setup.md, режим migrate, и MIGRATE_TO_2.0.md.
-Сначала только preflight: исходный пакет/ref, текущие правила,
-ветки, активные TASK/MSG/PR, OpenSpec и незапушенные остатки.
-Составь минимальный diff, карту текущего состояния и cutover.
-Запись начни после моего подтверждения. Не меняй продукт и инфраструктуру.
+Read Setup.md, mode team. Add Ken.
+Clarify provider identity, functions, chats, allowed helpers and permissions.
+QA and DevOps need not be separate people.
+Inspect affected active work, propose the TEAM diff and prepare a join invitation.
 ```
 
-## Добавление или изменение команды — действующему PM
+A custom Analyst/Tester function can be described and assigned to an existing executor. No automatic chat creation or additional protocol version.
 
-Допустимо также поручение: «Режим team: создай функцию Analyst/Tester, опиши границы и навыки, назначь её существующему executor». Классические роли не закрывают список и не требуют отдельного чата для каждой функции.
+## Join from any machine
+
+PM fills exact verified references, using accessible Git URLs rather than their private machine paths:
 
 ```text
-Прочитай Setup.md, режим team. Добавим Кена.
-Уточни его аккаунт, функции, чаты, субагенты и полномочия.
-Не предполагай, что QA и DevOps должны быть разными людьми.
-Проверь активные назначения, подготовь TEAM diff и join-поручение.
+Project: <Git URL>; default branch: <branch>.
+Accepted TEAM: <full SHA/path>.
+You are registered executor <id>, not a new PM.
+Onboarding/questions/first-task channel: <existing Issue/Work Item or agreed route>.
+Assigned TASK, if any: <path>; branch: <branch>; checkpoint: <full SHA>.
+Tracker: <URL>; PR: <URL if available>.
+Read AGENTS.md, Setup.md join, your role contract, SKILLS.md and OPERATING_COMMUNICATION.md.
+Verify current assignment/remote head; do not rely only on the invitation's old SHA.
+Cross-check duties, boundaries, inputs, actual skills, channels and unresolved questions.
+Report in the approved onboarding channel; without access ask your person to relay.
+Confirm the assigned TASK or request the first from PM.
+Do not begin product work until an explicit start/assignment after onboarding.
 ```
 
-## Вход исполнителя на любой машине
+Local routing may point to a verified current local TASK and expected commit without unnecessary fetch. A pointer does not change the contract.
 
-PM заполняет все значения и передаёт доступные Git-ссылки, а не локальные пути своей машины:
+## Role cross-check
+
+See [the common rule](CODEX_TEAM_PROTOCOL.md#role-cross-check). Fill with actual facts, not automatic assertions:
 
 ```text
-Проект: <Git URL>, default branch: <branch>, принятая TEAM: <full SHA/path>.
-Ты — зарегистрированный executor <id>, не новый PM.
-Канал подключения/вопросов/первой задачи: <существующий Issue/Work Item URL>.
-TASK, если назначен: <path>, branch: <branch>, checkpoint: <full SHA>.
-Tracker item: <URL>, PR: <URL при наличии>.
-Прочитай AGENTS.md, Setup.md режим join, свою функцию и SKILLS.md.
-Проверь актуальное назначение/remote head, не полагайся только на SHA приглашения.
-Прочитай общий цикл взаимодействия в CODEX_TEAM_PROTOCOL.md:
-бриф человеку, пошаговая помощь, уточнения и согласование через Issue/PR.
-Выполни собственный cross-check: объясни обязанности/границы,
-проверь входы и доступные skills, перечисли конкретные неясности.
-Опубликуй итог по каналу подключения в пределах разрешённых прав.
-Если TASK ещё не назначен, запроси первый у PM и не начинай работу сам.
-Если назначен — после cross-check подтверди TASK; продуктовую работу начни по отдельному start/явному поручению, показав intake.
-Результат сохрани в том же TASK/Git и сообщи через <item/PR URL>.
+R2Team 2.1 adopted: executor <id>, functions <list>, TEAM <ref>.
+Duties/output: <understanding>.
+Boundaries: <permissions, helpers and approvals>.
+Verified inputs/tools: <facts>.
+Questions/limits: <specific gaps or none identified>.
+First TASK: <confirmed assignment or request to PM>; READY/BLOCKED <reason>.
 ```
 
-Local direct wake при настроенном mapping может указать путь к опубликованному TASK и ожидаемый commit. Если локальная копия уже совпадает, дополнительный fetch ради чтения не нужен. При сомнении проверяй ref. Ссылка не является новым контрактом.
+An added function checks changed responsibilities rather than repeating full setup. No TASK means waiting for assignment, not necessarily a broken environment. PM/publisher preserves material onboarding state in the organizational TASK; no extra ACK/report or second PM.
 
-## Cross-check новой роли
+## Ordinary work entry
 
-Выполняется по [общему правилу](CODEX_TEAM_PROTOCOL.md#role-cross-check), в том числе для новой функции уже существующего чата. Пример результата, который роль заполняет фактами, а не автоматически копирует:
-
-```text
-Принял R2Team 2.0 · executor <id> · функции <список> · TEAM <ref>.
-Понимаю задачу роли так: <цель и ожидаемый результат>.
-Границы: <разрешено/запрещено, субагенты, approval>.
-Проверил: <Git/provider, нужные skills, источники спецификации>.
-Вопросы/ограничения: <конкретные пункты либо нет выявленных>.
-Первый TASK не назначен: @<PM-account>, прошу назначение. Готов / BLOCKED <почему>.
-```
-
-Если TASK уже есть — вместо повторного запроса подтверди его и выполни обычный intake. Если нет доступа к каналу, сообщи своему человеку, что запрос ещё не доставлен. PM/текущий владелец сохраняет существенный итог в организационном TASK; новая роль не создаёт себе второй PM, отдельный ACK/report или произвольную продуктовую работу.
-
-## Короткий вход в рабочую сессию
-
-Полный отдельный help: [COMMANDS.md](COMMANDS.md). В нём короткие формы skills, документный fallback и приглашение `register`: PM выполняет `add`, участник подключает свою машину через `register`, чаты принимают назначенные функции через `connect`. Это те же процедуры Setup, не новый реестр.
-
-Обычные поручения существующему чату без обязательной установки skills; эквивалентные skill-вызовы приведены в COMMANDS.md:
+[COMMANDS.md](COMMANDS.md) provides skill equivalents. These document prompts also work without installed R2Team skills:
 
 ```text
-R2Team: проверь мои обновления.
-Один read-only проход: мои назначения, адресные вопросы, новые ответы и PR.
-Дай короткий список изменений и next_action. Не выполняй задачи,
-не отправляй сообщения и не меняй статусы.
+R2Team: check my updates.
+One read-only pass over my assignments, addressed questions, replies and related PRs.
+Report exact changes and next action. Do not execute tasks, send notifications,
+change status or enable heartbeat.
 ```
 
 ```text
-R2Team: начни рабочую сессию.
-Проверь мои обновления, затем продолжи один однозначно назначенный
-разрешённый next_action с брифом. Если TASK нет — запроси у PM;
-если назначение неоднозначно или полномочий не хватает — уточни.
-Не включай heartbeat и не создавай себе новую задачу.
+R2Team: start my work session.
+Check relevant updates and continue one clear authorized next action with intake.
+If no valid task or bounded request exists, ask PM; clarify ambiguity or missing rights.
+Do not self-assign independent work or enable automation.
 ```
 
-Для PM «R2Team: проверь команду» означает Setup audit, read-only. Ручные поручения работают и локально, и удалённо; постоянная проверка требует отдельно настроенной автоматизации, по умолчанию выключенной.
+For PM, "check the team" means read-only audit. Manual requests work locally/remotely; background checks require separate configuration.
 
-## COO участника или помощник PM
+## Optional COO
 
-Права и формы — [ROLE-COO.md](ROLE-COO.md). Для PM достаточно внутреннего read-only помощника, который возвращает дельту; PM выполняет разрешённый wake сам. Самостоятельный COO участника может обслуживать его несколько ролей и иметь отдельно выданное право wake.
-
-Поручение действующему PM для настройки, не автоматическое включение:
+See [ROLE-COO.md](ROLE-COO.md). An internal PM helper returns facts; PM performs authorized wake. A registered standalone participant COO can watch several of their functions with separate rights.
 
 ```text
-R2Team: режим team. Настроим самостоятельного COO участника <id>
-для исполнителей <logical IDs>.
-Согласуй scope, право notify_local и единственного dispatcher wake.
-Остальные организационные права не выдавай автоматически.
-Подготовь TEAM diff, профиль и cross-check; heartbeat пока выключен.
-Чат не создавай без отдельного явного запроса.
+R2Team: team mode. Configure a standalone COO for participant <id>,
+watching executors <IDs>.
+Agree exact scope, notify_local rights and one wake dispatcher.
+Do not grant other organizational permissions automatically.
+Prepare TEAM/profile diff and cross-check. Leave heartbeat off.
+Do not create a chat without an explicit request.
 ```
 
-После регистрации и согласования прав можно поручить этому COO:
+After approved configuration:
 
 ```text
-R2Team: выполни один проход COO с разрешённым wake.
-Проверь только новые события моего согласованного scope.
-Уведоми зарегистрированных локальных адресатов, только если ты
-назначенный dispatcher и событие ещё не отправлялось.
-Не меняй TASK/TEAM, назначения, права или расписания.
-Не перезапускай работающие роли. При неизвестной доставке не повторяй вслепую.
-Дай сухой итог; не включай постоянное наблюдение.
+R2Team: perform one COO pass with authorized wake.
+Read only new events in the agreed scope.
+Notify registered local recipients only as the designated dispatcher.
+Do not change TASK/TEAM, assignments, rights or schedules.
+Do not interrupt active roles or blindly repeat uncertain delivery.
+Return dry facts; do not start continuous monitoring.
 ```
 
-«Проверь мои обновления» остаётся read-only даже у COO с правом wake. Для heartbeat сначала вручную проверяется именно разрешённый цикл, затем владелец отдельно выбирает расписание/среду и включает его штатным механизмом. При неизменившемся состоянии автоматический проход молчит; новые события/ошибки требуют краткого уведомления. Эта инструкция сама не создаёт heartbeat.
+"Check updates" stays read-only even for a COO with wake rights. Before scheduling, verify the manual cycle, permissions and dedup; then explicitly configure an available automation mechanism. Unchanged automatic passes remain quiet.
 
-## Intake перед работой
+## Intake
 
 ```text
-Получено: TASK-042/3 · john-main → ken-main · QA.
-Задача: проверить candidate <SHA> / PR <URL>.
-Границы: QA only; без patch, merge и deploy.
-От человека: визуальная приёмка мобильного экрана после тестов.
-Результат: checkpoint в TASK + comment в PR для PM. Начинаю.
+Received TASK-042/3: john-main -> ken-main, QA.
+Outcome: verify candidate <SHA> / PR <URL>.
+Boundaries: QA only; no patch, merge or deploy.
+Human input: visual acceptance after automated checks.
+Result: candidate evidence to the TASK publisher; Starting.
 ```
 
-Не более 3–5 коротких строк. TASK важнее резюме. При устаревшем/неполном назначении — BLOCKED; укажи конкретное расхождение и возврат через текущую задачу. Не создавай отдельный ACK.
+Use 3-5 short lines; TASK remains authoritative. Invalid/conflicting inputs mean BLOCKED. No separate ACK and no repeated approval for already authorized technical steps.
 
-## Помощь человеку, уточнения и обсуждение
+## Human guidance, questions and agreement
 
-Правила — [цикл взаимодействия](CODEX_TEAM_PROTOCOL.md#interaction), готовые формы — [обращения в Issue/PR](ISSUE_PR_TEMPLATES.md). Действуют для всех функций, включая PM; за субагентов отвечает родитель.
+Use [interaction rules](CODEX_TEAM_PROTOCOL.md#interaction), [communication policy](OPERATING_COMMUNICATION.md) and optional [provider forms](ISSUE_PR_TEMPLATES.md).
 
-- Если нужен человек: цель → один понятный шаг → ожидаемый результат → ответ → проверка → следующий шаг до результата либо явной остановки. Не оставляй общее «настрой среду», не запрашивай секреты и не выдавай ответ человека за автоматическую проверку.
-- Если нужен ответ роли: конкретный вопрос и адресат в связанном Issue/PR; зависимая часть ждёт, остальные разрешённые действия могут продолжаться. Владелец TASK не меняется.
-- Если нужно согласование: предмет, нужные позиции, критерии и уполномоченный принимающий; затем варианты/возражения и явный итог. Молчание не согласие, новый scope не возникает из комментария.
-- Открытые вопросы/действия и существенные ответы сохраняются текущим владельцем в TASK до зависимой работы, handoff и паузы. Не создавай MSG, ACK или параллельный журнал.
-- Перед началом/возобновлением и на безопасных контрольных точках проверяй свой TASK и адресные обновления. Автор уведомляет нужные аккаунты; local wake только при настройке. Чужой remote Codex не запускается сам.
+- Human action: purpose -> safe step -> expected result -> reply -> check -> next step, until outcome or explicit pause. Never request secrets or call unverified confirmation PASS.
+- Clarification: authorized direct exchange or existing Issue/PR; identify respondent and blocked portion. Ownership remains unchanged.
+- Agreement: subject, required viewpoints, criteria and authorized decider; preserve material options/objections and the accepted outcome. Silence does not approve new scope.
+- Preserve material open questions/results before dependent work, ownership handoff, blocking stop/session end and acceptance. Do not create MSG/ACK or a parallel journal.
+- Check addressed updates at entry and safe boundaries; no automatic remote execution is promised.
 
-## Внутренний субагент
+## Internal helper
 
 ```text
-Выполни ограниченную часть TASK <id/revision> как <function>.
-Цель: <result>; входы: <точные файлы/требования>.
-Разрешённые пути/действия: <list>; запреты: <list>.
-Прочитай применимый SKILL.md: <skill>.
-Не меняй TEAM, назначения, официальные TASK/checkpoints и чужие ROLE-файлы.
-Не читай межролевые журналы целиком и не отправляй внешние уведомления.
-Верни результат, evidence и ограничения родителю.
+Perform a bounded part of TASK <id/revision> as <function>.
+Outcome: <result>; inputs: <exact files/requirements/candidate>.
+Allowed paths/actions: <list>; restrictions: <list>.
+Read applicable SKILL.md: <skill>.
+Do not modify TEAM, assignments, official TASK/checkpoints or other ROLE files.
+Do not read entire inter-role journals or send external notifications.
+Return result, evidence, limitations and questions to the parent.
 ```
 
-Родитель выполняет видимую приёмку результата и сохраняет нужное в Git. Он не называет QA-субагента независимым человеком.
+The parent validates and preserves material output. A QA helper is not an independent person. If another role/human must respond, the helper returns the question to the parent.
 
-Если помощнику нужен ответ другой роли или действие человека, он возвращает точный вопрос родителю. Родитель сопровождает человека/публикует обращение и сохраняет ответ, не заставляя субагента вести отдельную переписку.
-
-## Возобновление
+## Standalone bounded working exchange
 
 ```text
-Прочитай Setup.md, режим resume, и восстанови TASK <id>.
-Сначала подтвердить назначение/ветку/контракт/остатки; затем next_action.
-Не заводи дубли Issue/PR и не подменяй UNKNOWN предположением.
+Within TASK-042 revision 3, check Unicode export on candidate <SHA>.
+The parent owner remains <executor>.
+Allowed: read and run the specified tests. No code changes, merge or deploy.
+Validate the contract and show a brief before execution.
+Return observations and evidence to <owner> through this agreed route.
 ```
 
-## Проверка без изменений
+No new TASK/item/PR or checkpoint merely for the reply. The owner persists material consequences at the four boundaries. True ownership transfer still needs prior publication. Losing a transient exchange may require repeating a safe consultation, not losing critical state.
+
+## Resume and audit
 
 ```text
-Прочитай Setup.md, режим audit. Только read-only.
-Проверь источники, назначения, tracker, skills и восстановимость состояния.
-Дай список конкретных несоответствий; не запускай миграцию или deployment.
+Read Setup.md resume and restore TASK <id>.
+Verify current owner, branch, contract and remaining work, then the authorized next step.
+Do not duplicate Issue/PR or replace UNKNOWN with assumptions.
+```
+
+```text
+Read Setup.md audit, read-only.
+Check sources, roles, provider, skills and recoverability.
+Report exact gaps; do not migrate, repair or deploy.
 ```

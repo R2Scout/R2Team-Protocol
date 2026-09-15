@@ -1,34 +1,23 @@
-# START — мастер R2Team 2.0
+# START — R2Team 2.1
 
-Откройте проект или папку с этим пакетом в Codex. Отправьте:
+This file starts a wizard only when explicitly requested. Reading or editing the distribution does not adopt it in a project.
 
 ```text
-Прочитай START.md из пакета R2Team 2.0 и запусти мастер.
-Помоги выбрать режим. Задавай вопросы по одному, проверяй известные ответы.
-Сначала подтверди точные пути к пакету и целевому проекту.
-Ничего не заменяй поверх существующего без согласованного diff.
+Read START.md from <verified R2Team package path or Git URL/full commit>.
+Confirm the target project and current instructions.
+Guide me through new, migrate, team, join, resume or audit.
+Ask focused questions, verify known facts, and show the intended diff before writes.
+Do not overwrite existing work, install tools or enable automation without authority.
 ```
 
-Если пакет не в рабочем каталоге, укажите абсолютный путь к этому START.md либо доступный Git URL и точный commit SHA.
+1. Verify the package source, manifest and actual target Git root.
+2. Read [Setup.md](templates/Setup.md), relevant [protocol](templates/CODEX_TEAM_PROTOCOL.md) sections and [OPERATING_COMMUNICATION.md](templates/OPERATING_COMMUNICATION.md).
+3. Apply the same distinction locally and remotely: OpenSpec contract, TASK recovery state, transient working exchanges. A bounded request is not a new independent task or an ownership handoff.
+4. Configure the actual GitHub or generic Azure DevOps Server/TFS Git provider using [TRACKER_GUIDE.md](templates/TRACKER_GUIDE.md). Specialized process setup is not part of this package.
+5. Confirm PM only for a new project; joining an existing team does not appoint another PM.
+6. Preserve existing specs, IDs, roles and work. A project on 1.10 retains its rules until approved cutover.
+7. Check [SKILLS.md](templates/SKILLS.md) and [command help](templates/COMMANDS.md). Skill installation is separate; use document prompts without skills when needed.
+8. Confirm approved communication routes and permissions. Direct working exchanges are optional; provider discussion is a fallback. Heartbeat remains off.
+9. Save material setup state at publication boundaries in the existing organizational TASK, not a new message registry. Local-only output is not a remote-ready handoff.
 
-Для TFS с Git и CMMI используется этот же START. Можно сразу добавить: «Режим new (или migrate). Платформа TFS/Azure DevOps Server, репозиторий Git, процесс CMMI. Пройди профиль SETUP-TFS-CMMI.md: Requirement → Task → PR и Requirement → Bug → PR». Мастер прочитает [профиль CMMI](templates/SETUP-TFS-CMMI.md), затем вернётся к общим шагам.
-
-## Инструкция Codex
-
-Повседневные команды и приглашение участнику: [COMMANDS.md](templates/COMMANDS.md). PM использует add, участник — register, отдельный чат — connect. Четыре skills поставляются в пакете; установите их по [SKILL-INSTALL.md](SKILL-INSTALL.md) либо запускайте процедуру обычным текстом по справочнику.
-
-1. Прочитай действующие инструкции целевого проекта, затем [Setup.md](templates/Setup.md) и [протокол](templates/CODEX_TEAM_PROTOCOL.md).
-2. Это явный запуск мастера, а не разрешение на произвольные действия с инфраструктурой.
-3. Определи режим: `new`, `migrate`, `team`, `join`, `resume` или `audit`.
-4. Выполняй выбранную ветку Setup. Прежде чем писать, установи целевой Git root, полномочия и существующих владельцев.
-5. Для новой команды этот же чат становится начальным PM после подтверждения пользователя. Для существующей команды не назначай себя PM автоматически.
-6. При паузе сохрани разрешённый checkpoint в текущем setup/организационном TASK. После возобновления читай его, не начинай опрос заново.
-7. Не запускай продуктовую реализацию из режима планирования OpenSpec. Выполни его собственные точки подтверждения и перехода к apply.
-
-Позже можно сказать действующему PM: «Прочитай Setup.md, режим team: добавь Кена с QA и DevOps», «режим migrate», «режим resume для TASK-042» или «режим audit».
-
-Для повседневного входа: «R2Team: проверь мои обновления» — один read-only проход; «R2Team: начни рабочую сессию» — проверка и продолжение однозначно назначенного разрешённого шага; для PM «R2Team: проверь команду» — audit. Это обычные поручения, не shell-команды; heartbeat сами не включают. Формы — [CODEX_TEAM_SETUP.md](templates/CODEX_TEAM_SETUP.md).
-
-R2Team — имя протокола; наличие skills в пакете не означает их автоматическую установку. CLI/сервис не поставляется. Существующие имена файлов сохранены. В каждом рабочем цикле роль даёт бриф человеку, сопровождает необходимые действия и использует Issue/PR для уточнений; открытое состояние и решения сохраняются в TASK.
-
-Не запускай одновременно старый мастер 1.10 и новый 2.0. Cutover существующего проекта проходит по [миграционной процедуре](templates/MIGRATE_TO_2.0.md).
+For source-package verification, resolve `v2.1` to its full commit and inspect `package.json`. A tag name or dirty local tree is not sufficient provenance.

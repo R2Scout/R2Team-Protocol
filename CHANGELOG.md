@@ -1,17 +1,15 @@
-# История R2Team
+# R2Team change history
 
-## 2.0 — 2026-09-15
+## 2.1 — package revision 1
 
-Первый самостоятельный выпуск в R2Scout/R2Team-Protocol. Основан на локальном R2Team 1.20, package_revision 6; исходный SHA-256 package.json: `18a5a2eb09ad5c0e29c9b9ace9d57e1c51d2cead1a652cba408fdbb0ba8efbce`.
+- Make bounded local/remote role communication and internal helper delegation first-class transient coordination inside an accepted TASK.
+- Separate OpenSpec product contract, TASK recovery state, and transient exchanges; retain four material publication boundaries and one publisher.
+- Preserve direct discussion without mandatory MSG/ACK/report files while formal ownership transfer remains Git/provider-first.
+- Add durable question/consensus, human-assisted actions, uncertain-delivery, recovery, and team growth/shrink procedures.
+- Keep generic GitHub and Azure DevOps Server/TFS Git projection in the main package; publish the specialized CMMI protocol separately.
+- Align setup, roles, provider guide, command help, four skills, scenarios, migration prompt, validator, and manifest.
+- Translate all maintained public distribution content to English.
 
-- Единый комплект протокола, wizard, шаблонов, help и четырёх skills.
-- Публичная поставка без приглашения для установки; встроенный help всех skills на английском.
-- PM как единственная обязательная роль; произвольные и совмещённые функции, local/remote/hybrid исполнение.
-- Git-first TASK + tracker/PR, intake, сопровождение человека, уточнения/консенсус, checkpoints и handoff.
-- OpenSpec/Superpowers в рабочих стадиях; документация и ADR отдельно от спецификаций.
-- add/register/connect/migrate/disconnect; update/check COO с delta-only и отдельными правами wake.
-- Единый startup для GitHub и TFS Git/CMMI, перенос существующей спецификации и чатов через явный cutover.
-- Опциональная связь нескольких репозиториев через владельца SDK/API, pinned contracts и связанные TASK/PR.
-- Validator переведён на 2.0. Старые пакеты и замороженные миграционные патчи в исходном репозитории не изменяются.
+## 2.0 — package revision 1
 
-Установка/публикация пакета не является миграцией существующих проектов. Нативный CLI, фоновый сервис, GitHub/TFS live workflow и unattended scheduling не входят в данный выпуск.
+Initial self-contained R2Team distribution with setup, flexible team lifecycle, TASK/PR workflow, four instruction skills, and payload validation. Historical source remains under tag `v2.0`.

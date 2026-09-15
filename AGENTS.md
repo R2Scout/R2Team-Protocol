@@ -1,11 +1,12 @@
-# Работа над дистрибутивом R2Team
+# Maintaining the R2Team distribution
 
-Этот репозиторий — исходники протокола/шаблонов/skills, не внедрённый продуктовый проект. TEAM и ROLE внутри templates — заготовки, не реальные назначения. Не запускайте project setup, не создавайте чаты/участников и не включайте автоматику от одного чтения файлов.
+This repository contains protocol, template and skill sources, not an adopted product project. TEAM and ROLE files under templates are examples, not real assignments. Reading them does not start setup, create chats/participants or enable automation.
 
-- Сохраняйте согласованность версии в package.json, протоколе, шаблонах и skills.
-- Для изменений skills используйте skill-creator и проверку его формата, когда доступны; не объявляйте её поведенческим тестом.
-- Изменения Python validator проверяйте тестами, без внешних Git/provider операций в fixtures.
-- После изменения payload пересчитывайте его SHA-256 в package.json, затем запускайте scripts/validate_package.py и scripts/test_validate_package.py.
-- Проверяйте ссылки и переносимость templates: ссылки из templates остаются внутри этой папки. Изолированный skill использует инструкции целевого проекта и проверенный источник пакета, не локальный путь автора.
-- В выпуск не входят credentials, .codex-local, личные thread IDs и runtime state. Commit/push/release выполняйте только по поручению пользователя.
-- Не меняйте действующие проекты и пользовательские установки skills как побочный эффект редактирования дистрибутива.
+- Keep package.json, protocol, templates and skills consistent.
+- Public repository content must be English-only.
+- Use skill-creator for skill changes and its format validator when available; format checks are not behavioral tests.
+- Test Python validator changes with fixtures that never perform external Git/provider operations.
+- Refresh payload SHA-256 entries in package.json after edits, then run scripts/validate_package.py and scripts/test_validate_package.py.
+- Verify links and template portability: template links remain within templates. Isolated skills use target-project instructions and trusted package sources, not author machine paths.
+- Never ship credentials, .codex-local, personal thread IDs or runtime state. Commit/push/release only when instructed by the user.
+- Editing the distribution must not incidentally change live projects or user-installed skills.

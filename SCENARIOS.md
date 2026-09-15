@@ -1,84 +1,126 @@
-# Проверки мастера R2Team 2.0
+# R2Team 2.1 scenarios
 
-Это acceptance-сценарии setup и подключения команды. Документная сверка маршрутов не означает, что на каждой машине уже проверены доступы/skills/remote automation.
+These are acceptance scenarios for setup, team lifecycle, communication, recovery, and distribution behavior. Document review is not evidence that access, roles, integrations, or skills work on every machine.
 
-| Вход | Режим / ожидаемые действия | Недопустимое поведение |
+## Setup and migration
+
+| Input | Expected | Forbidden |
 | --- | --- | --- |
-| Джон, пустая папка, нет remote | new: подтвердить root/цель, спросить provider и разрешение создать repo, bootstrap main, TEAM и setup TASK | Не создавать remote по догадке; не объявлять LOCAL_ONLY Git-first |
-| Джон, GitHub, один PM с помощниками | new: один participant/executor, разрешённые функции/subagents; init/skills; первый real change | Не создавать шесть обязательных чатов/Issue |
-| MVP без OpenSpec | migrate: refs/docs/gaps, init с разрешением, ближайший срез explore/propose | Не переписывать весь код/документы и не выдумывать полную spec |
-| 1.10 с активными MSG и PR | migrate: сохранить историю, checkpoint и per-task cutover | Не прекращать MSG до cutover; не переписывать старые сообщения |
-| GitHub 1.10, specs заполнены; пользователь разрешил новую очередь, чаты сохраняются | migrate по отдельному патчу: повторный setup, прежние ROLE-ограничения, персональный вход каждого существующего чата и ADOPTED; старые TASK/MSG не восстанавливать | Не сбрасывать OpenSpec tasks.md, не пересоздавать чаты, не считать обновление файлов миграцией чатов |
-| Файлы 2.0 готовы, один сохраняемый чат не подтвердил правила | Миграция чатов не завершена; точечный blocker/повторная проверка; другие принявшие чаты работают в своём scope | Не объявлять общую миграцию завершённой и не исключать молча неподтверждённый чат |
-| Код в repo, org docs в негитованном root | migrate: согласовать root/placement, сохранить и внести org docs в выбранный Git | Не объявлять внешнюю папку уже доступной команде |
-| Есть кастомные OpenSpec skills / user legacy prompts | migrate/new tools: inventory+backup+diff перед init/update | Не удалять legacy через init --tools без проверки/согласования |
-| Принят proposal, нет нового запроса на apply | приостановить на предусмотренном skill gate | Не начинать продуктовую реализацию из мастера |
-| Кен присоединяется удалённо как QA+DevOps | PM team; Кен join: одна identity, один executor с двумя функциями; собственные skills | Не создавать второго PM/очередь и не требовать direct wake |
-| Кен разделяет один чат на QA и DevOps | team: новые IDs при необходимости, передать TASK, проверить single writer | Не считать смену названия независимой человеческой проверкой |
-| Майя remote Designer, Ли remote Dev | team/join: права, ROLE/skills, назначения через тот же tracker | Не кодировать местоположение как другой workflow |
-| QA FAIL, fix передан с local Dev remote Ли | team/handoff или текущий TASK: checkpoint/owner/active_role+assignee, тот же PR | Не заводить новый Issue только ради владельца; не терять defect evidence |
-| Утрачен чат, ветка опубликована | resume: latest TEAM/TASK/remote head, тот же executor после прекращения старого writer | Не восстанавливать только по памяти чата |
-| Старый исполнитель недоступен с незапушенными файлами | takeover PM, опубликованная часть восстановима; остаток UNKNOWN | Не утверждать, что восстановлены недоступные изменения |
-| Кен уходит, всё возвращается Джону | team: checkpoint, reassignment, inactive records, mapping/access в scope | Не удалять историю или отключать unrelated automation |
-| Нужен Tester/Analyst или произвольная новая функция | team: определить профиль/skills/права, сохранить ROLE либо описание TEAM, включить в executor.roles и active_role | Не отказывать из-за отсутствия в базовой шестёрке, не выдавать права по названию и не создавать чат автоматически |
-| Новая самостоятельная роль зарегистрирована, но первая задача не дана | join: собственный cross-check, объяснение границ, вопросы и запрос TASK у PM по каналу подключения | Не объявлять принятие роли по одному TEAM и не самоназначать работу из backlog |
-| Существующему чату добавили DevOps к QA | Cross-check изменившихся обязанностей/доступов/skills; подтверждение TASK либо запрос первого для нового scope | Не повторять полный setup, не выдавать права deployment по названию функции |
-| У роли есть неясность или нет канала для запроса PM | Уточнение, конкретное ограничение/NOT_DELIVERED; безопасный вход продолжается без продуктового исполнения | Не утверждать «всё понятно» или доставку неотправленного запроса |
-| Пользователь говорит «R2Team: проверь мои обновления» | Один read-only проход назначений/адресных вопросов/PR, короткий итог | Не исполнять TASK, не отправлять сообщения и не включать heartbeat, даже у COO с правом wake |
-| TFS Server старой версии | new/join: version/API/workitem/process/policies, REST/client, реальный compatibility check | Не предполагать поддержку az devops, draft или облачных endpoints |
-| Новая работа TFS+CMMI | Requirement Parent → Task; Git TASK указывает на Task; PR Development link с Task | Не делать PR дочерним Work Item; не создавать Requirement на каждую роль |
-| Самостоятельный дефект TFS+CMMI | Requirement Parent → Bug; Bugs as tasks согласован; Git TASK указывает на Bug; PR связан с Bug | Не создавать дублирующую Task-карточку для исправления |
-| Bug уже имеет другого Parent или Bugs отслеживаются как requirements | Сохранить факты, согласовать Parent/team setting, проверить влияние на доски | Не добавлять второго Parent и не выдавать Related за Parent–Child |
-| Один дочерний PR merged, другая работа Requirement не закончена | Закрытие дочернего item по DoD; родитель остаётся до проверки всего scope | Не закрывать Requirement автоматическим PR completion |
-| Существующий CMMI-проект подключается к 2.0 | Переиспользовать Requirement/Task/Bug IDs, Parents и PR; добавить ссылки/контракт в Git | Не конвертировать типы/процесс и не плодить новые карточки |
-| Tracker временно недоступен | checkpoint Git, NOT_DELIVERED/SYNC_REQUIRED, точечная проверка перед retry | Не создавать дубликаты и не считать уведомление выполнением |
-| Нужный skill отсутствует | остановить затронутую фазу, согласовать установку/эквивалент | Не утверждать, что SKILLS.md устанавливает skill автоматически |
-| Уже пройден setup, пользователь просит audit | audit read-only, известные факты не переспрашивать | Не переписывать TEAM/включать heartbeat/запускать init |
-| Принят TASK с участием человека | Видимый бриф до выполнения: что/как, границы, ожидаемая помощь и return route | Не начинать молча и не превращать бриф в повторный запрос всех разрешений |
-| Кен должен настроить доступ или визуально подтвердить экран | Роль объясняет цель, даёт проверенный шаг/версию, проверяет ответ и сопровождает дальше; ожидание в TASK | Не просить секреты, не объявлять человеческий ответ автоматическим PASS, не снимать с себя TASK |
-| Dev уточняет спорное поведение у Designer | Один Issue/thread, точный адресат, зависимая часть ждёт; ответ и при необходимости новая revision в Git | Не менять owner ради вопроса, не реализовывать новое scope только из комментария |
-| Две роли обсуждают варианты, одна не ответила | Сводка позиций/возражений, явный принимающий, итог в TASK/spec/ADR по масштабу | Не считать молчание/двух субагентов консенсусом и не создавать второй план |
-| Не-владелец TASK отвечает в обсуждении | Комментарий → один текущий publisher сохраняет существенное до зависимой работы/паузы | Не разрешать конкурентные записи общего TASK ради каждого ответа |
-| Новый чат восстанавливается без истории Issue/PR | В Git видны открытый вопрос, кому адресован, варианты/блокировка и следующий шаг | Не хранить единственную копию незакрытого обращения в комментариях |
-| Несколько executors под одним GitHub account | Обращение указывает executor/функцию; проверяются открытые запросы TASK помимо общего inbox | Не считать unread-флаг отдельным для каждого чата или «прочитано» выполнением |
-| Удалённый человек ответил, local wake/heartbeat не настроены | Обновление доступно в provider; проверяется при следующем цикле/ручном входе, без обещания auto-start | Не включать фоновую автоматизацию/COO автоматически и не объявлять уведомление доставленным чату |
-| PM вызывает внутреннего COO | Разрешённый субагент читает точную дельту, возвращает сухие факты; PM публикует/уведомляет | Не считать субагента независимым планировщиком, не давать ему внешние назначения по умолчанию |
-| Самостоятельный COO Кена с notify_local и scope QA/DevOps | Один проход новых событий, проверка назначений/routing, wake конкретных локальных адресатов; минимум токенов | Не читать весь проект, не будить роли Джона на другой машине, не менять TASK/TEAM по праву wake |
-| Автор и COO увидели одно событие | Настроен один dispatcher для адресатов, проверены event URL/checkpoint и предыдущая отправка | Не отправлять один wake обоими и не повторять неизвестную доставку |
-| COO просит расширить права или включить heartbeat | PM/уполномоченный владелец и владелец среды согласуют точный scope/права/настройку; ручная проверка перед расписанием | Не допускать self-escalation, авто-включение расписаний и обход approvals |
-| Cursor COO утрачен или проход завершился ошибкой | Точечная сверка актуальных открытых событий/доставок; успешный cursor не продвигается на неполном чтении | Не перечитывать весь архив и не будить все роли заново |
+| Empty folder, no remote | Confirm root/outcome/provider and authority; bootstrap Git only after approval | Guess remote or claim Git-first readiness without publication |
+| GitHub, one PM with helpers | One participant/executor, needed functions/helpers, first real TASK | Create six mandatory chats/issues |
+| Brownfield MVP without OpenSpec | Preserve code/docs, assess coverage/gaps, baseline changed area incrementally | Rewrite whole project or claim complete specs |
+| Existing OpenSpec | Preserve config/specs/active changes/tasks; use version-compatible CLI | Reinitialize/reset/archive to fit protocol |
+| 1.10 with active MSG/PR | Preserve history; choose per-task/coordinated cutover; roles adopt 2.1 | Stop old transport before cutover |
+| 1.10 with retained chats and fresh queue authorized | Re-run setup around current specs; cross-check each chat; explicitly retire only approved old org artifacts | Recreate chats or erase OpenSpec tasks |
+| One retained chat rejects/does not understand | Mark its adoption BLOCKED/PENDING; other roles continue only in their scope | Declare universal migration |
+| Organizational docs outside Git | Agree canonical Git root/placement and publish | Treat local folder as remotely recoverable |
+| Trusted target package unavailable | SOURCE_BLOCKED with exact missing source | Reconstruct 2.1 from memory/latest |
+| Proposal accepted but apply not authorized | Stop at installed workflow gate | Begin product implementation during setup |
+| Existing custom skills | Inventory, backup, diff, ask before replacement | Overwrite through init/update |
+| Audit requested | Read-only scoped evidence report | Repair files, enable heartbeat, or migrate |
 
-## Минимальная проверка в целевом проекте
+## Team flexibility
 
-Дополнительные сценарии 2.0:
+| Input | Expected | Forbidden |
+| --- | --- | --- |
+| John is PM and all functions | One executor with explicit functions/helpers | Artificial role tasks/chats |
+| Ken joins remotely as QA+DevOps | One participant, suitable executor(s), rights and portable invitation | Second PM or required local wake |
+| Ken splits one executor into QA/DevOps chats | New executor IDs if useful; published handoff/single publisher | Treat name change as independent human QA |
+| Maya remote Designer and Lee remote Dev | Same TEAM/TASK/provider model; location changes route only | Separate protocol by location |
+| Custom Tester/Analyst/Architect | Define purpose/output/authority/skills/acceptance | Reject because not built-in or grant rights by title |
+| Add DevOps function to existing QA | Cross-check changed duties/rights/skills and task assignment | Repeat full setup or infer deploy rights |
+| Function has several instances | Address exact executor/active role in TASK | Ambiguous role-only assignment |
+| One provider account backs several executors | TASK/request names executor/function; provider access verified | Treat inbox/read state as per-chat queue |
+| Participant leaves | Publish/transfer affected work, deactivate assignments, preserve history | Delete history/branches/accounts automatically |
+| Team shrinks to PM+helpers | Reverse assignments safely; same specs/tasks/history | Redesign protocol or lose evidence |
+| Role has no first task | Cross-check and request it through PM route | Self-assign from backlog |
+| No PM response route | Report precise NOT_DELIVERED/BLOCKED | Pretend acceptance/delivery |
 
-- Новый проект без TEAM: skill запрашивает проверенный setup bundle и запускает new, не требует предварительного назначения.
-- Переданная поставка из нового репозитория: skills устанавливаются из skills/* без зависимостей от старой папки 1.20.
-- SDK/Web/Mobile: один владелец контракта и координирующий Issue; repo-qualified TASK, pinned contract SHA и подтверждённые consumer checks; локальный DONE не закрывает весь rollout.
-- Нет доступа к репозиторию потребителя: UNKNOWN/BLOCKED с точным адресатом, без автоматического расширения полномочий.
+## TASK, communication, and handoff
 
-Перед реальным использованием skills проверить следующие сценарии. Пока это документные критерии, не выполненные live-тесты:
+| Input | Expected | Forbidden |
+| --- | --- | --- |
+| Independent feature | One TASK + provider item + branch + PR where applicable | Separate task entity per role |
+| Bounded helper request | Parent TASK/ref/candidate/scope/return route; same owner/publisher | New TASK/MSG/ACK just for help |
+| Trivial factual clarification | Direct answer in current route | Ceremonial intake/commit |
+| Material answer affects dependent work | Publisher records result before dependency/pause | Leave only in chat/comment |
+| Direct request changes scope/owner/permission | Stop and use formal TASK/provider update/approval | Treat message as authority |
+| Two roles discuss alternatives | One thread, evidence, decision owner, durable conclusion | Silence as consensus or duplicate plans |
+| Non-owner supplies result | Parent publisher reviews and records material state | Concurrent TASK writes by every helper |
+| Human must configure/visually confirm | Explain purpose, bounded step, expected evidence; guide to result/blocker | Request secrets or call reply automated PASS |
+| Direct delivery uncertain | Inspect current state/event/candidate before retry | Blind duplicate message or side effect |
+| Old owner unavailable with unpushed work | Recover published state; mark rest UNKNOWN | Claim invisible work restored |
+| Local Dev to remote Dev after QA FAIL | Same TASK/PR, failure evidence and checkpoint, owner transfer | Replacement Issue or lost failure |
+| Same executor changes QA to DevOps | Record stage/function/authority where material | Pretend independent reviewer/person |
+| Tracker unavailable | Preserve Git checkpoint, SYNC_REQUIRED/NOT_DELIVERED | Duplicate items or claim synchronized |
+| New executor resumes | Read accepted TEAM, TASK branch, spec, candidate, open requests | Depend on previous chat memory |
+| Same branch already in worktree | Coordinate/branch/detached inspection | Force/destructive checkout |
 
-| Вход | Ожидаемый результат |
+## Specifications, evidence, and delivery
+
+| Input | Expected | Forbidden |
+| --- | --- | --- |
+| New behavior/API/security/data/migration | OpenSpec change plus TASK/PR linkage | Requirements only in chat |
+| Fix restores accepted behavior | Existing spec may suffice; TDD/debug/verify | Artificial proposal solely for process |
+| Research result | Sources/findings/assumptions/UNKNOWN; PM decides | Treat research as accepted contract |
+| QA starts | Exact candidate, acceptance/scenarios, coverage level | “Latest” candidate or CI-only acceptance |
+| QA failure | FAIL evidence and return to implementation; blocker only if no safe next step | Mark DONE or erase prior evidence |
+| Candidate changes | Assess and repeat affected checks | Reuse PASS blindly |
+| PR merged | Record actual merge SHA; acceptance remains separate | Auto-DONE/deployed claim |
+| QA evidence-only commit after PASS | Map verified candidate to result; assess affected checks | Automatically invalidate or blindly inherit all |
+| Deployment independent | Linked deployment TASK with exact source/artifact/env/rollback | Overload code TASK or infer production authority |
+| Deployment response lost | Investigate environment/provider before retry | Repeat possibly completed deployment |
+| OpenSpec archive | After actual completion conditions for change scope | Archive to clear checklist |
+| Partial brownfield coverage | Explicit map/gaps/UNKNOWN and priorities | Claim completeness from files/validator |
+
+## Providers and automation
+
+| Input | Expected | Forbidden |
+| --- | --- | --- |
+| GitHub provider | Verify repo/default branch/policies/identity; Issue/PR projection | Hard-code unknown IDs or bypass checks |
+| Older TFS Server | Verify version/API/work-item types/states/tool compatibility | Assume Azure cloud CLI/features |
+| Provider write times out | Read narrow target before retry | Create duplicate |
+| Direct working exchange enabled | Actual permission and routing; content stays within accepted TASK | Assume every local/remote chat reachable |
+| Provider notification to remote person | Available at next manual/authorized check | Promise remote Codex auto-start |
+| COO update | Exact configured deltas, dry read-only facts, no notifications | Execute TASK or scan whole project |
+| COO check | Same plus one authorized deduplicated local wake | Create scope/assignment or wake other machines |
+| Sender and COO see same event | One dispatcher owns delivery | Double wake |
+| Heartbeat not requested | Off | Infer it from protocol/role |
+| Heartbeat requested | Explicit scheduler/scope, quiet unchanged, manual canary | Perpetual undocumented polling |
+| Wake send uncertain | Report uncertainty; no blind retry | Claim delivery or resend indefinitely |
+
+## Skill routing
+
+| Situation | Expected skill behavior | Not proven by invocation |
+| --- | --- | --- |
+| Explore idea | openspec-explore and relevant brainstorming | Accepted requirement |
+| Capture material change | openspec-propose; respect gates | Implementation authorization |
+| Change approved plan | openspec-update-change | Code edit |
+| Implement | openspec-apply-change plus TDD as applicable | QA/merge/deploy |
+| Unexpected failure | systematic-debugging before fix | Root cause until evidence |
+| Pre-completion | verification-before-completion against TASK/spec/candidate | Full product acceptance |
+| Acceptance audit | openspec-verify-change plus QA evidence | Independent QA if same executor/person |
+| Sync/archive | Authorized owner after conditions | Production deployment |
+| Skill missing | BLOCKED or explicit equivalent | Permission to invent usage |
+| Install/update skills | Trusted source/ref, diff, machine-owner approval | Protocol migration/project adoption |
+
+## Distribution release
+
+| Check | Expected |
 | --- | --- |
-| `$r2team help` без проекта | Help без записи/доступа к tracker; неизвестная команда не исполняется |
-| register с несуществующим/inactive participant или устаревшим приглашением | Сверка current TEAM/provider identity; blocker PM, без саморегистрации/новых прав |
-| Повторный register Кена с QA+DevOps | Один участник, выбор назначенного executor; connect внутри register при однозначности, без дубликатов |
-| connect QA при двух назначенных QA executor | Уточнить executor; не захватывать чужую активную задачу |
-| task TASK-042 без действия / start того же TASK | Первый вызов только читает; второй требует назначения/прав, показывает бриф и выполняет разрешённый next_action |
-| COO update при выданном wake / check без маршрута | update ничего не отправляет; check сообщает недоставку, не угадывает адресата и не включает heartbeat |
-| Skill установлен в проекте 1.10 | Нет автоматической миграции или отмены старых правил коммуникации |
-| disconnect при незаписанной работе | Сначала recoverable checkpoint/передача либо blocker, без удаления остатков |
+| Public language | All maintained distribution files, help, commits, release notes in English |
+| Manifest | Protocol 2.1, package revision 1, required paths and matching SHA-256 |
+| Links/anchors | Structural validator PASS |
+| Validator suite | 17/17 PASS |
+| Skills | Four skill directories pass official quick_validate |
+| Help copies | templates/COMMANDS.md and skills/r2team/references/commands.md byte-identical |
+| Specialized CMMI | Absent from main package; maintained in separate TFS repository |
+| Publication | main and annotated v2.1 resolve to exact release commit |
+| Fresh clone | Exact tag validates independently |
+| Runtime claims | Direct messaging, provider writes, migration, deployment, heartbeat remain NOT_RUN unless separately tested |
 
-После согласованного внедрения PM проводит один небольшой реальный цикл:
-TASK → item → branch/PR → назначение → checkpoint → проверка → завершение по DoD.
+## Recovery tabletop
 
-Для команды проверить хотя бы один handoff и восстановление чистым чатом. Для выбранного provider проверять именно его API/права. Продуктовый тестовый scope и approvals не расширяются ради проверки протокола.
+A fresh authorized executor receives only repository URL, accepted TEAM/default-branch ref, TASK branch, provider item/PR, and project access. It must identify current owner/role, scope/acceptance, exact candidate, evidence, open questions, next action, and publication status without chat history.
 
-Для цикла взаимодействия проверить бриф, безопасный запрос человеку, вопрос роли и согласование решения; существенные открытые ожидания должны восстанавливаться из Git. Тест direct wake выполняется только если он включён и проверка разрешена; иначе NOT_RUN. Не создавать новые чаты/внешние обращения только из-за наличия этих сценариев.
-
-Сохранить фактический результат в setup TASK: дата, ref, команды, что сделано, что NOT_RUN. Не заводить отдельный отчёт на каждую строку этой таблицы.
-
-## Что проверяет комплект локально
-
-`scripts/test_validate_package.py` выполняет validator на настоящих временных fixtures: валидный пакет, недостающий файл, сломанный link/anchor, fences, UTF-8, небезопасные пути и локальные runtime данные. Это тесты валидатора, не симуляция работы живых Codex.
+PASS requires all material facts in Git and provider links to resolve. UNKNOWN is preserved. The exercise does not send synthetic messages, deploy, or change live assignments unless separately authorized.

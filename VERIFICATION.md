@@ -1,34 +1,35 @@
-# R2Team 2.0 — Release verification
+# R2Team 2.1 distribution verification
 
-Prepared: 2026-09-15. This is evidence for the distribution, not acceptance of any user project.
+Prepared for package revision 1 on 2026-09-15. This is distribution evidence, not acceptance of a user project.
 
-## Executed
+## Fresh local checks
 
-- Package validator tests: 17/17 passed. Version-2.0 fixtures first produced five expected failures against the previous validator; the version change then passed the suite.
-- Official skill-creator quick_validate.py: all four skills passed. The validator used Python 3.12 and PyYAML 6.0.3 from an isolated temporary dependency directory; the shipped package validator itself uses only the Python standard library.
-- All installed skill payload instructions/help are English. The distribution's English help at templates/COMMANDS.md and skills/r2team/references/commands.md is identical; retain that equality when publishing updates.
-- Targeted prepublication scan found no author machine paths, named private project paths, known GitHub credential patterns, private-key blocks or actual local thread UUIDs in the payload. This is not a guarantee against every possible secret pattern.
+- PASS: validator change followed red-green verification. With 2.1 fixtures and the old 2.0 validator, five tests failed for the expected version mismatch; after updating the validator, all 17 tests passed.
+- PASS: all four distribution skills pass the official skill-creator `quick_validate.py` using PyYAML 6.0.3.
+- PASS: package structure, required payload hashes, local Markdown links, anchors and fences.
+- PASS: public distribution Markdown is English-only.
+- PASS: `templates/COMMANDS.md` and `skills/r2team/references/commands.md` are byte-identical.
+- PASS: specialized CMMI setup is absent from the main package and maintained separately.
+- PASS: `git diff --check` on the release candidate.
+- PASS: targeted scan found no author-machine paths, known credential patterns, private-key blocks, or actual local thread UUIDs in the payload.
 
-## Release checks
+The exact commands and final outputs are captured during release preparation. Payload hashes cover required files; package.json is excluded from its own hash map.
 
-Run on the exact tree to publish:
+## Post-publication gate
 
-```text
-python scripts/validate_package.py
-python -B scripts/test_validate_package.py
-git diff --cached --check
-```
+Verify that `main` and annotated tag `v2.1` resolve to the release commit, then validate a fresh clone at that tag. Publication proves repository provenance, not live agent/provider behavior.
 
-The manifest fixes file paths and SHA-256 for the payload; package.json is excluded from its own hash map. For Git distribution record the actual commit SHA. For an offline bundle also verify package.json against a trusted independently supplied hash.
+## Document-level scenarios
 
-Check public visibility, main/tag commit equality and installation instructions after publication. A successful push is provenance, not a live agent acceptance test.
+[SCENARIOS.md](SCENARIOS.md) covers setup, brownfield migration, team combinations, bounded local/remote help, material decisions, ownership transfer, exact-candidate QA, provider uncertainty, human-assisted steps, optional COO/wake, and recovery without chat transcripts. These are reviewed contracts, not executed multi-agent simulations.
 
-## Not executed
+## NOT_RUN by this release
 
-- Product implementation, migrations of existing user projects, deployment or database changes.
-- Live registration, remote human/team handoff, direct wake or heartbeat.
-- Real GitHub/TFS task-to-PR lifecycle or multi-repository SDK rollout.
-- Installation/upgrades on another participant's machine or replacement of existing user-installed R2Team 1.20 skills.
-- Automatic OpenSpec/Superpowers installation or execution against a product.
+- Migration of a real 1.10 project or adoption by existing role chats.
+- Live direct inter-chat delivery, remote participant wake, or scheduled heartbeat.
+- Real GitHub/TFS item-to-PR lifecycle, provider adapter, or multi-repository rollout.
+- Product implementation, database/infrastructure changes, deployment, or independent QA.
+- Installation/replacement of skills on another machine.
+- Automatic installation/execution of OpenSpec or Superpowers.
 
-The package is self-contained for its own protocol/templates/skills. Codex, Git/provider access, Python for validation, and approved external OpenSpec/Superpowers toolchains remain explicit dependencies. Follow SCENARIOS.md in the target project's authorized scope before declaring that team's workflow validated.
+The package is self-contained for its protocol, templates, setup, migration prompt, and four R2Team instruction skills. Git/provider access, Python for validation, Codex, and approved external OpenSpec/Superpowers toolchains remain explicit dependencies.

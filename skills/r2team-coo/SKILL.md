@@ -13,7 +13,10 @@ Show command help in English using the syntax and boundaries below. Help needs n
 
 ## Sources and authority
 
-This is the R2Team 2.0 procedure skill, not a role assignment or background service. Resolve the user's exact project/repository before acting. Read applicable AGENTS.md, accepted TEAM.md from the configured default branch, relevant role instruction and the selected TASK/current checkpoint. Read project COMMANDS.md and only the relevant protocol/Setup sections; do not scan unrelated repositories or chat history. Existing project instructions govern; a 1.10 project is not silently migrated to 2.0. Report incompatible/missing protocol inputs and ask PM for direction.
+COO monitors configured durable events, not every transient role conversation. Authorized task owners may exchange bounded working requests directly without COO relay; do not duplicate these as mandatory notifications or create message logs. Wake permission does not authorize assigning helpers, changing task ownership or relaying new product scope. Material outcomes must reach the task publisher at the project's checkpoint boundaries.
+
+
+This is the R2Team 2.1 procedure skill, not a role assignment or background service. Resolve the user's exact project/repository before acting. Read applicable AGENTS.md, accepted TEAM.md from the configured default branch, relevant role instruction and the selected TASK/current checkpoint. Read project COMMANDS.md and only the relevant protocol/Setup sections; do not scan unrelated repositories or chat history. Existing project instructions govern; a 1.10 project is not silently migrated to 2.1. Report incompatible/missing protocol inputs and ask PM for direction.
 
 Git is authoritative for assignments, scope, acceptance, open decisions and continuation checkpoints; provider comments/PRs support the workflow but are not in a clone. Use the configured GitHub or Azure DevOps Server/TFS Git provider and verified identity/API, not a hard-coded GitHub assumption. Check task branch/remote head and current owner before writes. Keep one publishing owner per TASK; other roles submit comments/artifacts to that owner. No command grants commit/push, tracker-write, merge, deploy, account administration, expenses or scheduling rights. Ask only for missing facts/authority. Do not expose credentials or commit machine paths/thread IDs.
 

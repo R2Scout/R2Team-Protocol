@@ -1,39 +1,39 @@
-# DEVOPS — профиль функции 2.0
+# DEVOPS — function profile 2.1
 
-Сборки, артефакты, инфраструктура, БД, demo/Azure/deployment в назначенном scope.
+Builds, artifacts, infrastructure, databases, demos, Azure and deployment within assigned scope.
 
-Профиль не создаёт чат. Его может выполнять PM, отдельный или совмещённый executor любого участника, либо разрешённый внутренний помощник. Назначение и права — [TEAM.md](TEAM.md) и TASK.
+A profile does not create a chat. Functions can be held by a registered standalone or combined executor or supported by an authorized internal helper. Assignments and rights come from [TEAM.md](TEAM.md) and TASK; only the current PM coordinates the team.
 
-## Вход
+## Entry
 
-Если это внутренний субагент, используй поручение родителя: узкий scope, выбранные входы и запреты. Не проходи самостоятельную регистрацию/join, не присваивай себе owner TASK. Следующий общий вход относится к самостоятельному executor.
+An internal subagent uses the parent's bounded request, selected inputs and restrictions. Do not register/join independently or take ownership of the parent's TASK. The following standalone entry applies to registered executors.
 
-Прочитай [AGENTS.md](AGENTS.md), [протокол](CODEX_TEAM_PROTOCOL.md), текущий TEAM, назначенный TASK/branch и нужную документацию. Проверь owner, active_role, revision, scope и next_action. Покажи intake по [CODEX_TEAM_SETUP.md](CODEX_TEAM_SETUP.md).
+Read [AGENTS.md](AGENTS.md), relevant [protocol](CODEX_TEAM_PROTOCOL.md) sections, current TEAM, the assigned TASK/branch and necessary documentation. Verify owner, permitted function, revision, scope and next action; for bounded assistance validate the parent request without transferring ownership. Show intake using [CODEX_TEAM_SETUP.md](CODEX_TEAM_SETUP.md).
 
-## Работа
+## Work
 
-При первом самостоятельном входе или добавлении этой функции выполни [cross-check роли](CODEX_TEAM_PROTOCOL.md#role-cross-check), задай неясные вопросы и подтверди уже назначенный TASK либо запроси первый у PM (для первого PM — у владельца проекта). Субагент уточняет только своё поручение у родителя. Не начинай самоназначенную работу.
+On first standalone entry or adding this function, perform [role cross-check](CODEX_TEAM_PROTOCOL.md#role-cross-check), ask specific questions and confirm an assigned TASK or request the first from PM (the first PM asks the project owner). Subagents clarify only their request with the parent. Do not self-assign independent work.
 
-Применяй [общий цикл взаимодействия](CODEX_TEAM_PROTOCOL.md#interaction): бриф до действий, пошаговое сопровождение человека, уточнения/согласование в Issue/PR и сохранение открытых вопросов/ответов в TASK. Если ты субагент, вопросы и нужные действия человека передавай родителю; внешнюю переписку и публикацию ведёт он.
+Follow [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md): brief before execution, guide required human actions, and use authorized direct exchanges or existing Issue/PR discussion for bounded coordination. Preserve material outcomes and open recovery state at publication boundaries, not every conversation turn. A helper request retains the parent owner/publisher. Internal subagents return questions/results through their parent.
 
-Прочитай runbook, target environment и rollback. Зафиксируй source SHA/build/artifact digest и нужные approvals. До выкладки проверь QA/CI для нужного candidate. После — runtime/smoke evidence, ограничения и rollback status. Отчёт в Evidence текущего TASK.
+Read the runbook, target environment and rollback plan. Record source SHA/build/artifact digest and required approvals. Before deployment verify QA/CI for the applicable candidate. Afterward record runtime/smoke evidence, limitations and rollback status in the current TASK's Evidence.
 
-## Навыки
+## Skills
 
-verification-before-completion и systematic-debugging; openspec-explore/propose/update/apply по назначенному infra change; TDD для исполняемого поведения scripts/IaC по применимости. Обычная утверждённая сборка не требует всех planning workflows.
+verification-before-completion and systematic-debugging; openspec-explore/propose/update/apply for assigned infrastructure changes; TDD for executable script/IaC behavior where applicable. An ordinary approved build does not require every planning workflow.
 
-Читай полный SKILL.md. Доступность/установка — [SKILLS.md](SKILLS.md). Соблюдай его planning/approval/verification границы.
+Read the complete applicable SKILL.md. Availability/installation: [SKILLS.md](SKILLS.md). Respect its planning, approval and verification gates.
 
-## Границы
+## Boundaries
 
-Merge не означает deploy. Не меняй shared DB/secrets/access/production/расходы и не останавливай неизвестные процессы без scope. Не печатай credentials. QA-функция того же чата не даёт право rollout.
+Merge does not mean deployment. Do not change shared databases, secrets, access, production or spending, or stop unknown processes without scope. Never print credentials. Holding QA in the same chat does not authorize rollout.
 
-Отдельный release TASK нужен при самостоятельном контролируемом жизненном цикле. Локальное preview фичи может быть этапом той же задачи. Отдельный обязательный REPORT не нужен.
+A separate release TASK is needed for an independently controlled lifecycle. A local feature preview can remain a stage of the same task. No separate mandatory REPORT.
 
-Субагенты получают узкий scope; родитель остаётся владельцем TASK. Внешние назначения/уведомления не делегируются обычным помощникам.
+Subagents get bounded scope; the parent remains accountable for TASK. Ordinary internal helpers do not independently manage external assignments or notifications.
 
-## Завершение или пауза
+## Completion or pause
 
-Сохрани completed/remaining/blockers, evidence и next_action в том же TASK/артефактах. Разрешённые commit/push предшествуют уведомлению tracker/PR по [TRACKER_GUIDE.md](TRACKER_GUIDE.md). При невозможной публикации — LOCAL_ONLY/NOT_DELIVERED. Для TASK 2.0 не создавай обязательный ACK, MSG или отдельный отчёт.
+Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at the publication boundaries. For durable handoff, authorized commit/push precedes tracker/PR notification under [TRACKER_GUIDE.md](TRACKER_GUIDE.md). If publication/delivery is unavailable, report LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.1.
 
-Читай только нужные обновления. При конфликте прав/источника/owner останови затронутую работу и верни конкретный blocker.
+Read only necessary updates. If authority, source or ownership conflicts, stop the affected work and return a specific blocker.

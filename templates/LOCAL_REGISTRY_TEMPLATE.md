@@ -1,15 +1,17 @@
-# Локальная регистрация — образец, не действительный registry
+# Local registration example — not an actual registry
 
-Используется только если владелец машины включил direct wake. Создать `.codex-local/THREAD_REGISTRY.md` локально и убедиться через `git check-ignore`, что путь игнорируется. Этот образец не содержит реальных IDs и может храниться в Git; заполненная копия — никогда.
+Use only when the machine owner has authorized direct routing. Create .codex-local/THREAD_REGISTRY.md locally and verify exclusion with git check-ignore. This example contains no real IDs and may be committed; the populated registry never is.
 
-| Executor ID из TEAM | Host / task ID на этой машине | Проверенный маршрут | Статус |
+| Executor ID from TEAM | Host / task ID on this machine | Verified route | Status |
 | --- | --- | --- | --- |
-| Пример | Заполняется только локально | NOT_RUN | Disabled |
+| Example | Fill locally only | NOT_RUN | Disabled |
 
-Проверять конкретный адресат и доступность инструмента. Удалённому человеку достаточно Git + tracker. Локальность относительна: чаты Кена локальны для Кена, но не обязательно для Джона.
+Verify the exact recipient and tool availability. Remote participation needs only Git and the agreed tracker/channel. Locality is relative: Ken's chats are local to Ken, not necessarily to John.
 
-Один уведомительный вызов на опубликованный checkpoint. Успешный API-ответ не доказывает выполнение. При uncertain/error не повторять слепо; остаётся durable TASK и уведомление provider. При смене/отключении чата обновить mapping, не запускать старого писателя.
+For a durable event, send one wake per event/recipient. A successful API response is not execution. On uncertain delivery/error, inspect before retrying; the durable TASK/provider route remains available. Update mappings when chats change or are disconnected; do not wake an obsolete writer.
 
-Для вопросов/ответов событие может определяться точным comment URL вместе с checkpoint. Один wake на событие/адресата; для набора адресатов в TEAM выбран один dispatcher — sender либо конкретный самостоятельный COO. Сверь текущие права COO и routing; автор и COO не отправляют одно событие оба. Возможный технический cursor/dedup остаётся только ignored, не превращается в реестр задач; неизвестная доставка не помечается успешной.
+A question/answer event may use its exact comment URL and checkpoint. TEAM selects one wake dispatcher for each recipient set: sender or a specific authorized standalone COO. Check current rights and routing; do not notify from both. Optional technical cursor/dedup stays ignored and is not a task registry. Unknown delivery is not success.
 
-PM/COO heartbeat отдельно, по умолчанию выключен. Registry не включает расписания. Внутренний COO возвращает данные родителю; самостоятельный с явным notify_local может использовать разрешённые местные маршруты. Удалённые для Джона роли Кена регистрируются для wake на стороне Кена, а не как доступные локальные чаты Джона.
+Authorized bounded working conversations follow [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md); they are not restricted to pointer-only wake, and do not require a checkpoint per reply. Working-exchange permission is separate from a COO's notify_local permission.
+
+PM/COO heartbeat is separately configured and off by default. A registry enables no schedule. Internal COO returns facts to its parent; a standalone COO with explicit notify_local may use approved local routes. Register Ken's local chats on Ken's machine, not as locally reachable chats for John.

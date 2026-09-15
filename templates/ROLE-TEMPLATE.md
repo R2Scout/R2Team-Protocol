@@ -1,51 +1,49 @@
-# Заготовка произвольной функции — R2Team 2.0
+# Custom function template — R2Team 2.1
 
-Используется PM для Tester, Analyst, Architect, Security, Support или любой другой нужной функции. Это не новый обязательный член команды.
+PM may use this for Tester, Analyst, Architect, Security, Support or another useful function. It does not add a mandatory team member.
 
-Создай `ROLE-<stable-name>.md` либо внеси короткий профиль в TEAM. Не оставляй placeholders в действительном назначении.
+Create ROLE-<stable-name>.md or put a short contract in TEAM. Resolve placeholders before adopting an actual assignment.
 
-## Идентичность и цель
+## Identity and purpose
 
-- Устойчивое имя/ID функции:
-- Зачем нужна:
-- Чем отличается от существующих функций / с чем явно совмещается:
-- Ожидаемые результаты и критерии приёмки:
+- Stable function name/ID:
+- Purpose:
+- Difference from existing functions / explicitly combined functions:
+- Expected outputs and acceptance:
 
-## Назначение
+## Assignment
 
-- Какие executor имеют эту функцию в TEAM:
-- Активная работа: owner_executor_id + active_role в TASK.
-- Нужен отдельный чат или достаточно существующего/субагента:
+- Executors holding this function in TEAM:
+- Active independent work: owner_executor_id and active_role in TASK.
+- Separate chat needed, or existing executor/subagent sufficient:
 
-Новая функция не даёт собственных прав автоматически. PM-координатор остаётся один. Изменение состава не требует product OpenSpec change само по себе.
+A new function grants no rights by itself. There is one coordinating PM. Team changes alone do not require a product OpenSpec change.
 
-## Вход и полномочия
+## Entry and permissions
 
-Читать актуальные AGENTS/TEAM/TASK, scope/revision/current owner. Самостоятельный executor показывает intake перед работой. Внутренний помощник следует ограниченному поручению родителя.
+Read current AGENTS/TEAM/TASK, scope/revision/owner. Standalone executors show intake before execution; internal helpers follow the parent's bounded request.
 
-При первом самостоятельном входе или добавлении функции выполни [cross-check роли](CODEX_TEAM_PROTOCOL.md#role-cross-check): объясни обязанности/границы, проверь входы/skills, задай вопросы. Подтверди назначенный TASK либо запроси первый у PM; не назначай работу себе. Субагент проверяет ясность задания с родителем.
+On first standalone entry or adding a function, perform [role cross-check](CODEX_TEAM_PROTOCOL.md#role-cross-check): duties/limits, inputs/skills, questions. Confirm assigned work or ask PM for the first task; do not self-assign. Subagents clarify with the parent.
 
-- Разрешённые paths, данные и действия:
-- Запреты и операции с отдельным approval:
-- Право commit/push/tracker/PR/merge/deploy в точных границах:
-- Независимость проверки:
+- Allowed paths, data and actions:
+- Prohibitions and separate approvals:
+- Exact commit/push/tracker/PR/merge/deploy rights:
+- Required verification independence:
 
-## Навыки
+## Skills and helpers
 
-Выбрать из SKILLS.md и реально доступных дополнительных навыков по функции. Читать полный SKILL.md, соблюдать его gates. Проверить availability на нужной машине и сохранить readiness.
+Select actual available skills from SKILLS.md and relevant additional skills. Read complete SKILL.md instructions and honor their gates. Verify availability on the participant's machine and preserve readiness.
 
-Например Tester может использовать verify/verification/debugging, Analyst — explore/brainstorming/propose по разрешённому scope. Это примеры, а не жёсткое приравнивание к QA/Brain.
+Tester might use verification/debugging; Analyst might use explore/brainstorming/propose within scope. These are examples, not automatic equivalence to QA/Brain.
 
-## Субагенты
+Specify whether subagents are allowed, their purposes, paths and outputs. They do not independently own TEAM/TASK or external notifications.
 
-Разрешены ли, цели, пути, что возвращают родителю. Они не получают самостоятельное владение TEAM/TASK/внешними уведомлениями.
+## Results and continuation
 
-## Результат и продолжение
+Every function follows [the interaction cycle](CODEX_TEAM_PROTOCOL.md#interaction): intake, human guidance, addressed clarification and agreement. Internal helpers report to their parent; one executor publishes TASK. A question or reply expands no authority.
 
-Для любой функции обязателен [общий цикл взаимодействия](CODEX_TEAM_PROTOCOL.md#interaction): бриф, сопровождение человека, адресные уточнения и согласование. Субагент обращается к родителю; публикацией TASK владеет один назначенный executor. Вопрос или ответ не расширяет полномочия.
+Preserve artifacts, material evidence, blockers and next action under [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md). Bounded requests can return directly; ownership handoffs require publication first. No mandatory MSG/report/queue for a new function.
 
-Сохранить артефакт, checkpoint, evidence, remaining/blockers и next_action в текущем TASK/Git. Notify через связанный tracker/PR после публикации. Не вводить отдельный обязательный MSG/report/очередь только для новой функции.
+## Readiness
 
-## Готовность профиля
-
-PM проверяет, что обязанности не конфликтуют с другими профилями, права достаточны и ограничены, результат проверяем, новый executor/чат нужен только при действительной необходимости. Заполненный профиль и TEAM принимаются через обычный Git-процесс.
+PM checks compatibility with existing functions, sufficient and bounded permissions, verifiable outputs and whether another executor/chat is genuinely needed. Adopt the completed profile and TEAM through the normal Git workflow.

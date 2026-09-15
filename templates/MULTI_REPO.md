@@ -1,37 +1,37 @@
-# Несколько репозиториев: опциональный режим R2Team 2.0
+# Multiple repositories — optional R2Team 2.1 mode
 
-У каждого приложения свой Git root, TEAM, PM, TASK и tracker. Межпроектное взаимодействие не создаёт общего обязательного PM, второй backlog или копию спецификации. Базовые правила [протокола](CODEX_TEAM_PROTOCOL.md) остаются в силе.
+Each application retains its own Git root, TEAM, PM, TASKs and tracker. Cross-project coordination creates no mandatory global PM, duplicate backlog or competing specification. The base [protocol](CODEX_TEAM_PROTOCOL.md) still applies.
 
-## Минимальная связь
+## Minimum connection
 
-Для SDK/API выберите **один репозиторий-владелец контракта**: обычно SDK/backend. Там живут каноническая OpenSpec-спецификация API, интерфейсы/схемы, совместимость и решения. Другие репозитории хранят свои требования интеграции и ссылки на точный contract version/commit, не конкурирующие копии канонического контракта.
+For SDK/API work, choose one contract-owning repository, usually the SDK/backend. Its OpenSpec specification, interfaces/schemas, compatibility policy and decisions are canonical. Consumers store their own integration requirements and exact contract-version/commit references, not independently editable copies.
 
-Один координирующий TASK/Issue в репозитории владельца содержит участников обсуждения, границы изменения, обязательные подтверждения потребителей, ссылки на их TASK/PR, критерии совместимости и порядок выпуска. Это обычный TASK, не новый вид журнала.
+One coordinating TASK/Issue in the contract repository records participants, change boundaries, required consumer confirmations, links to their TASKs/PRs, compatibility criteria and release order. It is an ordinary TASK, not another registry type.
 
-Адрес в межпроектном сообщении: repo URL + participant/executor + TASK/Issue/PR URL. Одинаковые TASK-042 в разных проектах различаются полным repo-qualified ID. Право читать один репозиторий не даёт права писать в другой; каждый PM назначает работу только в своих полномочиях.
+Qualify addresses with repo URL, participant/executor and TASK/Issue/PR URL. TASK-042 in two repositories is not the same identity. Read access grants no write authority in another repository; each PM assigns only within their authority.
 
-## Пример: SDK, Web и Mobile
+## Example: SDK, Web and Mobile
 
 ```text
-SDK: TASK-021 — контракт API v2, owner Dev / PM SDK
-  ├─ Web: TASK-042 — адаптация клиента, свой PM и PR
-  └─ Mobile: TASK-017 — адаптация приложения, свой PM и PR
+SDK: TASK-021 - API v2 contract, SDK owner/PM
+  +-- Web: TASK-042 - client adaptation, its own PM and PR
+  +-- Mobile: TASK-017 - app adaptation, its own PM and PR
 ```
 
-1. Инициатор создаёт обычное изменение у владельца API; PM Web/Mobile назначают ответственных за позиции. Чтение/обсуждение не разрешает автоматически реализацию в чужом проекте.
-2. Обсуждение идёт в одном координирующем Issue; кодовые вопросы — в соответствующих PR. Существенные открытые вопросы/решения публикующий владелец сохраняет в своём TASK/spec. Потребители сохраняют относящиеся к ним обязательства и pinned source в своих TASK.
-3. Владелец предлагает OpenSpec change, включая совместимость, breaking changes, версию, переходный период. Потребители подтверждают свои ограничения; молчание не согласие.
-4. Каждый репозиторий делает свой TASK/branch/PR и применяет OpenSpec/Superpowers по необходимости. Ссылка на внешний change не заменяет локальный контракт задачи.
-5. Проверки фиксируют матрицу candidate SHA/SDK version → версия потребителя → contract/integration test → evidence. Для общей готовности нужны подтверждённые потребители, а не только unit tests SDK.
-6. Выпуск идёт в согласованном порядке с back-compat/feature flag или координированным переключением и rollback. Нет атомарного merge нескольких независимых репозиториев; частично выпущенное состояние явно сохраняется.
-7. Координирующий TASK закрывается по межпроектному DoD. Локальный DONE потребителя не означает, что всё изменение выпущено.
+1. The initiator proposes the change to the API owner. Consumer PMs assign people to provide positions. Discussion does not authorize implementation in their projects.
+2. Use the coordinating Issue for shared agreement and each PR for code. Preserve material open questions/decisions in the owner's TASK/spec; consumers preserve relevant commitments and pinned sources in their TASKs. Bounded transient exchanges may use [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md).
+3. The owner proposes an OpenSpec change covering compatibility, breaking changes, version and transition period. Consumers confirm constraints; silence is not agreement.
+4. Each independently implemented change uses its repository's TASK/branch/PR and relevant skills. An external change link does not replace the local task contract.
+5. Record a matrix of candidate SHA/SDK version, consumer version, contract/integration test and evidence. SDK unit tests alone do not establish coordinated readiness.
+6. Release in the agreed order, using compatibility/feature flags or a coordinated switch and rollback. Separate repositories do not have an atomic merge; preserve partially released state explicitly.
+7. Close the coordinating TASK against its cross-project DoD. A consumer's local DONE does not prove the whole release is delivered.
 
-При споре решает заранее назначенный владелец контрактного решения в своих полномочиях; изменение обязательств другого проекта требует его уполномоченного согласия. Полномочия общего руководителя не выводятся из участия в обсуждении.
+The preassigned contract decider resolves disputes within authority. Changing another project's commitments requires its authorized agreement; joining a discussion grants no global management rights.
 
-## Setup и восстановление
+## Setup and recovery
 
-Только при реальной зависимости PM записывает в TEAM либо связанном TASK: repo URL владельца, contract path/ref, координатор/account, канонический Issue, нужные потребители и критерии их подтверждения. Не заводить глобальный каталог всех репозиториев для маленькой фичи.
+Only for a real dependency, record in TEAM or the relevant TASK: contract repo URL/path/ref, coordinator/account, canonical Issue, consumers and required confirmations. No global repository catalog for a small feature.
 
-Новый исполнитель читает локальный TASK и конкретные pinned внешние источники в доступном scope. Если доступа нет, отмечает BLOCKED/UNKNOWN; подтверждённый экспорт допустим по решению владельца с source SHA и пометкой snapshot, без секретов.
+A new executor reads the local TASK and exact accessible external sources. Missing access is BLOCKED/UNKNOWN. An owner-approved export can be used with source SHA and a snapshot label, without secrets.
 
-Уведомления идут через provider mentions/subscriptions. Local wake — только при отдельном локальном маршруте и правах; разные PM/репозитории не означают общий процесс Codex. COO читает дельты только явно согласованных repo-qualified IDs. Ни skill, ни общий TASK сами не запускают удалённую команду.
+Provider mentions/subscriptions notify participants. Optional local wake needs verified routing and permission; separate projects/PMs do not imply one Codex process. COO reads only explicitly scoped repo-qualified deltas. Neither a skill nor the coordinating TASK starts a remote team by itself.
