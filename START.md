@@ -20,4 +20,4 @@ Do not overwrite existing work, install tools or enable automation without autho
 8. Confirm approved communication routes and permissions. Direct working exchanges are optional; provider discussion is a fallback. Heartbeat remains off.
 9. Save material setup state at publication boundaries in the existing organizational TASK, not a new message registry. Local-only output is not a remote-ready handoff.
 
-For candidate review, resolve `candidate/r2team-2.2` to its full commit and inspect `package.json`; after release, resolve `v2.2`. A branch/tag name or dirty local tree is not sufficient provenance.
+For source-package verification, resolve `v2.2` to its full commit and inspect `package.json`. A tag name or dirty local tree is not sufficient provenance.

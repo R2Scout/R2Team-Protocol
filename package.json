@@ -1,8 +1,7 @@
 {
   "protocol_name": "R2Team",
   "protocol_version": "2.2",
-  "status": "candidate",
-  "candidate_branch": "candidate/r2team-2.2",
+  "status": "release",
   "repository_url": "https://github.com/R2Scout/R2Team-Protocol",
   "visibility": "public",
   "template_root": "templates",
@@ -71,8 +70,8 @@
     ".gitattributes": "d60f352d0db1404c70afb4bb8b2ca3fd1c610572aa40720e8a0b7baa7885418c",
     ".gitignore": "90a942f18014793ac24304462625b4a31ea704248b407a0e4935de6a127dea38",
     "AGENTS.md": "4ee61486ed00677a6f9d51a16ba8bd1dee83c1f3d50f624dcf9a5c92ced63b45",
-    "CHANGELOG.md": "76bc0024a4080f552e3cdb26fe2b154c2e869e85bb312709c384678a548788d5",
-    "README.md": "d95a5886f8c98af6b553a7a6e0ef0685ab999419a085f07772c61c09b5f96077",
+    "CHANGELOG.md": "3a8edaa8f92359aa6fc831eb1a402c3e570d33313c7a0700cc054b60ddddb035",
+    "README.md": "3c660e9ccc10f2574397bae06bbb5a98f3b870269547c5ff57bf45e3d1828f71",
     "SCENARIOS.md": "ec78096663380cc19af64a2137fba004b845694ab18d2cca160ed4f5b53a8742",
     "scripts/test_validate_package.py": "3f4b46e0a26f2e56e50b4021597af1a551c57f8389882e375713d9571697b268",
     "scripts/validate_package.py": "ba02519b32047547fc959d5eca9c18ae0160bf642a32898e5a65925864e23d9c",
@@ -83,7 +82,7 @@
     "skills/r2team/references/commands.md": "23a9d0e35ebc7eb3454c29670be6bdcd7dddf91bd8542e6731662f9e3fd6c9e5",
     "skills/r2team/SKILL.md": "814614564976f485bc02c8842df69971c45d2a7d9b86bad9631077527827dc61",
     "SOURCES.md": "bb18ddf6be1c317d81ae969ba84193df5b66261d4d88c5387c22a3f7693524b2",
-    "START.md": "cce698959af5c358bde8db2819291f368fe48ae31c7675d6a559a80697f388c7",
+    "START.md": "cc5ce1816fc80366298e2ba6d4ce7a995131e5544198c7b7c5be856a3f53c23d",
     "templates/AGENTS.md": "c9657daccd80b6432a91e6b1e5375630ec3385e7c12c50fd6a0cf4ed38136e2f",
     "templates/CODEX_TEAM_PROTOCOL.md": "470096a3d073356ed353afcaf474b04fa057ba49700478f17b306dec834d29f9",
     "templates/CODEX_TEAM_SETUP.md": "0eb6e6378ea9b117b8cb9a6509a725b1f749bf310f02e846d9a502314fafb0b5",
@@ -110,5 +109,5 @@
     "templates/OPERATING_COMMUNICATION.md": "aa15ad4408663c7ef6673754dd57fafcbc56f443d1c18cc0a52771a6e64d0704"
   },
   "communication_policy": "templates/OPERATING_COMMUNICATION.md",
-  "release_tag": null
+  "release_tag": "v2.2"
 }

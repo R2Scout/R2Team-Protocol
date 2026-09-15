@@ -2,7 +2,7 @@
 
 Git-first teamwork for one person, local role chats, remote participants and hybrids. PM is the only mandatory coordinating function. GitHub and generic Azure DevOps Server/TFS Git providers are supported; specialized process profiles are maintained separately.
 
-## Current candidate
+## Current release
 
 Protocol version **2.2**. The version is the sole release identifier: the major number identifies the protocol generation and the minor number increments for each published protocol revision.
 
@@ -12,7 +12,7 @@ Bounded requests inside an existing task need no additional Issue, PR, MSG or ro
 
 ## Start and references
 
-1. For candidate review, use `candidate/r2team-2.2` only at an explicitly verified full commit. After release, use the public `v2.2` tag. An approved bundle with a trusted manifest hash is also supported. Do not silently substitute `main/latest`.
+1. Obtain the public `v2.2` release and verify its full commit, or use an approved bundle with a trusted manifest hash. Do not silently substitute `main/latest`.
 2. Verify the payload and local links with `python scripts/validate_package.py` and `python -B scripts/test_validate_package.py`.
 3. Read [START.md](START.md). Choose new, migrate, team, join, resume or audit.
 4. Install procedure skills separately using [SKILL-INSTALL.md](SKILL-INSTALL.md) only with machine-owner approval. Updating this repository does not update installed copies or adopted projects.

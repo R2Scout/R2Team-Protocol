@@ -4,7 +4,7 @@
 
 - Make `protocol_version` the sole release identifier: major is the protocol generation and minor increments for each protocol revision.
 - Remove `package_revision` and `protocol_package_revision` from the distribution and project templates.
-- Rename the candidate and migration source to 2.2 without rewriting the immutable 2.1 release.
+- Publish the versioned migration source as the official `v2.2` release without rewriting the immutable 2.1 release.
 
 ## 2.1 — package revision 1
 
