@@ -1,4 +1,4 @@
-# Operational communication and durable state — R2Team 2.2
+# Operational communication and durable state — R2Team 2.3
 
 This policy applies equally to local chats, remote participants and authorized subagents. Execution location changes the available communication channel, not the persistence boundary. It becomes effective only through an approved project adoption; it does not override an existing 1.10 project.
 
@@ -30,6 +30,8 @@ Include only what is necessary: parent TASK/ref, exact candidate or input, bound
 
 Local chat IDs remain in ignored local configuration. Remote participants may use an existing Issue/PR thread or another agreed channel with the same persistence rules. Do not invent cross-host routing or promise automatic execution by a remote Codex. Direct messaging is optional; no new required messaging service.
 
+A durable invitation contains repository, participant/executor, functions, accepted TEAM/protocol ref, assigned TASK/checkpoint or first-work route and PM response route, but no local task IDs. A local standalone executor receives a separate ephemeral launch envelope and must return onboarding readiness directly. Without confirmed return, report `NOT_DELIVERED`; notification is not connection.
+
 Distinguish:
 - **Working exchange:** the authorized owner/participant communicates inside the existing contract; one clear conversation route, without mandatory duplicate provider comments.
 - **Wake for a durable event:** the configured sender or COO sends a pointer to the published task/event; avoid duplicate notifications.
@@ -41,7 +43,7 @@ COO is not a mandatory relay for conversations and does not gain authority to as
 
 ## OpenSpec boundary
 
-Update the appropriate OpenSpec change/spec artifacts when an approved decision changes behavior, acceptance, API, data, security, compatibility, significant constraints or technical design of the change. Keep proposed deltas separate from the accepted specification and follow the chosen skill's approval/sync/archive gates.
+Update the appropriate OpenSpec change/spec artifacts when an approved decision changes behavior, acceptance, API, data, security, compatibility, significant constraints or technical design of the change. Keep proposed deltas separate from the accepted specification and follow the chosen skill's approval/sync/archive gates. Finalization order is: verify implementation against the change; sync every declared delta into accepted specs; verify semantic equivalence; archive the change; publish accepted specs/archive/TASK; only then close the provider item. A schema-declared conditional artifact may be absent without making the change incomplete.
 
 A significant long-lived architectural decision may require an ADR. User/operational instructions belong in maintained documentation where they answer a different question. Do not create an ADR or duplicate documents for every minor implementation choice.
 

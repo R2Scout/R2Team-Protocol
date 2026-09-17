@@ -1,6 +1,8 @@
-# GitHub and Azure DevOps Server/TFS Git — R2Team 2.2
+# GitHub and Azure DevOps Server/TFS Git — R2Team 2.3
 
 One project uses one provider. Git stores the contract and confirmed state; the tracker displays the queue; PRs connect diff/review/checks. No universal dispatcher is implemented here: Codex uses available authorized CLI/API tools.
+
+Treat access as independent capability planes: Git refs/read/push, tracker API, PR/review/policy API, browser UI, CI and release/environment access. Success in one plane proves nothing about another.
 
 ## Common independent-task cycle
 
@@ -15,6 +17,8 @@ One project uses one provider. Git stores the contract and confirmed state; the 
 9. Preserve material discussion outcomes in Git before dependent work.
 
 No tracker/access does not turn a local TASK into a delivered assignment. Use LOCAL_ONLY and report readiness limits.
+
+Mergeable/checks-green is not merged. Before recording integration, read back provider completed/merged state, actual merge commit and remote default-branch result; fetch the merge object before local inspection. Provider policy configuration and per-PR evaluation are separate evidence.
 
 ## GitHub
 
@@ -59,7 +63,7 @@ The repository must be Git, not TFVC. Cloud Services and on-premises Server are 
 
 $Task is a literal URL segment, not a PowerShell variable. Select and encode the actual process type.
 
-Work Item operations typically use JSON Patch and application/json-patch+json. Verify System.Title/Description/AssignedTo/State fields and transitions on the server; do not submit a protocol REVIEW state without mapping.
+Work Item operations typically use JSON Patch and application/json-patch+json. Verify System.Title/Description/AssignedTo/State fields and transitions on the server; do not submit a protocol REVIEW state without mapping. Use supported revision/concurrency checks and exact post-write read-back.
 
 PR source/target refs use refs/heads/<branch>. Verify the supported Development relation/artifact URI before linking Work Item and PR; do not guess it. Preserve IDs/URLs in TASK, perform supported revision/concurrency checks and read back writes. A conflict requires rereading, not overwriting another actor.
 

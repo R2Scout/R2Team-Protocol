@@ -1,6 +1,6 @@
-# Setup — R2Team 2.2 guided wizard
+# Setup — R2Team 2.3 guided wizard
 
-Protocol version 2.2. Run only when requested; reading/editing the distribution does not start a project. Full rules: [protocol](CODEX_TEAM_PROTOCOL.md). Entry prompts: [CODEX_TEAM_SETUP.md](CODEX_TEAM_SETUP.md).
+Protocol version 2.3. Run only when requested; reading/editing the distribution does not start a project. Full rules: [protocol](CODEX_TEAM_PROTOCOL.md). Entry prompts: [CODEX_TEAM_SETUP.md](CODEX_TEAM_SETUP.md).
 
 ## Wizard rules
 
@@ -9,6 +9,7 @@ Protocol version 2.2. Run only when requested; reading/editing the distribution 
 - Do not guess root, remote, TASK, account, environment or PM.
 - Preserve existing AGENTS, docs, skills, code, TASKs, historical messages/reports and dirty work.
 - Plan -> approved diff -> write -> verify. New authority, expense, publication and conflicts need a decision.
+- Execute an already approved multi-step operation as small resumable mechanical steps without repeatedly requesting identical approval. Stop on drift, failed validation, denied authority, ambiguous write, irreversible effect or a new material choice.
 - Preserve material setup state in one organizational TASK: mode, answers, refs, checks, blockers and next question. Do not create another registry or a checkpoint for every trivial reply.
 - Before first-write approval, a conversational summary is sufficient. Move material decisions into Git once its root/TASK exist.
 - Honor the selected skill's approval/implementation gates.
@@ -28,6 +29,8 @@ Protocol version 2.2. Run only when requested; reading/editing the distribution 
 | audit | Read-only readiness check | Repairs separately authorized |
 
 If intent is clear, state the mode and proceed. An invitee is not starting another project.
+
+For `new` or `migrate`, also choose `launch_mode: production | synthetic_pilot`. Collect one Project Charter for both modes: outcome, repositories/provider, constraints, desired participants/functions/executors, permissions, QA independence, communication, OpenSpec, branches/PRs, CI/deployment, multi-repo dependencies and first result. Reuse confirmed answers throughout setup. Only `synthetic_pilot` receives a Pilot Addendum covering scenario, full path, permitted writes, optional defect/deployment flow, PASS/stop criteria, retention and findings report; production records `Pilot Addendum: NOT_APPLICABLE`.
 
 <a id="preflight"></a>
 ## 1. Read-only preflight
@@ -55,7 +58,7 @@ For real SDK/API dependencies across applications, use [MULTI_REPO.md](MULTI_REP
 
 Confirm exact Git URL or authorization to create one. Choose GitHub or generic Azure DevOps Server/TFS Git using [TRACKER_GUIDE.md](TRACKER_GUIDE.md).
 
-Confirm default branch, account rights, policies/checks and push/merge side effects such as deployment. For Server confirm collection/project/repo ID, server/API version, Work Item type and actual state mapping. TFVC migration is separate work.
+Confirm default branch, account rights, policies/checks and push/merge side effects such as deployment. Verify Git refs/read/push, tracker API, PR/review/policy API, browser UI, CI and environment access independently. For Server confirm collection/project/repo ID, server/API version, Work Item type and actual state mapping. TFVC migration is separate work.
 
 Creating task-related items/branches/PRs/comments may be approved as standard project operations. Merge, tags/releases, deploy, database changes and spending remain separate authority.
 
@@ -67,9 +70,11 @@ Start with one participant and one PM executor; user chooses identity. John/john
 
 For each needed function choose PM execution, authorized helper, separate local chat or another person. Do not create speculative future participants. Standard profiles are not a closed list; use [ROLE-TEMPLATE.md](ROLE-TEMPLATE.md) or concise TEAM entries for custom functions.
 
-For each executor ask about functions/prohibitions, helpers/purposes/paths, combined/separate chats, QA independence, environments and Git/tracker rights. Ken can combine QA+DevOps.
+For each executor explicitly choose existing local standalone task, new local standalone task, persistent/ephemeral subagent, or remote/manual participant. Ask about functions/prohibitions, helpers/purposes/paths, parent executor, combined/separate chats, QA independence, environments and Git/tracker rights. Ken can combine QA+DevOps. A persistent subagent with its own queue may be a named executor; an ephemeral helper is not registered.
 
 Fill [TEAM.md](TEAM.md). Internal subagents are not separately registered participants. Create chats only on explicit request. Confirm human-action/visual-acceptance respondents, scope deciders, provider accounts, update-check subscriptions and escalation. Locality is relative; remote auto-start is not promised.
+
+For a local standalone executor, use a portable Git invitation plus a separate ephemeral launch prompt containing PM task ID, executor, exact register/connect commands and mandatory direct onboarding return. Store bidirectional task routes only in ignored `.codex-local/THREAD_REGISTRY.md`; unconfirmed delivery is `NOT_DELIVERED`. Remote/manual participants never receive local task IDs.
 
 If COO is needed, choose internal read-only helper or registered standalone executor. Separately scope reads, wake and organizational writes; choose one wake dispatcher. See [ROLE-COO.md](ROLE-COO.md). Scheduling and chat creation require explicit requests.
 
@@ -77,7 +82,7 @@ If COO is needed, choose internal read-only helper or registered standalone exec
 
 Show and approve the actual file diff:
 1. AGENTS, full protocol, OPERATING_COMMUNICATION and TEAM.
-2. Setup, CODEX_TEAM_SETUP, SKILLS and TRACKER_GUIDE.
+2. R2TEAM_MASTER, Setup, CODEX_TEAM_SETUP, SKILLS and TRACKER_GUIDE.
 3. PM and used role profiles or equivalent TEAM contracts.
 4. One organizational setup TASK using [TASK-TEMPLATE.md](TASK-TEMPLATE.md).
 5. Existing documentation index or [DOCUMENTATION-TEMPLATE.md](DOCUMENTATION-TEMPLATE.md), filled with facts.
@@ -116,7 +121,7 @@ Run the audit below. Report ready/NOT_RUN, first TASK, owner and next action. Th
 <a id="migrate"></a>
 ## 3. MIGRATE
 
-Use [MIGRATE_TO_2.2.md](MIGRATE_TO_2.2.md), then applicable N5-N7. Preserve active work by default. A user-approved fresh organizational queue may retain specs/chats while retiring old tasks/messages; it must not erase OpenSpec tasks.md or falsely mark unfinished work DONE. Each retained role must actually adopt the cutover.
+Use [MIGRATE_TO_2.3.md](MIGRATE_TO_2.3.md), then applicable N5-N7. Preserve active work by default. A user-approved fresh organizational queue may retain specs/chats while retiring old tasks/messages; it must not erase OpenSpec tasks.md or falsely mark unfinished work DONE. Each retained role must actually adopt the cutover.
 
 For an MVP, map capabilities/sources/gaps and cover the next changed area, not a speculative full import. Existing documents are evidence, not automatically correct requirements.
 

@@ -1,4 +1,4 @@
-# DESIGNER — function profile 2.2
+# DESIGNER — function profile 2.3
 
 UX/UI, scenarios, states, accessibility and agreed design.
 
@@ -34,6 +34,6 @@ Subagents get bounded scope; the parent remains accountable for TASK. Ordinary i
 
 ## Completion or pause
 
-Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at the publication boundaries. For durable handoff, authorized commit/push precedes tracker/PR notification under [TRACKER_GUIDE.md](TRACKER_GUIDE.md). If publication/delivery is unavailable, report LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.2.
+Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at the publication boundaries. For durable handoff, authorized commit/push precedes tracker/PR notification under [TRACKER_GUIDE.md](TRACKER_GUIDE.md). If publication/delivery is unavailable, report LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.3.
 
 Read only necessary updates. If authority, source or ownership conflicts, stop the affected work and return a specific blocker.

@@ -1,15 +1,17 @@
-# TASK template — R2Team 2.2
+# TASK template — R2Team 2.3
 
 Use the body below for Tasks/TASK-<id>-<name>.md, removing these explanatory instructions. Choose a collision-free ID. Role handoff alone does not create another TASK; bounded helper requests remain inside the parent TASK.
 
 ```yaml
 ---
-protocol_version: "2.2"
+protocol_version: "2.3"
 id: "<unique-task-id>"
 revision: 1
 status: DRAFT
 stage: DISCOVERY
 owner_executor_id: "<registered-executor>"
+executor_mode: "<local_standalone|remote_manual|subagent>"
+parent_executor_id: null
 active_role: PM
 tracker_item: null
 tracker_item_type: null
@@ -59,6 +61,7 @@ Setup checkpoints include mode, last completed step, confirmed answers/refs and 
 - Who verified:
 - Limits and NOT_RUN:
 - References to retained artifacts and summaries:
+- Provider completed/merged state, merge commit and remote branch read-back:
 
 Candidate, verified, merged and deployed versions are not interchangeable. A link to an expiring log is not a durable result summary.
 

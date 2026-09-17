@@ -1,4 +1,6 @@
-# R2Team 2.2 — Command Help
+# R2Team 2.3 — Command Help
+
+Open project `R2TEAM_MASTER.md` in the persistent local `R2Team Master - <project>` task for bootstrap, Project Charter, setup orchestration, provider/Git troubleshooting, team lifecycle changes or protocol consultation. Master routes actual procedures to the skills below and does not replace PM authority.
 
 These are Codex skill prompts, not shell commands. Install the four skills first. Natural-language requests are supported; arguments describe intent and never grant permissions. Help is always shown in English. For task conversations, use the participant's preferred language.
 
@@ -30,7 +32,7 @@ Confirm the target directory and guide me through setup. This chat will be PM.
 
 This routes to Setup mode `new`. A new project is not expected to have TEAM/TASK yet. The wizard confirms the initial PM and creates the agreed configuration. For an existing MVP or older protocol use Setup mode `migrate`; do not initialize a new project over its files.
 
-The full template package is needed for setup. Installing SKILL.md alone does not copy project templates. Provide a verified package path or repository URL and full commit SHA. The distribution is https://github.com/R2Scout/R2Team-Protocol. Resolve release v2.2 to its actual commit and verify the source; do not silently use main/latest.
+The full template package is needed for setup. Installing SKILL.md alone does not copy project templates. Provide a verified package path or repository URL and full commit SHA. The distribution is https://github.com/R2Scout/R2Team-Protocol. Resolve release v2.3 to its actual commit and verify the source; do not silently use main/latest.
 
 ## Add → register → connect
 
@@ -59,7 +61,7 @@ The public protocol repository can be installed without an invitation. Joining a
 
 ### connect: this chat adopts a function
 
-Resolve the assigned executor. If register already selected one unambiguously, connect runs in the same onboarding pass; another call is unnecessary. For multiple chats, invoke connect with each assigned executor. Internal subagents do not register as separate TEAM executors.
+Resolve the assigned executor. If register already selected one unambiguously, connect runs in the same onboarding pass; another call is unnecessary. For multiple chats, invoke connect with each assigned executor. A persistent subagent with its own queue may use a named TEAM executor and parent; an ephemeral helper does not register.
 
 Cross-check in the role's own words: duties/outputs, boundaries/approvals, permitted helpers, actual specification/tool inputs, task queue and return route, remaining questions. Confirm an existing TASK or request the first from PM. Onboarding does not begin product execution.
 

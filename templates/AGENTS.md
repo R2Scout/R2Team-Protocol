@@ -1,4 +1,4 @@
-# Project instructions — R2Team 2.2
+# Project instructions — R2Team 2.3
 
 This is an adoption template, not an actual role assignment. Editing it does not start setup.
 
@@ -6,7 +6,7 @@ This is an adoption template, not an actual role assignment. Editing it does not
 
 Read current [TEAM.md](TEAM.md) from the accepted default branch, relevant [protocol](CODEX_TEAM_PROTOCOL.md) sections and [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md). Resolve your registered executor and permitted function; a chat title is not an assignment. Read the applicable role contract and [SKILLS.md](SKILLS.md).
 
-Use [Setup.md](Setup.md) for lifecycle work and [CODEX_TEAM_SETUP.md](CODEX_TEAM_SETUP.md) for entry prompts. Adopted 1.10 projects retain their MSG rules until an approved [cutover](MIGRATE_TO_2.2.md). No skill/template silently migrates them.
+Use [Setup.md](Setup.md) for lifecycle work and [CODEX_TEAM_SETUP.md](CODEX_TEAM_SETUP.md) for entry prompts. Adopted 1.10 projects retain their MSG rules until an approved [cutover](MIGRATE_TO_2.3.md). No skill/template silently migrates them.
 
 New roles/functions cross-check duties, scope, inputs, tools and questions under [the role entry procedure](CODEX_TEAM_PROTOCOL.md#role-cross-check). Confirm an assigned TASK or request the first one; do not self-assign independent work.
 

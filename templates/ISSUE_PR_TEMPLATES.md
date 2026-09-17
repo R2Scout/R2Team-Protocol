@@ -1,4 +1,4 @@
-# Tracker and PR text templates — R2Team 2.2
+# Tracker and PR text templates — R2Team 2.3
 
 Generate these from TASK; they are not a competing source of scope. Use provider forms when that is the selected channel, not as mandatory copies of transient direct exchanges.
 
@@ -21,6 +21,7 @@ TASK and Issue/Work Item: <links>
 Change: <short outcome>
 Scope/requirements: <TASK and OpenSpec refs>
 Verification: <exact candidate, results and limits>
+Provider merge state: <NOT_MERGED or completed state + merge commit + remote default-branch result>
 Specs/docs: <paths and changes>
 Deployment included in Outcome: <yes/no>
 Readiness: <Draft/Review; actual remaining work>

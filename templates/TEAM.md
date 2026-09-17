@@ -1,10 +1,10 @@
 # TEAM — R2Team configuration
 
-Template for protocol version 2.2. PM fills it during setup; empty configuration is not ready. Never commit real thread IDs, other machines' absolute paths or credentials.
+Template for protocol version 2.3. PM fills it during setup; empty configuration is not ready. Never commit real thread IDs, other machines' absolute paths or credentials.
 
 ```yaml
 protocol_name: R2Team
-protocol_version: "2.2"
+protocol_version: "2.3"
 integration_revision: 0
 setup_status: NOT_CONFIGURED
 project:
@@ -48,6 +48,8 @@ participants:
     executors:
       - id: john-main
         active: true
+        mode: local_standalone
+        parent_executor_id: null
         roles: [PM, Brain, Designer, Dev, QA, DevOps]
         subagents:
           allowed: false
@@ -64,7 +66,7 @@ participants:
 
 Ask about actual needed rights/helpers; do not leave every permission false while declaring autonomous execution ready. Rights may be scoped to refs, environments and operations; deploy=true without a target/scope is insufficient.
 
-Ken may hold only DevOps or combined QA+DevOps, using one or several executors. Only the current pm_executor_id performs team coordination.
+Ken may hold only DevOps or combined QA+DevOps, using one or several executors. Supported modes are `local_standalone`, `remote_manual` and `subagent`. A persistent subagent with its own queue has a stable executor ID and `parent_executor_id`; an ephemeral helper stays only under its parent's helper policy. Only the current pm_executor_id performs team coordination.
 
 ## Function contracts
 
@@ -91,7 +93,7 @@ Use [TRACKER_GUIDE.md](TRACKER_GUIDE.md). Record verified remote/default branch,
 For actual needed functions, record:
 - Product/technical respondents and authorized scope deciders.
 - Human setup/visual acceptance responsibilities and environment boundaries.
-- Verified provider identities; multiple executors under one account remain logically distinguished.
+- Verified provider/Git identities; multiple executors under one account remain logically distinguished through executor ID, TASK, branch, PR and checkpoint. Commit author alone is not executor evidence.
 - Subscriptions/update-check method and optional local routing, without physical thread IDs.
 - Required independence, dispute resolution and escalation route.
 

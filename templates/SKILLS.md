@@ -1,4 +1,4 @@
-# OpenSpec and Superpowers — R2Team 2.2 integration
+# OpenSpec and Superpowers — R2Team 2.3 integration
 
 This is required routing by work, not a declaration that all skills are installed. Do not invoke every workflow for a minor task. Read the complete selected SKILL.md before acting. Missing required skills need an agreed installation or explicit equivalent.
 
@@ -74,6 +74,8 @@ A full installation can be used selectively. The quality core is TDD, systematic
 | openspec-verify-change | QA/reviewer/PM before acceptance | Completeness/correctness/coherence, evidence and limits; analysis does not replace tests |
 | openspec-sync-specs | Assigned owner prepares accepted behavior for integration | Semantic delta-to-spec merge in the task branch and validation, without premature archive |
 | openspec-archive-change | Authorized owner after the complete scope | Completion/sync checks and archive; incomplete/skipped work is not automatically accepted |
+
+Finalization order is: verify implementation against the change; sync every declared delta into accepted specs; verify semantic equivalence; archive; publish accepted specs/archive/TASK; then close the provider item. A schema-declared conditional artifact may legitimately be absent. CLI validation or artifact count does not prove specification completeness.
 
 Version-specific installed instructions govern exact operations and gates. Read-only examples, using actual change names and supported flags:
 

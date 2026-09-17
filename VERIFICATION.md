@@ -1,10 +1,10 @@
-# R2Team 2.2 distribution verification
+# R2Team 2.3 distribution verification
 
-Prepared for protocol version 2.2 on 2026-09-15. This is distribution evidence, not acceptance of a user project.
+Prepared for protocol version 2.3 on 2026-09-17. This is distribution evidence, not acceptance of a user project.
 
 ## Fresh local checks
 
-- PASS: validator change followed red-green verification. With 2.2 fixtures and the old 2.1 validator, six tests failed for the expected version/revision mismatch; after updating the validator, all 18 tests passed.
+- PASS: all 19 validator tests passed, including version, bootstrap, manifest-path, payload-hash and link guards.
 - PASS: all four distribution skills pass the official skill-creator `quick_validate.py` using PyYAML 6.0.3.
 - PASS: package structure, required payload hashes, local Markdown links, anchors and fences.
 - PASS: public distribution Markdown is English-only.
@@ -17,7 +17,7 @@ The exact commands and final outputs are captured during release preparation. Pa
 
 ## Post-publication gate
 
-Verify that `main` and annotated tag `v2.2` resolve to the release commit, then validate a fresh clone at that tag. Publication proves repository provenance, not live agent/provider behavior.
+Verify that `main` and annotated tag `v2.3` resolve to the release commit, then validate a fresh clone at that tag. Publication proves repository provenance, not live agent/provider behavior.
 
 ## Document-level scenarios
 

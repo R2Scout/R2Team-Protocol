@@ -1,5 +1,16 @@
 # R2Team change history
 
+## 2.3
+
+- Add `R2TEAM_MASTER.md` as the persistent bootstrap and procedure-consultant entry point while keeping PM as the only mandatory coordinating function.
+- Model participants, functions and executors independently, including local tasks, remote participants, persistent named subagents and ephemeral helpers.
+- Separate portable invitations from machine-local launch envelopes and keep local task routing out of Git.
+- Add one reusable Project Charter for production and synthetic-pilot setup, with a conditional Pilot Addendum only when a pilot is requested.
+- Verify Git, tracker, pull-request, policy, CI and deployment capability planes independently instead of inferring one from another.
+- Strengthen exact-candidate QA, provider read-back, completed/merged-state evidence and repository-qualified multi-repository checkpoints.
+- Define ordered OpenSpec finalization and allow explicitly conditional artifacts without treating their absence as incomplete work.
+- Add a controlled 2.2/older migration procedure and publish the generalized 2.3 findings used by setup, protocol and skills.
+
 ## 2.2
 
 - Make `protocol_version` the sole release identifier: major is the protocol generation and minor increments for each protocol revision.

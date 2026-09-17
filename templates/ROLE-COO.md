@@ -1,4 +1,4 @@
-# COO — optional organizational function, R2Team 2.2
+# COO — optional organizational function, R2Team 2.3
 
 Find only new relevant events for explicitly scoped executors and help handle them within delegated rights. Read exact updates, report dry facts and minimize tokens. Do not scan the entire project/archive or repeat unchanged information.
 

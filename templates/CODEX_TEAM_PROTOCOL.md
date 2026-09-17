@@ -1,4 +1,4 @@
-# R2Team 2.2
+# R2Team 2.3
 
 Git-first teamwork for one person, local role chats, remote participants, and hybrids. PM is the only mandatory coordinating function. GitHub and generic Azure DevOps Server/TFS Git are supported; specialized process profiles are separate.
 
@@ -94,6 +94,7 @@ Tool checks distinguish Git, OpenSpec CLI, project openspec directory, and insta
 
 ~~~text
 AGENTS.md
+R2TEAM_MASTER.md        # optional persistent bootstrap/admin consultant
 CODEX_TEAM_PROTOCOL.md
 OPERATING_COMMUNICATION.md
 TEAM.md
@@ -123,21 +124,25 @@ participants:
     executors:
       - executor_id: john-main
         functions: [PM, Brain, Dev]
-        location: local
+        mode: local_standalone
+        parent_executor_id: null
         helpers: [research, design, test]
   - participant_id: ken
     provider_identity: verified-remote-account
     executors:
       - executor_id: ken-ops
         functions: [QA, DevOps]
-        location: remote
+        mode: remote_manual
+        parent_executor_id: null
 ~~~
 
 TASK owner_executor_id and active_role must match current TEAM. Locality is relative.
 
+For every executor record mode: local standalone, remote/manual, or subagent. A persistent subagent with its own queue may be a named executor with `parent_executor_id`; an ephemeral helper is not registered. One provider/Git account may back several logical executors, so commit author alone is not executor evidence. TASK, branch, PR and checkpoint identify the executor.
+
 Any executor may use authorized bounded helpers. Parent supplies scope, paths, candidate, evidence, and return route; reviews output; remains publisher. Helpers do not take another executor's assignment, read unrelated inboxes, change role files, or publish independently. A standalone role chat may provide bounded help without ownership transfer under [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md).
 
-Record independence: same executor/subagent, different executor same person, different participant, or required independent reviewer. Chat renaming does not create independence.
+Record independence: same executor, different executor under the same participant, different participant, or required independent reviewer. Chat renaming does not create independence.
 
 Supported modes: one PM with helpers; one person with local role chats; remote people; any hybrid. Persistence and acceptance do not change.
 
@@ -147,7 +152,7 @@ Supported modes: one PM with helpers; one person with local role chats; remote p
 Independent work creates/reuses one TASK, provider item, branch, and PR where applicable. Bounded consultation inside an accepted TASK creates no extra mandatory TASK/Issue/PR/MSG. Reuse the TASK across discovery, design, implementation, QA, integration, and handoff. Separate deployment TASK only for an independent lifecycle/owner/authority.
 
 ~~~yaml
-protocol_version: "2.2"
+protocol_version: "2.3"
 task_id: TASK-042
 task_revision: 3
 status: IN_PROGRESS
@@ -207,9 +212,9 @@ Current publisher rechecks remote head, records candidate/evidence/remaining wor
 
 ### 8.5 QA and integration
 
-QA tests exact candidate against TASK/OpenSpec and reports PASS/FAIL/BLOCKED/NOT_RUN with coverage. Green CI does not replace UI/manual acceptance. Candidate changes invalidate affected checks.
+QA tests exact candidate against TASK/OpenSpec and reports PASS/FAIL/BLOCKED/NOT_RUN with coverage. Preserve a concise result in TASK and the provider PR/review route when both exist. Green CI does not replace UI/manual acceptance. Candidate changes invalidate affected checks.
 
-Integrator reviews base/diff/checks/docs/specs/authority, then records actual merged SHA. A report-only commit need not invalidate all evidence; code/config/base changes require impact assessment. Never label merged SHA verified without mapping/test evidence.
+Integrator reviews base/diff/checks/docs/specs/authority, then verifies provider completed/merged state, actual merge commit and remote default-branch result. Mergeability is not completion. Fetch the merge object before local inspection. A report-only commit need not invalidate all evidence; code/config/base changes require impact assessment. Never label merged SHA verified without mapping/test evidence.
 
 ### 8.6 Deployment
 
@@ -256,11 +261,11 @@ Disconnect after publishing affected checkpoints and replacement ownership. Pres
 | Discussion | Issue/PR | Work Item/PR |
 | Recovery | Git TASK/spec/code | Git TASK/spec/code |
 
-Tracker is a projection of TASK in R2Team 2.2. Summarize provider-only continuation facts into Git.
+Tracker is a projection of TASK in R2Team 2.3. Summarize provider-only continuation facts into Git.
 
-Verify repo/default branch/policies/checks/permissions and merge/deploy effects. For Server also verify version/API, actual Work Item types/states, and tool compatibility; do not assume cloud-only CLI/MCP.
+Verify Git refs/read/push, tracker API, PR/review/policy API, browser UI, CI and environment access independently. Repo/default branch/policies/checks/permissions and merge/deploy effects remain separate facts. For Server also verify version/API, actual Work Item types/states, and tool compatibility; do not assume cloud-only CLI/MCP.
 
-Provider writes are idempotent and read back IDs/links/revisions. On uncertainty inspect narrow target before retry. No bypass or duplicates. This package is a guide, not a live adapter; “request sent” is not completion.
+Provider writes use supported concurrency and read back IDs/links/revisions/state/refs. On uncertainty inspect narrow target before retry. No bypass or duplicates. Git ref access proves no other capability; “request sent” is not completion.
 
 <a id="specs"></a>
 ## 11. Specifications and documentation
@@ -275,7 +280,7 @@ Use OpenSpec change for new behavior, API/security/data/migration/architecture o
 
 Brownfield baseline is incremental: map capabilities to code/tests/docs; distinguish implemented, verified, intended, UNKNOWN; prioritize changed/risky areas. Inventory/CLI validation does not prove completeness.
 
-Accepted specs live on default branch; proposed deltas on task branch. Do not duplicate versions unless product maintains them. OpenSpec tasks.md is not a message/status ledger.
+Accepted specs live on default branch; proposed deltas on task branch. Do not duplicate versions unless product maintains them. OpenSpec tasks.md is not a message/status ledger. A schema-declared conditional artifact may legitimately be absent; do not infer incompleteness from file count alone.
 
 <a id="skills"></a>
 ## 12. OpenSpec and Superpowers
@@ -292,7 +297,7 @@ Verify trusted skill source/ref, installed version, and machine scope. Installat
 | sync accepted deltas | openspec-sync-specs |
 | archive completed history | openspec-archive-change |
 
-Respect skill gates; archive after actual completion.
+Respect skill gates. Finalization order is: verify implementation against the change; sync every declared delta into accepted specs; verify semantic equivalence; archive; publish accepted specs/archive/TASK; then close the provider item.
 
 Superpowers:
 
@@ -326,6 +331,8 @@ Heartbeat is optional and off by default. Enable through supported scheduler onl
 
 PM starts guided setup. Confirm purpose, paths, provider, constraints, people/functions/helpers, rights, docs/spec state, versions, communication, automation.
 
+Preferred bootstrap is the optional persistent `R2Team Master - <project>` task using [R2TEAM_MASTER.md](R2TEAM_MASTER.md). Master collects the Project Charter, installs/verifies skills, creates/connects PM and later advises team lifecycle; it owns no project decisions.
+
 1. Verify package and target root.
 2. Select new/migrate/team/join/resume/audit.
 3. Merge approved entry files.
@@ -348,11 +355,11 @@ Ready means source/TEAM/rights known, tools verified or blocked, and a safe next
 <a id="migration"></a>
 ## 15. Migration
 
-Use [MIGRATE_TO_2.2.md](MIGRATE_TO_2.2.md). Preserve refs, code, filled specs, active OpenSpec changes/tasks, roles, evidence, dirty/unpublished work, and material requests.
+Use [MIGRATE_TO_2.3.md](MIGRATE_TO_2.3.md). Preserve refs, code, filled specs, active OpenSpec changes/tasks, roles, evidence, dirty/unpublished work, and material requests.
 
 Existing TASKs remain by default. User-approved fresh organizational queue may retire old message/task artifacts while explicitly preserving product/OpenSpec/current work. Never erase OpenSpec tasks.md.
 
-For 1.10, mandatory MSG rules remain until approved per-task/coordinated cutover. Retained chats individually cross-check/adopt 2.2; replacing files alone is not chat migration. Resolve higher-priority instruction conflicts explicitly.
+For 1.10, mandatory MSG rules remain until approved per-task/coordinated cutover. Retained chats individually cross-check/adopt 2.3; replacing files alone is not chat migration. Resolve higher-priority instruction conflicts explicitly.
 
 <a id="feature-example"></a>
 ## 16. Feature example
@@ -430,7 +437,7 @@ Structural validation does not prove provider integration, behavioral skill qual
 First PM:
 
 ~~~text
-Read START.md from verified R2Team 2.2 and run setup new or migrate for <project>.
+Read START.md from verified R2Team 2.3 and run setup new or migrate for <project>.
 Confirm root, provider, instructions, PM, functions, permissions and specs.
 Show proposed diff before writes. Do not enable automation or start product
 work merely by finishing setup.

@@ -1,4 +1,4 @@
-# Custom function template — R2Team 2.2
+# Custom function template — R2Team 2.3
 
 PM may use this for Tester, Analyst, Architect, Security, Support or another useful function. It does not add a mandatory team member.
 

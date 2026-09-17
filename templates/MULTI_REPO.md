@@ -1,4 +1,4 @@
-# Multiple repositories — optional R2Team 2.2 mode
+# Multiple repositories — optional R2Team 2.3 mode
 
 Each application retains its own Git root, TEAM, PM, TASKs and tracker. Cross-project coordination creates no mandatory global PM, duplicate backlog or competing specification. The base [protocol](CODEX_TEAM_PROTOCOL.md) still applies.
 
@@ -22,7 +22,7 @@ SDK: TASK-021 - API v2 contract, SDK owner/PM
 2. Use the coordinating Issue for shared agreement and each PR for code. Preserve material open questions/decisions in the owner's TASK/spec; consumers preserve relevant commitments and pinned sources in their TASKs. Bounded transient exchanges may use [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md).
 3. The owner proposes an OpenSpec change covering compatibility, breaking changes, version and transition period. Consumers confirm constraints; silence is not agreement.
 4. Each independently implemented change uses its repository's TASK/branch/PR and relevant skills. An external change link does not replace the local task contract.
-5. Record a matrix of candidate SHA/SDK version, consumer version, contract/integration test and evidence. SDK unit tests alone do not establish coordinated readiness.
+5. Record a matrix of repository-qualified TASK, branch, PR, candidate SHA/SDK version, consumer version, contract/integration test and evidence. One commit never identifies the entire coordinated feature. SDK unit tests alone do not establish coordinated readiness.
 6. Release in the agreed order, using compatibility/feature flags or a coordinated switch and rollback. Separate repositories do not have an atomic merge; preserve partially released state explicitly.
 7. Close the coordinating TASK against its cross-project DoD. A consumer's local DONE does not prove the whole release is delivered.
 
