@@ -1,4 +1,4 @@
-# R2Team 2.3 — Command Help
+# R2Team 2.4 — Command Help
 
 Open project `R2TEAM_MASTER.md` in the persistent local `R2Team Master - <project>` task for bootstrap, Project Charter, setup orchestration, provider/Git troubleshooting, team lifecycle changes or protocol consultation. Master routes actual procedures to the skills below and does not replace PM authority.
 
@@ -32,7 +32,7 @@ Confirm the target directory and guide me through setup. This chat will be PM.
 
 This routes to Setup mode `new`. A new project is not expected to have TEAM/TASK yet. The wizard confirms the initial PM and creates the agreed configuration. For an existing MVP or older protocol use Setup mode `migrate`; do not initialize a new project over its files.
 
-The full template package is needed for setup. Installing SKILL.md alone does not copy project templates. Provide a verified package path or repository URL and full commit SHA. The distribution is https://github.com/R2Scout/R2Team-Protocol. Resolve release v2.3 to its actual commit and verify the source; do not silently use main/latest.
+The full template package is needed for setup. Installing SKILL.md alone does not copy project templates. Provide a verified package path or repository URL and full commit SHA. The distribution is https://github.com/R2Scout/R2Team-Protocol. Resolve release v2.4 to its actual commit and verify the source; do not silently use main/latest.
 
 ## Add → register → connect
 
@@ -69,7 +69,9 @@ Publish the result in the existing onboarding channel if authorized; the current
 
 ## Work and discussion
 
-`start` verifies current owner, active role, TASK revision, branch/head, inputs and addressed updates. It gives a 3–5-line visible intake before one authorized next action: task/route, outcome, bounds, human input, result route and Starting/BLOCKED. No task means ask PM; competing assignments require clarification, not self-selection from backlog.
+`start` verifies current owner, active role, TASK revision, branch/head, inputs and addressed updates. Without an ID it performs bounded default-branch TASK-frontmatter discovery for the current executor; one match is selected, several require priority, and none means ask PM. This same-chat path needs no registry or self-wake. It gives a 3–5-line visible intake before one authorized next action: task/route, outcome, bounds, human input, result route and Starting/BLOCKED.
+
+At stage completion, use the TASK's authorized transition table. Increment `handoff_seq`, publish the next owner/status/role/result route and evidence to the accepted default branch, then update the linked provider item. The remote recipient discovers that baton by executor ID. Missing route is `ROUTE_REQUIRED`; an unaccepted TASK update is not a completed handoff.
 
 `task TASK-ID` is inspection only. `task TASK-ID discuss ...` identifies the question, participating executors/accounts, criteria and authorized decider. Use the existing Issue/Work Item for requirements or PR thread for code review. Silence is not consent. A comment does not change scope; approval and an updated contract are required before dependent work.
 
@@ -90,6 +92,10 @@ Use the project's OpenSpec and Superpowers routing, reading the applicable SKILL
 `check` adds only previously authorized local wake: current recipient, exact ignored mapping, designated single dispatcher and a new actionable event without a prior successful or uncertain send. No mapping/tool/permission means report the missing delivery; do not guess thread IDs or blindly retry.
 
 An internal COO helper returns findings to its parent; it does not send external notifications. A standalone COO may notify its local roles within explicit rights. A GitHub/TFS event does not start remote Codex automatically.
+
+Both commands first discover newly assigned TASKs for configured watched executor IDs from accepted default-branch TASK deltas. This is how a remote COO learns an unknown new TASK ID. Shared provider-account unread/assignee state is not sufficient; TASK `owner_executor_id` controls. `update` reports only; `check` may use one authorized local wake.
+
+When invoked as an internal subagent, COO returns `RETURNED_TO_PARENT` and never asks for a registry. When invoked in the executor's own role chat, it returns `ACTION_FOUND_LOCAL` and the role proceeds with `$r2team-work start TASK-ID`. Only a separately registered standalone COO performs local wake.
 
 Both commands run once. Heartbeat stays off until separately requested, configured and manually tested. They do not mutate TASK/TEAM, assignments, rights or schedules, nor restart busy roles.
 

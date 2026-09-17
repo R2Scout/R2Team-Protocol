@@ -1,4 +1,4 @@
-# R2Team 2.3
+# R2Team 2.4
 
 Git-first teamwork for one person, local role chats, remote participants, and hybrids. PM is the only mandatory coordinating function. GitHub and generic Azure DevOps Server/TFS Git are supported; specialized process profiles are separate.
 
@@ -152,7 +152,7 @@ Supported modes: one PM with helpers; one person with local role chats; remote p
 Independent work creates/reuses one TASK, provider item, branch, and PR where applicable. Bounded consultation inside an accepted TASK creates no extra mandatory TASK/Issue/PR/MSG. Reuse the TASK across discovery, design, implementation, QA, integration, and handoff. Separate deployment TASK only for an independent lifecycle/owner/authority.
 
 ~~~yaml
-protocol_version: "2.3"
+protocol_version: "2.4"
 task_id: TASK-042
 task_revision: 3
 status: IN_PROGRESS
@@ -261,7 +261,7 @@ Disconnect after publishing affected checkpoints and replacement ownership. Pres
 | Discussion | Issue/PR | Work Item/PR |
 | Recovery | Git TASK/spec/code | Git TASK/spec/code |
 
-Tracker is a projection of TASK in R2Team 2.3. Summarize provider-only continuation facts into Git.
+Tracker is a projection of TASK in R2Team 2.4. Summarize provider-only continuation facts into Git.
 
 Verify Git refs/read/push, tracker API, PR/review/policy API, browser UI, CI and environment access independently. Repo/default branch/policies/checks/permissions and merge/deploy effects remain separate facts. For Server also verify version/API, actual Work Item types/states, and tool compatibility; do not assume cloud-only CLI/MCP.
 
@@ -320,9 +320,38 @@ Direct exchange and wake differ: exchange may contain bounded work; wake only po
 <a id="coo"></a>
 ### 13.4 COO and heartbeat
 
-COO is optional PM subagent or registered helper. Default: exact-delta, read-only, dry, minimal-token reporting for known IDs/revisions. No broad scan, second PM, acceptance gate, mandatory relay, or advancing past failed reads.
+COO is optional PM subagent or registered helper. Default: exact-delta, read-only, dry, minimal-token reporting. It checks known IDs and performs bounded executor-scoped assignment discovery so a remote participant can find a newly assigned TASK that was not previously watched. No broad scan, second PM, acceptance gate, mandatory relay, or advancing past failed reads.
 
-Wake needs separate authority, confirmed local mapping, one dispatcher, and deduplication. Uncertain delivery is not blindly retried. Wake does not grant delegation/product rights.
+COO has three explicit modes. An internal subagent returns findings to its invoking parent executor without registration, registry or wake. A same-chat check reports the role's own assignment locally and never wakes itself. A standalone COO is a registered executor and alone uses `notify_local`, local thread mapping and a dispatcher. Ambiguous mode stops as `COO_MODE_AMBIGUOUS`.
+
+Every active executor may use a bounded read-only internal COO for only its own executor IDs unless TEAM explicitly disables it. This baseline helper permission is independent of product subagent purposes and grants no writes, cross-participant monitoring, external wake or PM authority.
+
+Discovery reads `watched_executor_ids` from accepted TEAM. First use performs one metadata-only baseline of configured TASK frontmatter; later passes compare added/changed TASK frontmatter and relevant TEAM changes from ignored local `last_seen_default_branch_sha`. Match exact `owner_executor_id` and current revision before reading the complete TASK and linked provider events. Current actionable assignments at first baseline remain new until durable intake/checkpoint evidence proves acceptance.
+
+When logical executors share one GitHub/TFS account, provider assignee, mention and unread state cannot route work. TASK ownership remains authority; an executor-specific provider label may optimize discovery but cannot replace it. Discovery/dedup state stays ignored and local—never add a committed inbox, polling journal or Messages replacement.
+
+Exact `owner_executor_id` plus an actionable TASK status is sufficient assignment to the executor. Issue/PR assignment is not a second acceptance gate. An internal helper returns `RETURNED_TO_PARENT`; a same-chat check returns `ACTION_FOUND_LOCAL`, after which the parent/role may enter work through `r2team-work`.
+
+### 13.5 Durable baton handoff
+
+Every cross-executor transition, local or remote, uses the same TASK as the baton. Chat delivery is optional; assignment discovery must work without it.
+
+1. PM defines the authorized transition table in the TASK. Each outcome names next status, next executor, active role and result recipient. A missing route stops at `ROUTE_REQUIRED`; the current executor does not invent an owner.
+2. The current executor finishes the stage, publishes code/artifact/evidence refs, and prepares one TASK handoff checkpoint. Increment `handoff_seq`; set `previous_owner_executor_id`, `owner_executor_id`, `active_role`, `status`, `result_to_executor_id`, exact evidence and `next_action`.
+3. An authorized assignment publisher publishes that TASK checkpoint to the accepted default branch through normal protection/review. Until publication succeeds, the handoff is `LOCAL_ONLY` or `SYNC_REQUIRED`, not delivered. Product code may remain on its feature branch/PR.
+4. Update the linked Issue/PR with the exact TASK path, accepted commit, work ref/candidate and target logical executor. Apply the executor-specific routing label when configured. This notification cannot override the TASK.
+5. The target's internal, same-chat or standalone COO discovers the default-branch TASK delta by `owner_executor_id` and `handoff_seq`. The target prints visible intake, verifies the checkpoint and starts through `r2team-work`.
+6. The target returns PASS, FAIL, BLOCKED or another authorized outcome by repeating this sequence toward the route declared in the TASK. The resulting TASK checkpoint—not a chat response—is the durable return.
+
+```text
+Dev checkpoint -> TASK READY_FOR_QA, owner qa-remote, result_to dev40
+QA PASS        -> TASK QA_PASSED, owner pm, result_to pm
+QA FAIL        -> TASK QA_FAILED, owner dev40, result_to dev40, defect evidence linked
+```
+
+The previous owner is responsible for a truthful published handoff checkpoint and notification. The new owner is authoritative once the assignment checkpoint is accepted on the default branch; visible intake proves execution started. No intake is a delivery/attention problem, not grounds to erase or silently reassign the TASK.
+
+Wake needs separate authority, confirmed local mapping on the participant's machine, one dispatcher, and deduplication. The remote PM never needs that machine's thread ID. Uncertain delivery is not blindly retried. Wake does not grant delegation/product rights. A send result is `SENT_UNCONFIRMED`; recipient visible intake plus the required TASK/provider reply establishes durable delivery. Missing route is `NOT_DELIVERED`.
 
 Heartbeat is optional and off by default. Enable through supported scheduler only after manual verification, quiet when unchanged, with explicit scope. It cannot guarantee remote action.
 
@@ -355,11 +384,11 @@ Ready means source/TEAM/rights known, tools verified or blocked, and a safe next
 <a id="migration"></a>
 ## 15. Migration
 
-Use [MIGRATE_TO_2.3.md](MIGRATE_TO_2.3.md). Preserve refs, code, filled specs, active OpenSpec changes/tasks, roles, evidence, dirty/unpublished work, and material requests.
+Use [MIGRATE_TO_2.4.md](MIGRATE_TO_2.4.md). Preserve refs, code, filled specs, active OpenSpec changes/tasks, roles, evidence, dirty/unpublished work, and material requests.
 
 Existing TASKs remain by default. User-approved fresh organizational queue may retire old message/task artifacts while explicitly preserving product/OpenSpec/current work. Never erase OpenSpec tasks.md.
 
-For 1.10, mandatory MSG rules remain until approved per-task/coordinated cutover. Retained chats individually cross-check/adopt 2.3; replacing files alone is not chat migration. Resolve higher-priority instruction conflicts explicitly.
+For 1.10, mandatory MSG rules remain until approved per-task/coordinated cutover. Retained chats individually cross-check/adopt 2.4; replacing files alone is not chat migration. Resolve higher-priority instruction conflicts explicitly.
 
 <a id="feature-example"></a>
 ## 16. Feature example
@@ -437,7 +466,7 @@ Structural validation does not prove provider integration, behavioral skill qual
 First PM:
 
 ~~~text
-Read START.md from verified R2Team 2.3 and run setup new or migrate for <project>.
+Read START.md from verified R2Team 2.4 and run setup new or migrate for <project>.
 Confirm root, provider, instructions, PM, functions, permissions and specs.
 Show proposed diff before writes. Do not enable automation or start product
 work merely by finishing setup.

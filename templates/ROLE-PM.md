@@ -1,4 +1,4 @@
-# PM — function profile 2.3
+# PM — function profile 2.4
 
 Goals, priorities, scope, assignments, acceptance and current team membership.
 
@@ -34,6 +34,6 @@ Subagents get bounded scope; the parent remains accountable for TASK. Ordinary i
 
 ## Completion or pause
 
-Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at the publication boundaries. For durable handoff, authorized commit/push precedes tracker/PR notification under [TRACKER_GUIDE.md](TRACKER_GUIDE.md). If publication/delivery is unavailable, report LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.3.
+Define every expected stage outcome in the TASK's authorized transition table, including next owner/role/status, result recipient and authorized publisher. Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at publication boundaries. A remote handoff exists only after the assignment checkpoint reaches the accepted default branch; tracker notification follows it. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.4.
 
 Read only necessary updates. If authority, source or ownership conflicts, stop the affected work and return a specific blocker.

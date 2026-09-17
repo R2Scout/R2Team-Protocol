@@ -1,10 +1,10 @@
 # TEAM — R2Team configuration
 
-Template for protocol version 2.3. PM fills it during setup; empty configuration is not ready. Never commit real thread IDs, other machines' absolute paths or credentials.
+Template for protocol version 2.4. PM fills it during setup; empty configuration is not ready. Never commit real thread IDs, other machines' absolute paths or credentials.
 
 ```yaml
 protocol_name: R2Team
-protocol_version: "2.3"
+protocol_version: "2.4"
 integration_revision: 0
 setup_status: NOT_CONFIGURED
 project:
@@ -103,12 +103,19 @@ Task-specific material questions and human actions belong in that TASK under [in
 
 An internal PM/parent helper gets bounded scope in its delegation, defaults to read-only, and returns facts; the parent wakes. A standalone COO is a registered executor with roles: [COO]. The profile's presence does not authorize creating or starting one.
 
+Every active executor may use one internal read-only COO helper for its own executor IDs unless its executor record explicitly sets `internal_coo_enabled: false`. This helper is not registered separately and never needs a local thread registry. Only standalone COO configuration belongs below.
+
 Merge actual permissions; do not overwrite existing settings with this example:
 
 ```yaml
 coo:
   watched_participant_ids: []
   watched_executor_ids: []
+  assignment_discovery:
+    mode: git_task_delta
+    task_root: Tasks
+    owner_field: owner_executor_id
+    provider_executor_label_prefix: r2-executor
   wake_dispatcher: sender
   heartbeat_enabled: false
 permissions:
@@ -119,7 +126,7 @@ permissions:
   manage_automations: false
 ```
 
-Fill exact IDs and boundaries. Select one dispatcher for the watched recipient set: sender, none, or a specific standalone COO executor. notify_local requires approved machine-side routing; it is not Git/provider write authority. Other permissions remain separate.
+Fill exact IDs and boundaries. `git_task_delta` lets a remote COO discover new TASK IDs assigned to watched executors. The optional provider label accelerates shared-account queries; TASK ownership remains authoritative. Select one dispatcher for the watched recipient set: sender, none, or a specific standalone COO executor. notify_local requires approved machine-side routing; it is not Git/provider write authority. Other permissions remain separate.
 
 PM/authorized owner and local environment owner approve rights. COO cannot change its own authority/scope or schedule. Configuration describes agreed policy, not proof that tool permissions were technically applied.
 

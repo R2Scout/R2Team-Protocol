@@ -23,14 +23,33 @@ class PackageTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         (self.root / "templates").mkdir()
+        (self.root / "skills" / "r2team-coo").mkdir(parents=True)
         (self.root / "package.json").write_text(json.dumps({
-            "protocol_version": "2.3",
+            "protocol_version": "2.4",
             "bootstrap": "R2TEAM_MASTER.md",
-            "required_files": ["START.md", "templates/Setup.md"],
+            "required_files": ["START.md", "templates/Setup.md", "templates/TASK-TEMPLATE.md", "skills/r2team-coo/SKILL.md"],
             "template_root": "templates"
         }), encoding="utf-8")
         self.put("START.md", "[Start](templates/Setup.md#new)\n")
         self.put("templates/Setup.md", '<a id="new"></a>\n# New\n\nReady.\n')
+        self.put("templates/TASK-TEMPLATE.md", """# TASK
+handoff_seq
+previous_owner_executor_id
+assigned_by_executor_id
+result_to_executor_id
+Authorized next transitions
+""")
+        self.put("skills/r2team-coo/SKILL.md", """# COO
+executor-scoped assignment discovery
+owner_executor_id
+last_seen_default_branch_sha
+shared provider actor
+handoff_seq
+result_to_executor_id
+RETURNED_TO_PARENT
+ACTION_FOUND_LOCAL
+COO_MODE_AMBIGUOUS
+""")
 
     def put(self, name, text):
         (self.root / name).write_text(text, encoding="utf-8")
@@ -79,7 +98,17 @@ class PackageTests(unittest.TestCase):
         config = json.loads((self.root / "package.json").read_text())
         config["protocol_version"] = "2.1"
         self.put("package.json", json.dumps(config))
-        self.assertTrue(any("Expected protocol_version 2.3" in e for e in validate(self.root)))
+        self.assertTrue(any("Expected protocol_version 2.4" in e for e in validate(self.root)))
+
+    def test_coo_must_discover_new_task_ids_by_executor(self):
+        self.put("skills/r2team-coo/SKILL.md", "# COO\nOnly inspect known task IDs.\n")
+        self.assertTrue(any("Missing COO assignment-discovery marker" in e
+                            for e in validate(self.root)))
+
+    def test_task_template_must_define_durable_baton(self):
+        self.put("templates/TASK-TEMPLATE.md", "# TASK\nowner_executor_id\n")
+        self.assertTrue(any("Missing durable-baton marker" in e
+                            for e in validate(self.root)))
 
     def test_separate_package_revision_is_rejected(self):
         config = json.loads((self.root / "package.json").read_text())
@@ -94,7 +123,7 @@ class PackageTests(unittest.TestCase):
 
     def test_manifest_cannot_escape_root(self):
         self.put("package.json", json.dumps({
-            "protocol_version": "2.3", "bootstrap": "R2TEAM_MASTER.md",
+            "protocol_version": "2.4", "bootstrap": "R2TEAM_MASTER.md",
             "required_files": ["../outside.md"],
             "template_root": "templates"
         }))
@@ -102,7 +131,7 @@ class PackageTests(unittest.TestCase):
 
     def test_duplicate_required_paths_rejected(self):
         self.put("package.json", json.dumps({
-            "protocol_version": "2.3", "bootstrap": "R2TEAM_MASTER.md",
+            "protocol_version": "2.4", "bootstrap": "R2TEAM_MASTER.md",
             "required_files": ["START.md", "START.md"],
             "template_root": "templates"
         }))

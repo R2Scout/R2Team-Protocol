@@ -1,4 +1,4 @@
-# START — R2Team 2.3
+# START — R2Team 2.4
 
 This file starts a wizard only when explicitly requested. Reading or editing the distribution does not adopt it in a project. Preferred first entry is [R2TEAM_MASTER.md](R2TEAM_MASTER.md) in a persistent local `R2Team Master - <project>` task; direct PM setup remains a supported fallback.
 
@@ -20,4 +20,4 @@ Do not overwrite existing work, install tools or enable automation without autho
 8. Confirm approved communication routes and permissions. Direct working exchanges are optional; provider discussion is a fallback. Heartbeat remains off.
 9. Save material setup state at publication boundaries in the existing organizational TASK, not a new message registry. Local-only output is not a remote-ready handoff.
 
-For source-package verification, resolve `v2.3` to its full commit and inspect `package.json`. A tag name or dirty local tree is not sufficient provenance.
+For this candidate, use the approved full commit from `candidate/r2team-2.4` and inspect `package.json`. No release tag is implied; a branch name or dirty local tree is not sufficient provenance.

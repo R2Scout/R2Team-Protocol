@@ -1,10 +1,10 @@
-# COO — optional organizational function, R2Team 2.3
+# COO — optional organizational function, R2Team 2.4
 
 Find only new relevant events for explicitly scoped executors and help handle them within delegated rights. Read exact updates, report dry facts and minimize tokens. Do not scan the entire project/archive or repeat unchanged information.
 
 ## Form and authority
 
-- Internal helper of PM/authorized parent: read-only by default; returns facts to its parent. It is not a standalone executor and does not manage external notifications or assignments. Parent publishes and wakes.
+- Internal helper of any active executor: read-only and limited to that parent's executor IDs by default; returns facts to its parent. It is not a standalone executor and does not manage external notifications or assignments.
 - Participant's standalone chat: registered COO executor, potentially serving several of that person's roles. Other participants require explicit scope. It is not a second PM.
 - Local wake, provider writes and specific organizational actions may be granted separately by PM/authorized owner with the local environment owner's approval. COO never changes its own rights or scope.
 
@@ -14,18 +14,29 @@ Current TEAM and assignment govern under [the COO section](CODEX_TEAM_PROTOCOL.m
 
 Standalone COO performs [cross-check](CODEX_TEAM_PROTOCOL.md#role-cross-check), clarifies rights and requests its first organizational assignment if none exists. An internal helper clarifies with the parent.
 
-Confirm exact participant/executor IDs and TASK/branch/Issue/PR scope; baseline or last successful read checkpoint; one wake dispatcher; permitted actions/routes; manual pass or separately configured schedule; stopping conditions and response route.
+Confirm exact participant/executor IDs, TASK root and any known TASK/branch/Issue/PR scope; baseline or last successful default-branch checkpoint; one wake dispatcher; permitted actions/routes; manual pass or separately configured schedule; stopping conditions and response route.
 
 An empty scope does not mean the whole project. A read-only "check updates" request remains read-only even when notify_local is available.
 
+Resolve one mode before reading:
+
+- an internal COO subagent returns findings directly to its invoking parent executor and needs no registry or wake permission;
+- a same-chat check reports the parent's own actionable assignment in that chat and never wakes itself;
+- only a separately registered standalone COO uses local thread mapping and wake.
+
+Ambiguous mode is `BLOCKED: COO_MODE_AMBIGUOUS`, not an assumed standalone delivery attempt. Exact matching `owner_executor_id` plus actionable status is sufficient assignment; provider assignment is only a routing aid.
+
+Every active executor may invoke one bounded read-only internal COO helper for its own executor IDs unless TEAM explicitly disables it. This protocol default does not authorize external notifications, writes, monitoring other participants or PM decisions.
+
 ## One pass
 
-1. Read relevant TEAM deltas, then only new assignments, addressed questions/answers and related PR changes. Do not query another person's private inbox.
-2. Check event against current TASK/owner/revision. Do not execute stale assignments. For shared provider accounts, use logical executor/function as well as notification metadata.
-3. Without authorized wake, return new facts and recommended next action. No external comment without tracker_write.
-4. For authorized wake, verify registered local recipient and one dispatcher. Send one pointer per new event: TASK path, branch, published SHA, exact comment URL where applicable and instruction to read inputs. No new scope or product execution.
-5. Do not interrupt active roles or create replacement chats. On unavailable environment/uncertain delivery, report limits and the accessible Git/provider reference; do not blindly resend.
-6. Optional technical cursor/dedup stays ignored in .codex-local without secrets. A failed read does not advance a successful cursor; attempted notification is not execution. Lost cache requires reconciliation, not mass wake.
+1. Discover newly added or changed TASK frontmatter for configured watched executor IDs. At first use, make one bounded metadata-only baseline of the configured TASK root; later compare accepted default-branch changes from ignored local `last_seen_default_branch_sha`. Do not scan unrelated history or TASK bodies.
+2. Match exact `owner_executor_id`, actionable status/revision and current TEAM registration. A current actionable assignment at first baseline is new unless durable intake/checkpoint evidence proves acceptance. Only then read the full TASK and its linked provider events.
+3. Check event against current TASK/owner/revision. Do not execute stale assignments. For a shared provider actor, assignee/mention/unread state cannot route between logical executors; the TASK executor ID controls. An optional `r2-executor:<id>` label accelerates queries but is not authority.
+4. In internal mode return `RETURNED_TO_PARENT`; in same-chat mode return `ACTION_FOUND_LOCAL`. No registry lookup or delivery attempt is involved. Without authorized standalone wake, return new facts and recommended next action. No external comment without tracker_write.
+5. For authorized wake, verify registered local recipient and one dispatcher. Send one pointer per new event: TASK path, branch, published SHA, exact comment URL where applicable and instruction to read inputs. No new scope or product execution.
+6. Do not interrupt active roles or create replacement chats. On unavailable environment/uncertain delivery, report `NOT_DELIVERED` and the accessible Git/provider reference; do not blindly resend.
+7. Optional technical cursor/dedup stays ignored in .codex-local without secrets. A failed read does not advance a successful cursor; attempted notification is not execution. Lost cache requires reconciliation, not mass wake.
 
 No MSG, separate REPORT or Git commit per polling pass. The TASK publisher persists material state. A COO authorized to write must still obey assignment, single-writer and Git rules.
 
@@ -40,6 +51,8 @@ Merge, deployment, database/access changes, spending and product acceptance are 
 Default: one manual pass, heartbeat off. A standalone COO may receive a separately configured participant-side heartbeat after route/permission/dedup checks. An internal subagent has no independent schedule; the parent invokes it as needed.
 
 Unchanged automatic passes stay quiet. Notify only meaningful new events, results, errors or required human action. A manual response can say "No new events" or give exact facts. Successful sending does not establish product READY/PASS.
+
+Transport success is `SENT_UNCONFIRMED`. Delivery is evidenced only after the role publishes its visible intake and required reply/checkpoint through the TASK's linked route.
 
 Follow [interaction rules](CODEX_TEAM_PROTOCOL.md#interaction) for discussion/human action and verification-before-completion under [SKILLS.md](SKILLS.md) for claims. Diagnose routing failures before retries.
 

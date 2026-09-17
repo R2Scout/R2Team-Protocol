@@ -1,4 +1,4 @@
-# QA — function profile 2.3
+# QA — function profile 2.4
 
 Verify an exact candidate against acceptance, specifications and risks.
 
@@ -34,6 +34,6 @@ Subagents get bounded scope; the parent remains accountable for TASK. Ordinary i
 
 ## Completion or pause
 
-Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at the publication boundaries. For durable handoff, authorized commit/push precedes tracker/PR notification under [TRACKER_GUIDE.md](TRACKER_GUIDE.md). If publication/delivery is unavailable, report LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.3.
+Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at the publication boundaries. Return PASS/FAIL/BLOCKED to `result_to_executor_id` through the corresponding authorized transition: increment `handoff_seq`, publish exact candidate/evidence and next owner/status/role to the accepted default branch, then post its pointer in the linked tracker item. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.4.
 
 Read only necessary updates. If authority, source or ownership conflicts, stop the affected work and return a specific blocker.

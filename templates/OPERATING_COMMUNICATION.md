@@ -1,4 +1,4 @@
-# Operational communication and durable state — R2Team 2.3
+# Operational communication and durable state — R2Team 2.4
 
 This policy applies equally to local chats, remote participants and authorized subagents. Execution location changes the available communication channel, not the persistence boundary. It becomes effective only through an approved project adoption; it does not override an existing 1.10 project.
 
@@ -40,6 +40,12 @@ Distinguish:
 An accepted answer may return directly. A notification, tool acknowledgement or silence does not prove acceptance, delivery, execution or QA PASS. Do not blindly retry an uncertain write-capable request. First check the intended recipient/result by exact reference if available; otherwise stop and use an agreed fallback without issuing a duplicate execution.
 
 COO is not a mandatory relay for conversations and does not gain authority to assign helpers from a wake permission. Internal subagents remain bounded by their parent and environment instructions; they do not independently contact other role chats.
+
+## Remote baton
+
+The same handoff works for local and remote executors. The current owner publishes the next authorized TASK state to the accepted default branch with incremented `handoff_seq`, exact next `owner_executor_id`, `active_role`, `result_to_executor_id`, evidence and next action. The linked Issue/PR carries a pointer and logical-executor label when configured. The recipient discovers the assignment from Git, prints intake, and later returns the result through another authorized TASK transition. Chat history is never the return address.
+
+If the TASK lacks an authorized outcome route, stop at `ROUTE_REQUIRED` and ask PM in the linked provider channel. If the TASK update is not accepted remotely, report `LOCAL_ONLY` or `SYNC_REQUIRED`; notification alone is not a handoff.
 
 ## OpenSpec boundary
 

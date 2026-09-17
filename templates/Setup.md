@@ -1,6 +1,6 @@
-# Setup — R2Team 2.3 guided wizard
+# Setup — R2Team 2.4 guided wizard
 
-Protocol version 2.3. Run only when requested; reading/editing the distribution does not start a project. Full rules: [protocol](CODEX_TEAM_PROTOCOL.md). Entry prompts: [CODEX_TEAM_SETUP.md](CODEX_TEAM_SETUP.md).
+Protocol version 2.4. Run only when requested; reading/editing the distribution does not start a project. Full rules: [protocol](CODEX_TEAM_PROTOCOL.md). Entry prompts: [CODEX_TEAM_SETUP.md](CODEX_TEAM_SETUP.md).
 
 ## Wizard rules
 
@@ -76,7 +76,7 @@ Fill [TEAM.md](TEAM.md). Internal subagents are not separately registered partic
 
 For a local standalone executor, use a portable Git invitation plus a separate ephemeral launch prompt containing PM task ID, executor, exact register/connect commands and mandatory direct onboarding return. Store bidirectional task routes only in ignored `.codex-local/THREAD_REGISTRY.md`; unconfirmed delivery is `NOT_DELIVERED`. Remote/manual participants never receive local task IDs.
 
-If COO is needed, choose internal read-only helper or registered standalone executor. Separately scope reads, wake and organizational writes; choose one wake dispatcher. See [ROLE-COO.md](ROLE-COO.md). Scheduling and chat creation require explicit requests.
+Every active executor may use a bounded read-only internal COO for its own assignments unless explicitly disabled. It returns findings to that role and needs no registry. If a separate COO chat is needed, register a standalone executor; for remote participants configure watched executor IDs, TASK root and executor-scoped assignment discovery, and choose an executor-label convention when provider actors are shared. Separately scope reads, wake and organizational writes; choose one wake dispatcher. See [ROLE-COO.md](ROLE-COO.md). Scheduling and chat creation require explicit requests.
 
 ### N4. Project entry files
 
@@ -114,6 +114,8 @@ Use actual CLI help/output/schema paths; do not invent metadata or specs for non
 
 ### N7. Publication and entry
 
+Before execution, define the first TASK's authorized transition table: every expected PASS/FAIL/BLOCKED outcome names next status, exact next executor/role, result recipient and authorized publisher. Initialize `handoff_seq`; a remote recipient must be discoverable from the accepted default-branch TASK.
+
 Publish approved setup through the chosen provider and verify refs/assignments. Missing push authority/access means no remote-ready claim.
 
 Run the audit below. Report ready/NOT_RUN, first TASK, owner and next action. The confirmed initial chat continues as PM; no mandatory COO/heartbeat.
@@ -121,7 +123,7 @@ Run the audit below. Report ready/NOT_RUN, first TASK, owner and next action. Th
 <a id="migrate"></a>
 ## 3. MIGRATE
 
-Use [MIGRATE_TO_2.3.md](MIGRATE_TO_2.3.md), then applicable N5-N7. Preserve active work by default. A user-approved fresh organizational queue may retain specs/chats while retiring old tasks/messages; it must not erase OpenSpec tasks.md or falsely mark unfinished work DONE. Each retained role must actually adopt the cutover.
+Use [MIGRATE_TO_2.4.md](MIGRATE_TO_2.4.md), then applicable N5-N7. Preserve active work by default. A user-approved fresh organizational queue may retain specs/chats while retiring old tasks/messages; it must not erase OpenSpec tasks.md or falsely mark unfinished work DONE. Each retained role must actually adopt the cutover.
 
 For an MVP, map capabilities/sources/gaps and cover the next changed area, not a speculative full import. Existing documents are evidence, not automatically correct requirements.
 

@@ -25,13 +25,13 @@ It does not assign work, accept scope, merge, deploy, grant access, spend money 
 - [Communication](templates/OPERATING_COMMUNICATION.md) and [commands](templates/COMMANDS.md): direct/remote routes and command entry points.
 - [Provider guide](templates/TRACKER_GUIDE.md): GitHub and Azure DevOps Server/TFS Git.
 - [Skills](templates/SKILLS.md): OpenSpec, Superpowers and R2Team skills.
-- [Findings](FINDINGS-2.3.md): generalized lessons behind 2.3.
+- [Findings](FINDINGS-2.4.md): generalized lessons behind 2.4.
 
 Read only the exact TASKs, provider items, PRs, refs and local routes needed for the current operation.
 
 ## Bootstrap
 
-1. Confirm project root, Git provider/repository, new or migration mode, and trusted R2Team tag plus full commit.
+1. Confirm project root, Git provider/repository, new or migration mode, and trusted R2Team release tag or approved candidate plus full commit.
 2. Validate the package manifest and hashes before project writes.
 3. Compare existing `r2team`, `r2team-work`, `r2team-coo` and `r2team-audit` installations. Ask before replacement and preserve rollback.
 4. Verify OpenSpec CLI plus explore/propose/update/apply/verify/sync/archive skills.
@@ -59,6 +59,8 @@ For PM and every optional/custom function, explicitly select:
 One participant may own several functions and executors under the same provider/Git identity. A persistent subagent with its own queue may be registered as an executor with `mode: subagent` and `parent_executor_id`; an ephemeral helper is not registered. Record QA independence as same executor, separate executor under the same participant, separate participant, or required independent reviewer.
 
 Durable TEAM/invites contain no local task IDs. Local standalone tasks receive an ephemeral launch prompt with PM task ID, executor, exact register/connect commands and mandatory onboarding return. Store local routes only in ignored `.codex-local/THREAD_REGISTRY.md`. Unconfirmed delivery is `NOT_DELIVERED`.
+
+For every independent TASK, require an authorized transition table and explicit `result_to_executor_id`. Local and remote roles pass the same durable baton: publish the next owner/status/role, incremented `handoff_seq`, evidence and next action to the accepted default branch, then notify through the linked provider item. An internal COO returns discoveries to its parent without a registry; only a standalone COO performs local wake.
 
 ## Provider and Git diagnostics
 

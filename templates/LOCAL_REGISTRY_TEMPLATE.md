@@ -15,3 +15,14 @@ A question/answer event may use its exact comment URL and checkpoint. TEAM selec
 Authorized bounded working conversations follow [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md); they are not restricted to pointer-only wake, and do not require a checkpoint per reply. Working-exchange permission is separate from a COO's notify_local permission.
 
 PM/COO heartbeat is separately configured and off by default. A registry enables no schedule. Internal COO returns facts to its parent; a standalone COO with explicit notify_local may use approved local routes. Register Ken's local chats on Ken's machine, not as locally reachable chats for John.
+
+For executor-scoped assignment discovery, the same ignored local area may store technical state such as:
+
+```yaml
+assignment_discovery:
+  repository: "<repo-id-without-credentials>"
+  last_seen_default_branch_sha: "<full-sha-or-NOT_RUN>"
+  provider_event_cursor: "<opaque-local-cursor-or-NOT_RUN>"
+```
+
+This cursor is not project truth. A first baseline still treats current actionable TASKs for the watched executor as `NEW_UNACKNOWLEDGED` unless durable intake/checkpoint evidence proves acceptance.

@@ -1,4 +1,4 @@
-"""Read-only structural checks for the distributable R2Team 2.3 package."""
+"""Read-only structural checks for the distributable R2Team 2.4 package."""
 import argparse
 import hashlib
 import json
@@ -19,8 +19,8 @@ def validate(root):
             raise ValueError("template_root must be a path")
     except (OSError, ValueError, KeyError, TypeError) as exc:
         return [f"Invalid package manifest: {exc}"]
-    if manifest.get("protocol_version") != "2.3":
-        errors.append("Expected protocol_version 2.3")
+    if manifest.get("protocol_version") != "2.4":
+        errors.append("Expected protocol_version 2.4")
     if manifest.get("bootstrap") != "R2TEAM_MASTER.md":
         errors.append("Expected bootstrap R2TEAM_MASTER.md")
     if "package_revision" in manifest:
@@ -101,6 +101,36 @@ def validate(root):
                         errors.append(f"Missing anchor in {path.name}: {target}")
         if fence:
             errors.append(f"Unclosed fence: {path.relative_to(root)}")
+
+    coo_skill = root / "skills" / "r2team-coo" / "SKILL.md"
+    if coo_skill.is_file():
+        coo_text = texts.get(coo_skill.resolve(), "")
+        for marker in (
+            "executor-scoped assignment discovery",
+            "owner_executor_id",
+            "last_seen_default_branch_sha",
+            "shared provider actor",
+            "handoff_seq",
+            "result_to_executor_id",
+            "RETURNED_TO_PARENT",
+            "ACTION_FOUND_LOCAL",
+            "COO_MODE_AMBIGUOUS",
+        ):
+            if marker not in coo_text:
+                errors.append(f"Missing COO assignment-discovery marker: {marker}")
+
+    task_template = root / "templates" / "TASK-TEMPLATE.md"
+    if task_template.is_file():
+        task_text = texts.get(task_template.resolve(), "")
+        for marker in (
+            "handoff_seq",
+            "previous_owner_executor_id",
+            "assigned_by_executor_id",
+            "result_to_executor_id",
+            "Authorized next transitions",
+        ):
+            if marker not in task_text:
+                errors.append(f"Missing durable-baton marker: {marker}")
     return errors
 
 def main():

@@ -1,4 +1,4 @@
-# Multiple repositories — optional R2Team 2.3 mode
+# Multiple repositories — optional R2Team 2.4 mode
 
 Each application retains its own Git root, TEAM, PM, TASKs and tracker. Cross-project coordination creates no mandatory global PM, duplicate backlog or competing specification. The base [protocol](CODEX_TEAM_PROTOCOL.md) still applies.
 

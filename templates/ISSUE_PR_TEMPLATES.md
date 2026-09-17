@@ -1,4 +1,4 @@
-# Tracker and PR text templates — R2Team 2.3
+# Tracker and PR text templates — R2Team 2.4
 
 Generate these from TASK; they are not a competing source of scope. Use provider forms when that is the selected channel, not as mandatory copies of transient direct exchanges.
 

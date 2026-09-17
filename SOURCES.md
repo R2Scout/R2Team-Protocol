@@ -1,6 +1,6 @@
 # Sources and compatibility
 
-Prepared on 2026-09-17. R2Team's role contracts, TASK model and persistence boundaries are project conventions, not an official OpenAI standard. Version 2.3 retains bounded operational exchanges, keeps specialized process profiles outside the main distribution, and uses the protocol version as the sole release identifier.
+Prepared on 2026-09-18. R2Team's role contracts, TASK model and persistence boundaries are project conventions, not an official OpenAI standard. Version 2.4 retains bounded operational exchanges, adds executor-scoped remote assignment discovery and durable baton transitions, keeps specialized process profiles outside the main distribution, and uses the protocol version as the sole release identifier.
 
 ## Reference sources used during setup design
 

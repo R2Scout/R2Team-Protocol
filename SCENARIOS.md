@@ -1,4 +1,4 @@
-# R2Team 2.3 scenarios
+# R2Team 2.4 scenarios
 
 These are acceptance scenarios for setup, team lifecycle, communication, recovery, and distribution behavior. Document review is not evidence that access, roles, integrations, or skills work on every machine.
 
@@ -10,11 +10,11 @@ These are acceptance scenarios for setup, team lifecycle, communication, recover
 | GitHub, one PM with helpers | One participant/executor, needed functions/helpers, first real TASK | Create six mandatory chats/issues |
 | Brownfield MVP without OpenSpec | Preserve code/docs, assess coverage/gaps, baseline changed area incrementally | Rewrite whole project or claim complete specs |
 | Existing OpenSpec | Preserve config/specs/active changes/tasks; use version-compatible CLI | Reinitialize/reset/archive to fit protocol |
-| 1.10 with active MSG/PR | Preserve history; choose per-task/coordinated cutover; roles adopt 2.3 | Stop old transport before cutover |
+| 1.10 with active MSG/PR | Preserve history; choose per-task/coordinated cutover; roles adopt 2.4 | Stop old transport before cutover |
 | 1.10 with retained chats and fresh queue authorized | Re-run setup around current specs; cross-check each chat; explicitly retire only approved old org artifacts | Recreate chats or erase OpenSpec tasks |
 | One retained chat rejects/does not understand | Mark its adoption BLOCKED/PENDING; other roles continue only in their scope | Declare universal migration |
 | Organizational docs outside Git | Agree canonical Git root/placement and publish | Treat local folder as remotely recoverable |
-| Trusted target package unavailable | SOURCE_BLOCKED with exact missing source | Reconstruct 2.3 from memory/latest |
+| Trusted target package unavailable | SOURCE_BLOCKED with exact missing source | Reconstruct 2.4 from memory/latest |
 | Proposal accepted but apply not authorized | Stop at installed workflow gate | Begin product implementation during setup |
 | Existing custom skills | Inventory, backup, diff, ask before replacement | Overwrite through init/update |
 | Audit requested | Read-only scoped evidence report | Repair files, enable heartbeat, or migrate |
@@ -55,6 +55,9 @@ These are acceptance scenarios for setup, team lifecycle, communication, recover
 | Tracker unavailable | Preserve Git checkpoint, SYNC_REQUIRED/NOT_DELIVERED | Duplicate items or claim synchronized |
 | New executor resumes | Read accepted TEAM, TASK branch, spec, candidate, open requests | Depend on previous chat memory |
 | Same branch already in worktree | Coordinate/branch/detached inspection | Force/destructive checkout |
+| Dev hands work to remote QA | Accepted default-branch TASK checkpoint increments `handoff_seq`, assigns QA and declares result route | Chat-only request or provider assignment without Git baton |
+| Remote QA passes | Publish evidence and next authorized TASK transition to declared executor | Choose recipient from memory or leave result only in comment |
+| Remote QA fails | Return same TASK to declared Dev with failure evidence and candidate identity | Create unrelated replacement task or lose failure history |
 
 ## Specifications, evidence, and delivery
 
@@ -84,6 +87,9 @@ These are acceptance scenarios for setup, team lifecycle, communication, recover
 | Provider notification to remote person | Available at next manual/authorized check | Promise remote Codex auto-start |
 | COO update | Exact configured deltas, dry read-only facts, no notifications | Execute TASK or scan whole project |
 | COO check | Same plus one authorized deduplicated local wake | Create scope/assignment or wake other machines |
+| Internal COO finds parent's TASK | `RETURNED_TO_PARENT`; no registry or wake lookup | Treat helper as standalone dispatcher |
+| Role chat checks its own TASK | `ACTION_FOUND_LOCAL`, then `r2team-work start` | Wake itself or report `NOT_DELIVERED` |
+| Unknown TASK assigned remotely | Bounded frontmatter discovery by executor ID and handoff sequence | Require prior TASK ID or shared-account unread flag |
 | Sender and COO see same event | One dispatcher owns delivery | Double wake |
 | Heartbeat not requested | Off | Infer it from protocol/role |
 | Heartbeat requested | Explicit scheduler/scope, quiet unchanged, manual canary | Perpetual undocumented polling |
@@ -109,14 +115,14 @@ These are acceptance scenarios for setup, team lifecycle, communication, recover
 | Check | Expected |
 | --- | --- |
 | Public language | All maintained distribution files, help, commits, release notes in English |
-| Manifest | Protocol 2.3 as the sole release identifier, required paths and matching SHA-256 |
+| Manifest | Protocol 2.4 as the sole release identifier, required paths and matching SHA-256 |
 | Links/anchors | Structural validator PASS |
-| Validator suite | 19/19 PASS |
+| Validator suite | Current complete suite PASS |
 | Skills | Four skill directories pass official quick_validate |
 | Help copies | templates/COMMANDS.md and skills/r2team/references/commands.md byte-identical |
 | Specialized CMMI | Absent from main package; maintained in separate TFS repository |
-| Publication | main and annotated v2.3 resolve to exact release commit |
-| Fresh clone | Exact tag validates independently |
+| Candidate publication | Candidate branch resolves to exact approved commit; no release tag implied |
+| Fresh clone | Exact candidate commit validates independently |
 | Runtime claims | Direct messaging, provider writes, migration, deployment, heartbeat remain NOT_RUN unless separately tested |
 
 ## Recovery tabletop

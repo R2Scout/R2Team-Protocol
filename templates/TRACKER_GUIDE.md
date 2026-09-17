@@ -1,4 +1,4 @@
-# GitHub and Azure DevOps Server/TFS Git — R2Team 2.3
+# GitHub and Azure DevOps Server/TFS Git — R2Team 2.4
 
 One project uses one provider. Git stores the contract and confirmed state; the tracker displays the queue; PRs connect diff/review/checks. No universal dispatcher is implemented here: Codex uses available authorized CLI/API tools.
 
@@ -45,6 +45,10 @@ Routine coordination can use an authorized direct exchange. Shared requirements 
 
 Mention verified provider accounts and identify the logical executor/function. Review requests are for actual reviews. Participants configure relevant subscriptions/mentions/assignments/review notifications. A shared account has no per-role unread state; also inspect the TASK's material open requests. Inbox read/Done does not complete a TASK or imply agreement.
 
+For remote executors, COO discovers new assignments from added/changed TASK frontmatter by exact `owner_executor_id`. If several executors share one provider actor, add a provider label such as `r2-executor:<executor-id>` when supported to narrow provider queries. The label, assignee, mention and unread state are routing aids only; accepted Git TASK remains authority.
+
+For every baton transition, publish the TASK checkpoint to the accepted default branch first. Then update the existing Issue/PR with the target executor, TASK path, accepted commit, work ref/candidate and expected action. On return, the recipient uses `result_to_executor_id` and an authorized transition rather than addressing whichever account last commented.
+
 Comments are not in a clone. The publisher preserves material open questions, human actions and decisions at the publication boundaries. No full transcript or mandatory duplicate comment for direct exchanges. Read exact assignments/events, not every Issue.
 
 ## Azure DevOps Server/TFS Git
@@ -77,7 +81,7 @@ Never put credentials in URLs, shell history, TEAM, request bodies or logs. Use 
 - TASK/tracker assignment or status drift is SYNC_REQUIRED; reconcile within authority.
 - Preserve limitations/remaining work; do not hide missing PRs or failed delivery.
 
-A provider assignment does not itself start remote Codex. Participants enter manually or separately configure automation. PM heartbeat is off by default.
+A provider assignment does not itself start remote Codex. A participant may run `$r2team-coo update` manually or configure a separately authorized participant-side heartbeat; `$r2team-coo check` may wake only a registered local route. PM heartbeat is off by default.
 
 ## Bounded working exchanges
 

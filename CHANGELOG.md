@@ -1,5 +1,14 @@
 # R2Team change history
 
+## 2.4 — candidate
+
+- Add executor-scoped discovery of unknown new TASK IDs from bounded default-branch frontmatter deltas.
+- Make exact `owner_executor_id` plus actionable TASK status the assignment signal; provider state remains a routing aid.
+- Separate internal-subagent, same-chat and standalone COO modes so internal helpers return to their parent without requiring a registry or wake.
+- Define the TASK-based durable baton and explicit result route for local/remote executor transitions.
+- Add local discovery cursor guidance, shared-provider executor labels and explicit delivery evidence states.
+- Keep committed Messages and polling journals absent; heartbeat remains optional and off by default.
+
 ## 2.3
 
 - Add `R2TEAM_MASTER.md` as the persistent bootstrap and procedure-consultant entry point while keeping PM as the only mandatory coordinating function.

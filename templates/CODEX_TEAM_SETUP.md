@@ -1,4 +1,4 @@
-# Startup and re-entry prompts — R2Team 2.3
+# Startup and re-entry prompts — R2Team 2.4
 
 [Setup.md](Setup.md) is the single wizard. Select its mode in natural language. Use the verified protocol version; installing skills alone does not adopt project rules.
 
@@ -15,10 +15,10 @@ Do not bypass the selected OpenSpec approval gate to start implementation.
 
 ## Existing MVP / legacy protocol
 
-Use [MIGRATE_TO_2.3.md](MIGRATE_TO_2.3.md). Preserve active work by default. A fresh organizational queue while retaining specs/chats needs explicit approval and per-chat adoption, not just file replacement.
+Use [MIGRATE_TO_2.4.md](MIGRATE_TO_2.4.md). Preserve active work by default. A fresh organizational queue while retaining specs/chats needs explicit approval and per-chat adoption, not just file replacement.
 
 ```text
-Read Setup.md, mode migrate, and MIGRATE_TO_2.3.md.
+Read Setup.md, mode migrate, and MIGRATE_TO_2.4.md.
 Start read-only: verify source package/ref, actual source version, current rules,
 branches, active TASKs/messages/PRs, OpenSpec and unpublished work.
 Show a minimal diff, state mapping and cutover.
@@ -50,6 +50,7 @@ Tracker: <URL>; PR: <URL if available>.
 Read AGENTS.md, Setup.md join, your role contract, SKILLS.md and OPERATING_COMMUNICATION.md.
 Verify current assignment/remote head; do not rely only on the invitation's old SHA.
 Cross-check duties, boundaries, inputs, actual skills, channels and unresolved questions.
+Read `handoff_seq`, `result_to_executor_id` and the authorized next-transition table.
 Report in the approved onboarding channel; without access ask your person to relay.
 Confirm the assigned TASK or request the first from PM.
 Do not begin product work until an explicit start/assignment after onboarding.
@@ -62,7 +63,7 @@ Local routing may point to a verified current local TASK and expected commit wit
 See [the common rule](CODEX_TEAM_PROTOCOL.md#role-cross-check). Fill with actual facts, not automatic assertions:
 
 ```text
-R2Team 2.3 adopted: executor <id>, functions <list>, TEAM <ref>.
+R2Team 2.4 adopted: executor <id>, functions <list>, TEAM <ref>.
 Duties/output: <understanding>.
 Boundaries: <permissions, helpers and approvals>.
 Verified inputs/tools: <facts>.
@@ -92,9 +93,13 @@ Do not self-assign independent work or enable automation.
 
 For PM, "check the team" means read-only audit. Manual requests work locally/remotely; background checks require separate configuration.
 
+For a remote role, the normal start command first runs an internal/same-chat COO pass scoped to that executor. When it finds an actionable TASK, the finding returns locally and the role continues with `$r2team-work start <TASK-ID>`. Automatic discovery without a user-started session requires a separately authorized participant-side heartbeat.
+
 ## Optional COO
 
 See [ROLE-COO.md](ROLE-COO.md). An internal PM helper returns facts; PM performs authorized wake. A registered standalone participant COO can watch several of their functions with separate rights.
+
+Any active executor may instead invoke a bounded read-only internal COO helper for only its own executor IDs. The helper returns the discovered assignment to its parent; it does not need registration, a thread registry or wake permission. A check in the role chat reports the action locally and then the role uses `r2team-work start`.
 
 ```text
 R2Team: team mode. Configure a standalone COO for participant <id>,

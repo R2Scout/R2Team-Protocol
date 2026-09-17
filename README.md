@@ -1,10 +1,10 @@
-# R2Team Protocol 2.3
+# R2Team Protocol 2.4
 
 Git-first teamwork for one person, local role chats, remote participants and hybrids. PM is the only mandatory coordinating function. GitHub and generic Azure DevOps Server/TFS Git providers are supported; specialized process profiles are maintained separately.
 
-## Current release
+## Current candidate
 
-Protocol version **2.3**. The version is the sole release identifier: the major number identifies the protocol generation and the minor number increments for each published protocol revision.
+Protocol version **2.4**. The version is the sole release identifier: the major number identifies the protocol generation and the minor number increments for each published protocol revision.
 
 **OpenSpec stores the product contract. TASK stores recoverable execution state. Direct conversation supports transient coordination.**
 
@@ -12,7 +12,7 @@ Bounded requests inside an existing task need no additional Issue, PR, MSG or ro
 
 ## Start and references
 
-1. Obtain the public `v2.3` release and verify its full commit, or use an approved bundle with a trusted manifest hash. Do not silently substitute `main/latest`.
+1. Obtain the approved `candidate/r2team-2.4` full commit or use an approved bundle with a trusted manifest hash. No `v2.4` release tag is claimed by this candidate; do not silently substitute `main/latest`.
 2. Verify the payload and local links with `python scripts/validate_package.py` and `python -B scripts/test_validate_package.py`.
 3. Read [START.md](START.md). Choose new, migrate, team, join, resume or audit.
 4. Install procedure skills separately using [SKILL-INSTALL.md](SKILL-INSTALL.md) only with machine-owner approval. Updating this repository does not update installed copies or adopted projects.
@@ -27,11 +27,11 @@ Bounded requests inside an existing task need no additional Issue, PR, MSG or ro
 | [Project instructions](templates/AGENTS.md) / [TEAM](templates/TEAM.md) | Adopted project rules and identities |
 | [Skills](templates/SKILLS.md) | OpenSpec and Superpowers routing |
 | [Provider guide](templates/TRACKER_GUIDE.md) | GitHub and generic Server/TFS Git |
-| [Migration](templates/MIGRATE_TO_2.3.md) | Explicit 2.2/older cutover preserving existing work |
+| [Migration](templates/MIGRATE_TO_2.4.md) | Explicit 2.3 cutover preserving existing work |
 | [Multiple repositories](templates/MULTI_REPO.md) | Scoped SDK/API coordination |
 | [Scenarios](SCENARIOS.md) / [Verification](VERIFICATION.md) | Expected behavior and verification limits |
-| [Sources](SOURCES.md) / [2.3 findings](FINDINGS-2.3.md) / [Change history](CHANGELOG.md) | Rationale, generalized findings and provenance |
+| [Sources](SOURCES.md) / [2.4 findings](FINDINGS-2.4.md) / [Change history](CHANGELOG.md) | Rationale, generalized findings and provenance |
 
-The four instruction skills are r2team, r2team-work, r2team-coo and r2team-audit. They are not an autonomous service, do not grant tool permissions and do not enable heartbeat. Follow current project instructions; an installed skill never silently migrates a 1.10 project.
+The four instruction skills are r2team, r2team-work, r2team-coo and r2team-audit. They are not an autonomous service, do not grant tool permissions and do not enable heartbeat. Follow current project instructions; an installed skill never silently migrates an older project.
 
 No tracker adapter, guaranteed direct transport or live provider test is implied by document validation. Preserve unpublished work and verify exact refs before handoff.
