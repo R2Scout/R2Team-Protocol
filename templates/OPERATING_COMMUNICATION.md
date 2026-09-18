@@ -30,7 +30,7 @@ Include only what is necessary: parent TASK/ref, exact candidate or input, bound
 
 Local chat IDs remain in ignored local configuration. Remote participants may use an existing Issue/PR thread or another agreed channel with the same persistence rules. Do not invent cross-host routing or promise automatic execution by a remote Codex. Direct messaging is optional; no new required messaging service.
 
-A durable invitation contains repository, participant/executor, functions, accepted TEAM/protocol ref, assigned TASK/checkpoint or first-work route and PM response route, but no local task IDs. A local standalone executor receives a separate ephemeral launch envelope and must return onboarding readiness directly. Without confirmed return, report `NOT_DELIVERED`; notification is not connection.
+A durable remote invitation contains repository, participant/executor, functions, accepted TEAM/protocol ref, stable registration ID, exact onboarding Issue/Work Item, PM recipient, prepared first TASK, evidence contract and activation/capacity mode, but no local task IDs. The participant posts a structured registration result or addressed question to that route. PM's COO detects the registered event; PM/publisher performs activation. A local standalone executor also receives a separate ephemeral launch envelope. Without confirmed return, report `NOT_DELIVERED`; notification is not connection.
 
 Distinguish:
 - **Working exchange:** the authorized owner/participant communicates inside the existing contract; one clear conversation route, without mandatory duplicate provider comments.
@@ -39,7 +39,7 @@ Distinguish:
 
 An accepted answer may return directly. A notification, tool acknowledgement or silence does not prove acceptance, delivery, execution or QA PASS. Do not blindly retry an uncertain write-capable request. First check the intended recipient/result by exact reference if available; otherwise stop and use an agreed fallback without issuing a duplicate execution.
 
-COO is not a mandatory relay for conversations and does not gain authority to assign helpers from a wake permission. Internal subagents remain bounded by their parent and environment instructions; they do not independently contact other role chats.
+Every active participant has one COO capability for assignments and registered onboarding events, internal by default; it is not a mandatory relay for conversations and does not gain authority to assign helpers from a wake permission. A separate COO chat and heartbeat remain optional. Internal subagents remain bounded by their parent and environment instructions; they do not independently contact other role chats.
 
 ## Remote baton
 

@@ -7,6 +7,8 @@
 - Separate internal-subagent, same-chat and standalone COO modes so internal helpers return to their parent without requiring a registry or wake.
 - Define the TASK-based durable baton and explicit result route for local/remote executor transitions.
 - Add local discovery cursor guidance, shared-provider executor labels and explicit delivery evidence states.
+- Require one participant-level COO capability, defaulting to internal; offer a separate COO chat once while keeping heartbeat independently optional and off.
+- Close remote onboarding with a registered provider channel, structured result/question events, pre-authorized PM activation and a prepared first TASK with explicit capacity semantics.
 - Keep committed Messages and polling journals absent; heartbeat remains optional and off by default.
 
 ## 2.3

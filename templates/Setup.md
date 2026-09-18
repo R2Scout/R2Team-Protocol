@@ -76,7 +76,11 @@ Fill [TEAM.md](TEAM.md). Internal subagents are not separately registered partic
 
 For a local standalone executor, use a portable Git invitation plus a separate ephemeral launch prompt containing PM task ID, executor, exact register/connect commands and mandatory direct onboarding return. Store bidirectional task routes only in ignored `.codex-local/THREAD_REGISTRY.md`; unconfirmed delivery is `NOT_DELIVERED`. Remote/manual participants never receive local task IDs.
 
-Every active executor may use a bounded read-only internal COO for its own assignments unless explicitly disabled. It returns findings to that role and needs no registry. If a separate COO chat is needed, register a standalone executor; for remote participants configure watched executor IDs, TASK root and executor-scoped assignment discovery, and choose an executor-label convention when provider actors are shared. Separately scope reads, wake and organizational writes; choose one wake dispatcher. See [ROLE-COO.md](ROLE-COO.md). Scheduling and chat creation require explicit requests.
+Configure one COO capability for every active participant. Default to one read-only `internal` COO covering that participant's executor IDs; `same_chat` and `standalone` are alternatives, not additional mandatory roles. It returns findings locally and needs no registry unless standalone wake is explicitly configured. Offer a separate COO chat exactly once during initial setup/registration, record `accepted`, `declined`, or `not_supported`, and do not ask again unless the participant requests a change. If accepted, ask whether to connect an existing chat or create a new one; creation requires an explicit request. Configure watched executor IDs, TASK root, executor-scoped discovery and any shared-account executor-label convention. Heartbeat is a separate opt-in and remains off by default. See [ROLE-COO.md](ROLE-COO.md).
+
+For every remote registration, create an exact onboarding channel before sending the invitation. Prefer a dedicated Issue/Work Item or another provider object whose URL is stored in the onboarding TASK; do not use an unregistered commit comment as the primary inbox. Give the registration a stable `registration_id`, PM recipient executor, objective `auto_accept_if` evidence, first TASK and one activation mode: `IMMEDIATE_RESERVED` with confirmed capacity, or `QUEUED_AFTER_REGISTRATION` without it. Empty `auto_accept_if` requires a new PM decision. Prepare the first product TASK as `PENDING_REGISTRATION` or `PENDING_CAPACITY` before inviting the participant.
+
+The remote participant posts a structured `REGISTRATION_RESULT` with `READY_FOR_ACTIVATION`, or an `ONBOARDING_QUESTION`, to that exact channel. PM's COO checks open onboarding channels in addition to PM TASKs and returns `REGISTRATION_READY`, `PM_ANSWER_REQUIRED`, or `REGISTRATION_BLOCKED`. If the invitation already authorizes objective acceptance criteria and the evidence matches, PM publishes TEAM activation, closes the onboarding transition, and moves the prepared first TASK to `READY` when capacity is reserved/free without requesting the same owner approval again. COO remains read-only; PM or another named publisher performs these writes. Otherwise the task remains queued with an explicit reason and activation condition.
 
 ### N4. Project entry files
 
@@ -118,7 +122,7 @@ Before execution, define the first TASK's authorized transition table: every exp
 
 Publish approved setup through the chosen provider and verify refs/assignments. Missing push authority/access means no remote-ready claim.
 
-Run the audit below. Report ready/NOT_RUN, first TASK, owner and next action. The confirmed initial chat continues as PM; no mandatory COO/heartbeat.
+Run the audit below. Report ready/NOT_RUN, first TASK, owner and next action. The confirmed initial chat continues as PM. COO capability is mandatory and defaults to internal; a separate COO chat and heartbeat remain optional.
 
 <a id="migrate"></a>
 ## 3. MIGRATE
@@ -137,29 +141,31 @@ The first cycle uses a small real TASK. Protocol migration authorizes no product
 1. Read accepted default-branch TEAM and only affected TASKs.
 2. Clarify add/remove/replace participant/chat/function, combine/split functions, or transfer PM.
 3. Verify provider identity/access; choose stable executor IDs; keep real chat IDs local.
-4. For each function clarify work, rights, skills, helpers, environments and independence. Record respondents, channels, intake and human-guidance rules without another journal.
+4. For each function clarify work, rights, skills, helpers, environments and independence. Configure one participant COO mode, offer standalone chat once, and keep heartbeat separate/off. Record respondents, channels, intake and human-guidance rules without another journal.
 5. Local/remote placement does not change TASK ownership rules. Optional local mapping belongs on the relevant machine.
 6. Show the minimum TEAM/ROLE/affected-TASK diff. Custom functions are valid; a role name grants no authority.
 7. Secure active work/checkpoints before transfer/deactivation. Preserve IDs, branches, evidence and unresolved requests.
-8. Obtain appropriate approval, publish through the normal workflow, then send a complete invitation/current assignment. Provider membership/access is separately administered.
-9. New/changed standalone functions cross-check their contract. Do not claim adoption from registration alone.
+8. For a remote join, create the exact onboarding Issue/Work Item plus onboarding TASK and prepared first TASK with registration/evidence/capacity gates.
+9. Obtain appropriate approval, publish through the normal workflow, then send a complete invitation/current assignment. Provider membership/access is separately administered.
+10. New/changed standalone functions cross-check and post the structured registration result/question. PM COO reports it; PM/publisher applies only pre-authorized transitions. Do not claim adoption from registration alone.
 
 Adding a participant does not itself require a product OpenSpec change.
 
 <a id="join"></a>
 ## 5. JOIN
 
-Use register/connect from [COMMANDS.md](COMMANDS.md). Verify current TEAM and provider identity, not just an invitation's stale SHA. An absent/inactive entry is a PM question, not permission to add yourself.
+Use register/connect from [COMMANDS.md](COMMANDS.md). Verify current TEAM and provider identity, not just an invitation's stale SHA. A matching invited/pending entry plus onboarding TASK is expected before activation. An absent/changed entry, or inactive entry without that registration, is a PM question—not permission to add yourself.
 
-1. Obtain repo URL, TEAM ref, executor, onboarding channel and TASK/branch if assigned. No TASK is needed to cross-check; request one afterward.
+1. Obtain repo URL, TEAM ref, executor, exact onboarding channel, `registration_id`, activation mode and prepared TASK/branch. Cross-check does not execute product work.
 2. Confirm local destination and access; preserve existing work.
 3. Read AGENTS, current default-branch TEAM, relevant protocol/ROLE/SKILLS, then assigned task branch.
 4. Verify needed tools on this machine; installation/replacement needs owner permission.
-5. Check documentation gaps, boundaries, permissions, allowed helpers and shared-provider account routing. Notification is not guaranteed chat execution.
+5. Check documentation gaps, boundaries, permissions, allowed helpers and shared-provider account routing. Confirm the participant COO mode; offer a separate COO chat only if `separate_chat_offer` is not already resolved. Notification is not guaranteed chat execution.
 6. Reuse the registered identity for a replacement physical chat; do not rewrite TEAM merely for a local thread ID.
 7. Perform [role cross-check](CODEX_TEAM_PROTOCOL.md#role-cross-check): duties, bounds, verified inputs, questions and readiness. For added functions, check only changed responsibilities.
-8. Confirm a current assigned TASK or request the first through the approved channel. If unavailable ask the person to relay and mark NOT_DELIVERED. Product execution requires start/explicit instruction and intake.
-9. Do not create a second PM, tracker or duplicate task.
+8. Post `REGISTRATION_RESULT` with `READY_FOR_ACTIVATION` and evidence, or an addressed `ONBOARDING_QUESTION`, to the exact onboarding channel. If unavailable ask the person to relay and mark NOT_DELIVERED.
+9. After PM publishes activation, run the configured COO pass. Start the prepared first TASK only when its accepted status is `READY`; otherwise report the explicit registration/capacity gate.
+10. Do not create a second PM, tracker or duplicate task.
 
 <a id="resume"></a>
 ## 6. RESUME
@@ -185,7 +191,7 @@ Check:
 - Version-specific evidence and known runtime limits.
 - Clear migration cutover and safe active-writer/automation coordination.
 - Ignored local registry; no committed secrets/thread IDs.
-- Heartbeat off unless explicitly configured; optional COO scoped with one dispatcher and no self-escalation.
+- One COO mode per active participant; separate COO chat optional and offered once; heartbeat off unless explicitly configured; one dispatcher and no self-escalation.
 - Fresh-executor recovery without transcripts.
 - Actual role cross-check and first-task confirmation/request.
 - Human actions, material questions and decisions survive in TASK; silence is not agreement.

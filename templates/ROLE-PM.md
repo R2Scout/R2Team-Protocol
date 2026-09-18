@@ -28,7 +28,7 @@ Read the complete applicable SKILL.md. Availability/installation: [SKILLS.md](SK
 
 Do not claim another executor's tests as your own or organizational readiness as runtime PASS. New rights, expenses, merge/deploy/database/access operations need authorized scope.
 
-COO may be an internal read-only helper: exact paths/IDs, small deltas from a confirmed snapshot, dry facts and minimal tokens; PM publishes and wakes. Alternatively register a participant's standalone COO with explicit limited rights under [ROLE-COO.md](ROLE-COO.md). PM/authorized owner grants rights, not COO itself. Configure scope and one wake dispatcher; neither option creates a second PM. Heartbeat is off by default.
+PM and every participant keep one COO capability: internal by default, same-chat, or optional standalone under [ROLE-COO.md](ROLE-COO.md). Offer a separate COO chat once during setup/register and persist the answer; do not create it implicitly. COO uses exact paths/IDs, small deltas from a confirmed snapshot, dry facts and minimal tokens. PM/authorized owner grants rights and publishes activation/assignment changes; COO does not. Configure scope and one wake dispatcher only for standalone mode. Heartbeat is a separate option and is off by default.
 
 Subagents get bounded scope; the parent remains accountable for TASK. Ordinary internal helpers do not independently manage external assignments or notifications.
 

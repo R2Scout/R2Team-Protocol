@@ -26,7 +26,7 @@ Help and unknown/ambiguous commands are read-only. A short visible intake states
 
 For an explicitly configured multi-repository scope, use repo-qualified TASK/event IDs and verify access separately per repository. Do not discover or monitor every repository owned by the participant.
 
-Resolve current COO mode and explicit watched participant/executor/task IDs, rights and dispatcher. COO may be PM's/internal read-only helper or a registered standalone executor serving one participant's roles. Do not infer scope from all repositories or every team member. Missing/ambiguous scope requires clarification.
+Resolve the participant's required COO mode and explicit watched participant/executor/task IDs, rights and dispatcher. The default is one internal read-only helper covering that participant's executors; same-chat and optional standalone modes are alternatives. Do not infer scope from all repositories or every team member. Missing/ambiguous scope requires clarification.
 Read only changes since a confirmed checkpoint via exact TASK paths/refs, selected Issue/Work Item IDs and PR events. Same provider account's "read" flag is not per-role completion.
 Return dry facts: changed ID, what changed, who needs action, source pointer and next action. No long narrative or unrequested summaries. Failed fetch preserves prior successful position and is reported, not an empty successful pass. Optional local cursor/dedup metadata belongs only in ignored local storage, not a Git journal. update does not persist a new cursor or change inbox read state.
 
@@ -38,7 +38,7 @@ Use exactly one mode; do not infer standalone delivery merely because the comman
 - **Same-chat check:** the current role task checks its own executor IDs. Report `ACTION_FOUND_LOCAL` in that task so the role can invoke `r2team-work`; never try to wake itself.
 - **Standalone COO:** a separately registered COO executor watches named executors. Only this mode uses `notify_local`, a machine-local thread registry and the configured dispatcher.
 
-If mode or parent executor is ambiguous, return `BLOCKED: COO_MODE_AMBIGUOUS` rather than falling through to standalone wake logic. Every active executor may use one bounded read-only internal COO helper to check only that executor's own assignments unless TEAM explicitly disables it. This default grants no project writes, external notification, other participant scope or second-PM authority.
+If mode or parent executor is ambiguous, return `BLOCKED: COO_MODE_AMBIGUOUS` rather than falling through to standalone wake logic. Every active participant must have one mode; absence or disabled COO is a configuration gap. Setup offers standalone chat once, records the response, and otherwise keeps internal mode. Heartbeat remains a separate opt-in. This default grants no project writes, external notification, other participant scope or second-PM authority.
 
 ## Executor-scoped assignment discovery
 
@@ -49,6 +49,14 @@ Known TASK IDs are not sufficient for a remote participant: a newly assigned TAS
 3. For each new actionable match, then read the complete TASK and only its linked Issue/Work Item, PR and checkpoint. Exact TASK ownership is authoritative. When several logical executors use a **shared provider actor**, provider assignment, mention or unread state cannot identify the intended local role. Use the executor ID in TASK; a provider label such as `r2-executor:<executor-id>` may accelerate queries but never overrides Git.
 4. Treat an actionable match already present at first baseline as `NEW_UNACKNOWLEDGED` unless durable intake/checkpoint evidence proves that executor accepted it. This prevents installation after assignment from silently skipping current work.
 5. Keep discovery cursor and wake dedup local. Do not recreate Messages, a committed inbox, polling journal or queue file.
+
+For a PM watcher, also inspect exact open onboarding channels declared in onboarding TASKs. Do not scan arbitrary commit comments. Recognize structured `R2_EVENT: REGISTRATION_RESULT` and `R2_EVENT: ONBOARDING_QUESTION` entries addressed by `registration_id` and `to_executor_id`.
+
+- Valid complete evidence reports `REGISTRATION_READY` to PM.
+- An addressed blocking question reports `PM_ANSWER_REQUIRED`.
+- Missing, conflicting, stale or failed evidence reports `REGISTRATION_BLOCKED`.
+
+COO remains read-only. PM or the named publisher performs any pre-authorized activation and first-TASK transition.
 
 `update` discovers and reports but never wakes or persists a successful-notification claim. `check` may use the discovered event for one already-authorized local wake and may persist technical cursor/dedup after the read/send outcome is known.
 

@@ -40,6 +40,20 @@ Reply: update this TASK through its publishing owner and report via <item/PR URL
 
 Publish first, then notify. Preserve returned IDs on partial failure and inspect before retry. "Sent" is not completed handoff.
 
+## Remote onboarding result or question
+
+```text
+R2_EVENT: REGISTRATION_RESULT
+registration_id: <stable-id>
+from_executor_id: <remote-executor>
+to_executor_id: <pm-executor>
+status: READY_FOR_ACTIVATION
+evidence: <identity/access/skills/cross-check refs>
+questions: none
+```
+
+For a blocker, use `R2_EVENT: ONBOARDING_QUESTION`, the same IDs, `blocking: true`, and one specific question. Post only in the exact Issue/Work Item recorded by the onboarding TASK. PM's COO reports the event; PM/publisher applies any pre-authorized registration and first-TASK transition. Do not use an arbitrary commit comment as the primary route.
+
 ## Task clarification
 
 ```text

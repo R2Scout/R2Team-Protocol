@@ -2,8 +2,9 @@
 import importlib.util
 import hashlib
 import json
-import tempfile
+import shutil
 import unittest
+import uuid
 from pathlib import Path
 
 MODULE = Path(__file__).with_name("validate_package.py")
@@ -19,25 +20,45 @@ else:
 
 class PackageTests(unittest.TestCase):
     def setUp(self):
-        self.temp = tempfile.TemporaryDirectory(prefix="r2team-220-test-")
-        self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(__file__).resolve().parent.parent / ".test-tmp" / f"r2team-240-test-{uuid.uuid4().hex}"
+        self.root.mkdir(parents=True)
+        self.addCleanup(shutil.rmtree, self.root, True)
         (self.root / "templates").mkdir()
         (self.root / "skills" / "r2team-coo").mkdir(parents=True)
         (self.root / "package.json").write_text(json.dumps({
             "protocol_version": "2.4",
             "bootstrap": "R2TEAM_MASTER.md",
-            "required_files": ["START.md", "templates/Setup.md", "templates/TASK-TEMPLATE.md", "skills/r2team-coo/SKILL.md"],
+            "required_files": ["START.md", "templates/Setup.md", "templates/TEAM.md", "templates/TASK-TEMPLATE.md", "skills/r2team-coo/SKILL.md"],
             "template_root": "templates"
         }), encoding="utf-8")
         self.put("START.md", "[Start](templates/Setup.md#new)\n")
         self.put("templates/Setup.md", '<a id="new"></a>\n# New\n\nReady.\n')
+        self.put("templates/TEAM.md", """# TEAM
+coo:
+  mode: internal
+  owner_executor_id: example-main
+  watched_executor_ids: [example-main]
+  separate_chat_offer: declined
+  triggers:
+    session_start: true
+    before_idle: true
+    heartbeat_enabled: false
+""")
         self.put("templates/TASK-TEMPLATE.md", """# TASK
 handoff_seq
 previous_owner_executor_id
 assigned_by_executor_id
 result_to_executor_id
 Authorized next transitions
+registration_id
+tracker_item
+onboarding_result_to_executor_id
+auto_accept_if
+activation_mode
+IMMEDIATE_RESERVED
+QUEUED_AFTER_REGISTRATION
+first_task_id
+READY_FOR_ACTIVATION
 """)
         self.put("skills/r2team-coo/SKILL.md", """# COO
 executor-scoped assignment discovery
@@ -49,6 +70,9 @@ result_to_executor_id
 RETURNED_TO_PARENT
 ACTION_FOUND_LOCAL
 COO_MODE_AMBIGUOUS
+REGISTRATION_READY
+PM_ANSWER_REQUIRED
+REGISTRATION_BLOCKED
 """)
 
     def put(self, name, text):
@@ -108,6 +132,34 @@ COO_MODE_AMBIGUOUS
     def test_task_template_must_define_durable_baton(self):
         self.put("templates/TASK-TEMPLATE.md", "# TASK\nowner_executor_id\n")
         self.assertTrue(any("Missing durable-baton marker" in e
+                            for e in validate(self.root)))
+
+    def test_team_requires_one_coo_mode_for_each_participant(self):
+        self.put("templates/TEAM.md", "# TEAM\nCOO is optional.\n")
+        self.assertTrue(any("Missing mandatory COO configuration marker" in e
+                            for e in validate(self.root)))
+
+    def test_task_template_requires_closed_onboarding_route(self):
+        self.put("templates/TASK-TEMPLATE.md", """# TASK
+handoff_seq
+previous_owner_executor_id
+assigned_by_executor_id
+result_to_executor_id
+Authorized next transitions
+""")
+        self.assertTrue(any("Missing onboarding-route marker" in e
+                            for e in validate(self.root)))
+
+    def test_onboarding_route_requires_pre_authorized_acceptance(self):
+        text = (self.root / "templates/TASK-TEMPLATE.md").read_text(encoding="utf-8")
+        self.put("templates/TASK-TEMPLATE.md", text.replace("auto_accept_if\n", ""))
+        self.assertTrue(any("Missing onboarding-route marker: auto_accept_if" in e
+                            for e in validate(self.root)))
+
+    def test_coo_must_report_registration_events_to_parent(self):
+        text = (self.root / "skills/r2team-coo/SKILL.md").read_text(encoding="utf-8")
+        self.put("skills/r2team-coo/SKILL.md", text.replace("REGISTRATION_READY\n", ""))
+        self.assertTrue(any("Missing COO registration-event marker" in e
                             for e in validate(self.root)))
 
     def test_separate_package_revision_is_rejected(self):

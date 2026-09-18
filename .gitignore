@@ -1,5 +1,8 @@
 __pycache__/
 *.pyc
+.test-tmp/
+.verify-cache/
+.verify-deps/
 .codex-local/
 .env
 .env.*

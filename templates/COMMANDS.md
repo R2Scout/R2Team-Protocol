@@ -38,7 +38,7 @@ The full template package is needed for setup. Installing SKILL.md alone does no
 
 ### add: PM prepares the assignment
 
-PM confirms the participant/provider identity, functions, executor IDs, combined or separate chats, allowed subagents and permissions. PM publishes the approved TEAM/role changes through the project's Git workflow and returns an invitation. A TEAM entry does not grant access to a private project; its administrator manages actual access.
+PM confirms the participant/provider identity, functions, executor IDs, combined or separate chats, allowed subagents and permissions. Configure one COO mode for the participant (`internal` by default, `same_chat`, or optional `standalone`). Offer a separate COO chat once and persist the answer; heartbeat is a different option and remains off. PM publishes the approved TEAM/role changes through the project's Git workflow and returns an invitation. A TEAM entry does not grant access to a private project; its administrator manages actual access.
 
 One person may own several executors or a single executor with QA+DevOps. PM is the only mandatory coordinator; other functions may be local, remote or internal helpers. Locality is relative to each participant's machine.
 
@@ -49,8 +49,10 @@ $r2team register repo <project-Git-URL> participant ken executor ken-ops
 TEAM: <path>, ref <full-commit-SHA>.
 Protocol: <path>, ref <full-commit-SHA>.
 PM reply channel: <Issue-or-Work-Item-URL>, recipient <account/executor>.
+Registration: <registration-id>; activation <IMMEDIATE_RESERVED|QUEUED_AFTER_REGISTRATION>.
+Prepared first TASK: <TASK-path>, state <PENDING_REGISTRATION|PENDING_CAPACITY>.
 Cross-check my assigned QA and DevOps functions.
-Request my first TASK if none is assigned. Do not start product work.
+Post `REGISTRATION_RESULT` or an addressed `ONBOARDING_QUESTION` in the exact channel. Do not start product work before accepted READY assignment.
 ```
 
 PM replaces placeholders with real values. The receiving agent verifies its actual provider account and the current accepted TEAM, not just an ID or stale SHA in the invitation. Missing, inactive or changed assignments are clarified with PM; no self-registration or privilege escalation.
@@ -65,7 +67,7 @@ Resolve the assigned executor. If register already selected one unambiguously, c
 
 Cross-check in the role's own words: duties/outputs, boundaries/approvals, permitted helpers, actual specification/tool inputs, task queue and return route, remaining questions. Confirm an existing TASK or request the first from PM. Onboarding does not begin product execution.
 
-Publish the result in the existing onboarding channel if authorized; the current publisher records material state in the organizational TASK. Without channel access ask the human to relay and mark NOT_DELIVERED. Do not create an extra ACK or MSG journal. A local thread mapping, if configured, remains ignored and outside Git.
+Publish the structured result in the exact onboarding channel if authorized; the current publisher records material state in the organizational TASK. PM's COO detects `REGISTRATION_READY`, `PM_ANSWER_REQUIRED`, or `REGISTRATION_BLOCKED`. Objective pre-authorized evidence may be accepted and published without repeating owner approval. Without channel access ask the human to relay and mark NOT_DELIVERED. Do not create an extra ACK or MSG journal. A local thread mapping, if configured, remains ignored and outside Git.
 
 ## Work and discussion
 
@@ -86,6 +88,8 @@ Use the project's OpenSpec and Superpowers routing, reading the applicable SKILL
 `disconnect` deactivates the agreed participant/executor/function after transfer. It does not delete the person's account, chats, repository, branches or history. Membership changes do not automatically revoke provider access; an authorized administrator handles that separately.
 
 ## COO
+
+Every active participant has one COO capability. Internal is the default; a standalone COO chat is optional, offered once during setup/register, and created only on explicit request. Heartbeat remains independently optional and off by default.
 
 `update` performs one bounded read-only delta pass, even if wake permission exists. It does not mark inbox events read or persist a new cursor. Missing scope is not permission to scan the whole project.
 

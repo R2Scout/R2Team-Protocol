@@ -49,6 +49,8 @@ For remote executors, COO discovers new assignments from added/changed TASK fron
 
 For every baton transition, publish the TASK checkpoint to the accepted default branch first. Then update the existing Issue/PR with the target executor, TASK path, accepted commit, work ref/candidate and expected action. On return, the recipient uses `result_to_executor_id` and an authorized transition rather than addressing whichever account last commented.
 
+Remote onboarding uses an exact Issue/Work Item URL stored in its onboarding TASK. The participant posts `R2_EVENT: REGISTRATION_RESULT` or `R2_EVENT: ONBOARDING_QUESTION` with `registration_id`, sender executor and PM recipient. Do not rely on an arbitrary commit comment as the inbox. PM's COO watches these registered channels; PM/publisher performs any pre-authorized activation. Prepare the first TASK before invitation and expose `PENDING_REGISTRATION`, `PENDING_CAPACITY`, or `READY` so neither side waits on an unstated approval.
+
 Comments are not in a clone. The publisher preserves material open questions, human actions and decisions at the publication boundaries. No full transcript or mandatory duplicate comment for direct exchanges. Read exact assignments/events, not every Issue.
 
 ## Azure DevOps Server/TFS Git

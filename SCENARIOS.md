@@ -25,6 +25,9 @@ These are acceptance scenarios for setup, team lifecycle, communication, recover
 | --- | --- | --- |
 | John is PM and all functions | One executor with explicit functions/helpers | Artificial role tasks/chats |
 | Ken joins remotely as QA+DevOps | One participant, suitable executor(s), rights and portable invitation | Second PM or required local wake |
+| Any participant is initialized | One participant-level COO mode; offer standalone chat once; heartbeat separately off | Disable COO capability or repeatedly ask about a chat |
+| Remote registration is complete | Structured result in exact onboarding item; PM COO reports it; pre-authorized publisher activates | Wait for an unspecified extra approval |
+| Remote registration lacks capacity | Accepted participant plus first TASK `PENDING_CAPACITY` and explicit gate | Hidden waiting or unauthorized parallel start |
 | Ken splits one executor into QA/DevOps chats | New executor IDs if useful; published handoff/single publisher | Treat name change as independent human QA |
 | Maya remote Designer and Lee remote Dev | Same TEAM/TASK/provider model; location changes route only | Separate protocol by location |
 | Custom Tester/Analyst/Architect | Define purpose/output/authority/skills/acceptance | Reject because not built-in or grant rights by title |
@@ -90,6 +93,7 @@ These are acceptance scenarios for setup, team lifecycle, communication, recover
 | Internal COO finds parent's TASK | `RETURNED_TO_PARENT`; no registry or wake lookup | Treat helper as standalone dispatcher |
 | Role chat checks its own TASK | `ACTION_FOUND_LOCAL`, then `r2team-work start` | Wake itself or report `NOT_DELIVERED` |
 | Unknown TASK assigned remotely | Bounded frontmatter discovery by executor ID and handoff sequence | Require prior TASK ID or shared-account unread flag |
+| PM awaits onboarding | Check only registered onboarding channels by registration ID | Scan arbitrary commit comments or expect the owner to forward a link |
 | Sender and COO see same event | One dispatcher owns delivery | Double wake |
 | Heartbeat not requested | Off | Infer it from protocol/role |
 | Heartbeat requested | Explicit scheduler/scope, quiet unchanged, manual canary | Perpetual undocumented polling |

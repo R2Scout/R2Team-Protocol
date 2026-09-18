@@ -31,7 +31,7 @@ PM is the sole mandatory coordinating function. Participants can combine functio
 
 Internal helpers get bounded scope, inputs, paths and applicable skills. They do not independently change TEAM, assignments, other ROLE files or send external messages. The parent validates and preserves material results; same-person helpers do not establish independent QA.
 
-COO is optional: a parent's read-only helper or a registered executor with explicit scope/permissions. Exact deltas, dry facts, minimal tokens; no self-escalation or mandatory polling journal. See [ROLE-COO.md](ROLE-COO.md).
+COO capability is required per active participant: internal by default, same-chat, or optional standalone executor with explicit scope/permissions. A separate COO chat is offered once; heartbeat is independently optional and off by default. Exact deltas, dry facts, minimal tokens; no self-escalation or mandatory polling journal. See [ROLE-COO.md](ROLE-COO.md).
 
 ## Specifications and quality
 

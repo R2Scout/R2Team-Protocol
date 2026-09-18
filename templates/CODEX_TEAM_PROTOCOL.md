@@ -83,7 +83,7 @@ Project:
 - clear first outcome, acceptance, checks, and publication authority;
 - required tools/skills verified or approved fallback.
 
-Do not require six chats, COO, heartbeat, service, or full PRD.
+Do not require six chats, a separate COO chat, heartbeat, service, or full PRD. Every active participant does require one lightweight COO capability, internal by default.
 
 Participant: verify provider identity, participant/executor/functions, permissions, tools/skills, contract, fetch/check/publish capability, and PM response route. Apply least privilege. One person may own several functions/executors.
 
@@ -320,13 +320,13 @@ Direct exchange and wake differ: exchange may contain bounded work; wake only po
 <a id="coo"></a>
 ### 13.4 COO and heartbeat
 
-COO is optional PM subagent or registered helper. Default: exact-delta, read-only, dry, minimal-token reporting. It checks known IDs and performs bounded executor-scoped assignment discovery so a remote participant can find a newly assigned TASK that was not previously watched. No broad scan, second PM, acceptance gate, mandatory relay, or advancing past failed reads.
+COO is a mandatory participant capability, not a mandatory separate role or chat. Default: one internal, exact-delta, read-only, dry, minimal-token helper covering that participant's executor IDs. It checks known IDs and performs bounded executor-scoped assignment discovery so a remote participant can find a newly assigned TASK that was not previously watched. No broad scan, second PM, acceptance gate, mandatory relay, or advancing past failed reads.
 
-COO has three explicit modes. An internal subagent returns findings to its invoking parent executor without registration, registry or wake. A same-chat check reports the role's own assignment locally and never wakes itself. A standalone COO is a registered executor and alone uses `notify_local`, local thread mapping and a dispatcher. Ambiguous mode stops as `COO_MODE_AMBIGUOUS`.
+Each active participant has exactly one configured COO mode. An internal subagent returns findings to its invoking parent executor without registration, registry or wake. A same-chat check reports the role's own assignment locally and never wakes itself. A standalone COO is an optional registered executor and alone uses `notify_local`, local thread mapping and a dispatcher. Ambiguous mode stops as `COO_MODE_AMBIGUOUS`.
 
-Every active executor may use a bounded read-only internal COO for only its own executor IDs unless TEAM explicitly disables it. This baseline helper permission is independent of product subagent purposes and grants no writes, cross-participant monitoring, external wake or PM authority.
+Setup/register offers a separate COO chat once and persists `accepted`, `declined`, or `not_supported`. Declining leaves internal mode active; the wizard does not ask again unless the participant requests a change. Accepting requires an explicit choice of an existing chat or creation request. Heartbeat is a separate opt-in and stays off by default. This baseline capability is independent of product-helper policy and grants no writes, cross-participant monitoring, external wake or PM authority.
 
-Discovery reads `watched_executor_ids` from accepted TEAM. First use performs one metadata-only baseline of configured TASK frontmatter; later passes compare added/changed TASK frontmatter and relevant TEAM changes from ignored local `last_seen_default_branch_sha`. Match exact `owner_executor_id` and current revision before reading the complete TASK and linked provider events. Current actionable assignments at first baseline remain new until durable intake/checkpoint evidence proves acceptance.
+Discovery reads `watched_executor_ids` from accepted TEAM. First use performs one metadata-only baseline of configured TASK frontmatter; later passes compare added/changed TASK frontmatter and relevant TEAM changes from ignored local `last_seen_default_branch_sha`. Match exact `owner_executor_id` and current revision before reading the complete TASK and linked provider events. PM's mode also checks exact open onboarding channels recorded by `registration_id`; it does not scan arbitrary commit comments. Current actionable assignments at first baseline remain new until durable intake/checkpoint evidence proves acceptance.
 
 When logical executors share one GitHub/TFS account, provider assignee, mention and unread state cannot route work. TASK ownership remains authority; an executor-specific provider label may optimize discovery but cannot replace it. Discovery/dedup state stays ignored and local—never add a committed inbox, polling journal or Messages replacement.
 
@@ -354,6 +354,26 @@ The previous owner is responsible for a truthful published handoff checkpoint an
 Wake needs separate authority, confirmed local mapping on the participant's machine, one dispatcher, and deduplication. The remote PM never needs that machine's thread ID. Uncertain delivery is not blindly retried. Wake does not grant delegation/product rights. A send result is `SENT_UNCONFIRMED`; recipient visible intake plus the required TASK/provider reply establishes durable delivery. Missing route is `NOT_DELIVERED`.
 
 Heartbeat is optional and off by default. Enable through supported scheduler only after manual verification, quiet when unchanged, with explicit scope. It cannot guarantee remote action.
+
+### 13.6 Closed remote onboarding
+
+Before inviting a remote participant, PM publishes an onboarding TASK with a stable `registration_id`, exact Issue/Work Item URL, `onboarding_result_to_executor_id`, objective `auto_accept_if` evidence, prepared `first_task_id`, and one activation mode: `IMMEDIATE_RESERVED` or `QUEUED_AFTER_REGISTRATION`. Empty `auto_accept_if` requires a new PM decision. A commit comment without a registered route is not a primary onboarding inbox.
+
+The participant registers and posts one structured event to that exact channel:
+
+```text
+R2_EVENT: REGISTRATION_RESULT
+registration_id: REG-042
+from_executor_id: ken-qa
+to_executor_id: pm-main
+status: READY_FOR_ACTIVATION
+evidence: <identity/access/skills/cross-check refs>
+questions: none
+```
+
+A blocking question uses `R2_EVENT: ONBOARDING_QUESTION`, the same registration ID and exact PM recipient. PM's COO returns `REGISTRATION_READY`, `PM_ANSWER_REQUIRED`, or `REGISTRATION_BLOCKED`; COO does not publish. When the invitation already pre-authorizes objective acceptance criteria and the evidence matches, PM or the named publisher activates TEAM and the onboarding TASK without requesting the same owner approval again.
+
+The first product TASK exists before invitation as `PENDING_REGISTRATION` or `PENDING_CAPACITY`. `IMMEDIATE_RESERVED` moves it to `READY` after accepted registration because capacity was reserved. `QUEUED_AFTER_REGISTRATION` keeps it queued until the explicit capacity condition is true; this is not a hidden approval. The remote participant's COO discovers the accepted `READY` TASK and enters `r2team-work`. Autonomous checks while all chats are idle require a separately authorized scheduler/heartbeat on the relevant machine.
 
 <a id="setup"></a>
 ## 14. Setup

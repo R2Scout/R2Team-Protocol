@@ -4,7 +4,7 @@ Prepared for protocol version 2.4 candidate on 2026-09-18. This is distribution 
 
 ## Fresh local checks
 
-- PASS: all 21 validator tests passed, including version, bootstrap, manifest-path, payload-hash, COO discovery/mode and durable-baton guards.
+- PASS: all 25 validator tests passed, including version, bootstrap, manifest-path, payload-hash, mandatory COO configuration, remote onboarding route and durable-baton guards.
 - PASS: all four distribution skills pass the official skill-creator `quick_validate.py` using PyYAML 6.0.3.
 - PASS: package structure, required payload hashes, local Markdown links, anchors and fences.
 - PASS: public distribution Markdown is English-only.
@@ -21,12 +21,13 @@ Verify that `candidate/r2team-2.4` resolves to the approved candidate commit, th
 
 ## Document-level scenarios
 
-[SCENARIOS.md](SCENARIOS.md) covers setup, brownfield migration, team combinations, bounded local/remote help, material decisions, ownership transfer, exact-candidate QA, provider uncertainty, human-assisted steps, optional COO/wake, and recovery without chat transcripts. These are reviewed contracts, not executed multi-agent simulations.
+[SCENARIOS.md](SCENARIOS.md) covers setup, brownfield migration, team combinations, bounded local/remote help, material decisions, ownership transfer, exact-candidate QA, provider uncertainty, human-assisted steps, required COO capability with optional standalone/wake, and recovery without chat transcripts. These are reviewed contracts, not executed multi-agent simulations.
 
 ## NOT_RUN by this release
 
 - Migration of a real 1.10 project or adoption by existing role chats.
 - Live direct inter-chat delivery, remote participant wake, or scheduled heartbeat.
+- Live end-to-end remote registration auto-activation and capacity release.
 - Real GitHub/TFS item-to-PR lifecycle, provider adapter, or multi-repository rollout.
 - Product implementation, database/infrastructure changes, deployment, or independent QA.
 - Installation/replacement of skills on another machine.

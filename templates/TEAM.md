@@ -45,6 +45,15 @@ participants:
   - id: john
     tracker_actor: "<verified-provider-identity>"
     active: true
+    coo:
+      mode: internal
+      owner_executor_id: john-main
+      watched_executor_ids: [john-main]
+      separate_chat_offer: declined
+      triggers:
+        session_start: true
+        before_idle: true
+        heartbeat_enabled: false
     executors:
       - id: john-main
         active: true
@@ -78,7 +87,7 @@ Ken may hold only DevOps or combined QA+DevOps, using one or several executors. 
 | Dev | [ROLE-DEV.md](ROLE-DEV.md) |
 | QA | [ROLE-QA.md](ROLE-QA.md) |
 | DevOps | [ROLE-DEVOPS.md](ROLE-DEVOPS.md) |
-| COO, optional | [ROLE-COO.md](ROLE-COO.md) |
+| COO capability; standalone chat optional | [ROLE-COO.md](ROLE-COO.md) |
 
 A profile creates no chat. Local/remote executors use the same TASK. Optional physical routing uses the [local registry template](LOCAL_REGISTRY_TEMPLATE.md), never committed once populated.
 
@@ -99,38 +108,43 @@ For actual needed functions, record:
 
 Task-specific material questions and human actions belong in that TASK under [interaction rules](CODEX_TEAM_PROTOCOL.md#interaction), not a duplicate team registry. Asking a question does not transfer ownership. Provider notifications guarantee neither reading nor remote Codex execution.
 
-## Optional COO configuration
+## Required COO capability
 
-An internal PM/parent helper gets bounded scope in its delegation, defaults to read-only, and returns facts; the parent wakes. A standalone COO is a registered executor with roles: [COO]. The profile's presence does not authorize creating or starting one.
+Every active participant has exactly one COO mode covering all of that participant's active executor IDs: `internal` by default, `same_chat`, or `standalone`. The capability is mandatory; a separate COO executor/chat is optional. Internal and same-chat modes require no registry and have no wake rights. A standalone COO is registered with `roles: [COO]` and may use only separately granted local wake rights.
 
-Every active executor may use one internal read-only COO helper for its own executor IDs unless its executor record explicitly sets `internal_coo_enabled: false`. This helper is not registered separately and never needs a local thread registry. Only standalone COO configuration belongs below.
+During initial setup or registration, offer a separate COO chat exactly once. Persist `accepted`, `declined`, or `not_supported` in `separate_chat_offer`; do not repeatedly ask. If accepted, let the participant choose an existing chat or explicitly request creation of a new one. Chat creation is never inferred. Heartbeat is a separate choice and remains false by default.
 
-Merge actual permissions; do not overwrite existing settings with this example:
+The participant-level form below is the norm. It minimizes duplicate scanning when one person owns several executors:
 
 ```yaml
 coo:
-  watched_participant_ids: []
-  watched_executor_ids: []
+  mode: internal
+  owner_executor_id: john-main
+  watched_executor_ids: [john-main]
+  separate_chat_offer: declined
+  triggers:
+    session_start: true
+    before_idle: true
+    heartbeat_enabled: false
   assignment_discovery:
     mode: git_task_delta
     task_root: Tasks
     owner_field: owner_executor_id
     provider_executor_label_prefix: r2-executor
-  wake_dispatcher: sender
-  heartbeat_enabled: false
-permissions:
-  notify_local: false
-  tracker_write: false
-  manage_assignments: false
-  manage_team: false
-  manage_automations: false
+  wake_dispatcher: none
+  permissions:
+    notify_local: false
+    tracker_write: false
+    manage_assignments: false
+    manage_team: false
+    manage_automations: false
 ```
 
-Fill exact IDs and boundaries. `git_task_delta` lets a remote COO discover new TASK IDs assigned to watched executors. The optional provider label accelerates shared-account queries; TASK ownership remains authoritative. Select one dispatcher for the watched recipient set: sender, none, or a specific standalone COO executor. notify_local requires approved machine-side routing; it is not Git/provider write authority. Other permissions remain separate.
+Fill exact IDs and boundaries. `git_task_delta` lets a remote COO discover new TASK IDs assigned to watched executors. In internal/same-chat mode, any watched executor may invoke the scoped check; `owner_executor_id` owns the participant's COO configuration, not all product TASKs. A standalone mode names its COO executor there and may select it as the one dispatcher. The optional provider label accelerates shared-account queries; TASK ownership remains authoritative. `notify_local` requires approved machine-side routing; it is not Git/provider write authority. Other permissions remain separate.
 
 PM/authorized owner and local environment owner approve rights. COO cannot change its own authority/scope or schedule. Configuration describes agreed policy, not proof that tool permissions were technically applied.
 
-Manual passes and separately enabled heartbeat use the same [COO procedure](ROLE-COO.md). Internal helper scheduling belongs to the parent. Local cursor/dedup is ignored technical state, not the Git project source.
+Session-start and before-idle checks run only while the participant is active. A separately authorized heartbeat uses the same [COO procedure](ROLE-COO.md); no idle Codex is assumed to run without a supported scheduler. Internal helper scheduling belongs to the parent. Local cursor/dedup is ignored technical state, not the Git project source.
 
 ## Actual tool readiness
 

@@ -19,6 +19,12 @@ parent_executor_id: null
 active_role: PM
 tracker_item: null
 tracker_item_type: null
+registration_id: null
+onboarding_result_to_executor_id: null
+auto_accept_if: []
+activation_mode: null
+first_task_id: null
+capacity_reserved: false
 requirement_ref: null
 branch: null
 pr: null
@@ -92,3 +98,5 @@ At every ownership change increment `handoff_seq` and update `previous_owner_exe
 Confirm actual DoD, specification/documentation consistency and required verification. Merge alone does not prove a deployment outcome. Preserve incomplete work honestly.
 
 revision tracks contract changes, not every checkpoint. Git commit identifies state. Real tracker/branch/PR links are required for independent handoff; DRAFT without them is not a ready assignment.
+
+For an onboarding TASK, `tracker_item` is the exact provider channel and `onboarding_result_to_executor_id` is normally PM. `auto_accept_if` lists objective pre-authorized evidence; empty means PM needs a new decision. Set `activation_mode` to `IMMEDIATE_RESERVED` or `QUEUED_AFTER_REGISTRATION`, never an implicit approval state. The participant returns `READY_FOR_ACTIVATION` with evidence or an addressed question. Prepare `first_task_id` before invitation as `PENDING_REGISTRATION` or `PENDING_CAPACITY`; PM moves it to `READY` only after registration is accepted and the declared capacity gate is satisfied.

@@ -118,6 +118,28 @@ def validate(root):
         ):
             if marker not in coo_text:
                 errors.append(f"Missing COO assignment-discovery marker: {marker}")
+        for marker in (
+            "REGISTRATION_READY",
+            "PM_ANSWER_REQUIRED",
+            "REGISTRATION_BLOCKED",
+        ):
+            if marker not in coo_text:
+                errors.append(f"Missing COO registration-event marker: {marker}")
+
+    team_template = root / "templates" / "TEAM.md"
+    if team_template.is_file():
+        team_text = texts.get(team_template.resolve(), "")
+        for marker in (
+            "mode: internal",
+            "owner_executor_id",
+            "watched_executor_ids",
+            "separate_chat_offer",
+            "session_start",
+            "before_idle",
+            "heartbeat_enabled: false",
+        ):
+            if marker not in team_text:
+                errors.append(f"Missing mandatory COO configuration marker: {marker}")
 
     task_template = root / "templates" / "TASK-TEMPLATE.md"
     if task_template.is_file():
@@ -131,6 +153,19 @@ def validate(root):
         ):
             if marker not in task_text:
                 errors.append(f"Missing durable-baton marker: {marker}")
+        for marker in (
+            "registration_id",
+            "tracker_item",
+            "onboarding_result_to_executor_id",
+            "auto_accept_if",
+            "activation_mode",
+            "IMMEDIATE_RESERVED",
+            "QUEUED_AFTER_REGISTRATION",
+            "first_task_id",
+            "READY_FOR_ACTIVATION",
+        ):
+            if marker not in task_text:
+                errors.append(f"Missing onboarding-route marker: {marker}")
     return errors
 
 def main():

@@ -8,7 +8,7 @@
 Read Setup.md, mode new. This chat becomes PM after confirmation.
 Confirm the target Git root, goal and trusted package source.
 Guide one step at a time; select GitHub or generic TFS Git and permitted operations.
-Configure the minimum team and the applicable OpenSpec/Superpowers skills.
+Configure the minimum team, one COO mode per participant, and the applicable OpenSpec/Superpowers skills.
 Create only approved files. Finish with audit, a real TASK and next action.
 Do not bypass the selected OpenSpec approval gate to start implementation.
 ```
@@ -43,17 +43,18 @@ PM fills exact verified references, using accessible Git URLs rather than their 
 ```text
 Project: <Git URL>; default branch: <branch>.
 Accepted TEAM: <full SHA/path>.
-You are registered executor <id>, not a new PM.
-Onboarding/questions/first-task channel: <existing Issue/Work Item or agreed route>.
-Assigned TASK, if any: <path>; branch: <branch>; checkpoint: <full SHA>.
+You are invited executor <id>, pending activation, not a new PM.
+Registration: <registration_id>; activation: <IMMEDIATE_RESERVED|QUEUED_AFTER_REGISTRATION>.
+Onboarding/questions channel: <exact Issue/Work Item URL>; reply to executor <pm-id>.
+Prepared first TASK: <path>; state <PENDING_REGISTRATION|PENDING_CAPACITY>; branch: <branch>; checkpoint: <full SHA>.
 Tracker: <URL>; PR: <URL if available>.
 Read AGENTS.md, Setup.md join, your role contract, SKILLS.md and OPERATING_COMMUNICATION.md.
 Verify current assignment/remote head; do not rely only on the invitation's old SHA.
 Cross-check duties, boundaries, inputs, actual skills, channels and unresolved questions.
 Read `handoff_seq`, `result_to_executor_id` and the authorized next-transition table.
-Report in the approved onboarding channel; without access ask your person to relay.
-Confirm the assigned TASK or request the first from PM.
-Do not begin product work until an explicit start/assignment after onboarding.
+Post `R2_EVENT: REGISTRATION_RESULT`, status `READY_FOR_ACTIVATION`, evidence and questions in the exact onboarding channel. Use `R2_EVENT: ONBOARDING_QUESTION`, `to_executor_id: <pm-id>` for blockers.
+After PM publishes registration, run your COO pass and start the prepared TASK when its accepted status becomes `READY` for your executor.
+Do not begin product work while it remains pending registration/capacity.
 ```
 
 Local routing may point to a verified current local TASK and expected commit without unnecessary fetch. A pointer does not change the contract.
@@ -71,7 +72,7 @@ Questions/limits: <specific gaps or none identified>.
 First TASK: <confirmed assignment or request to PM>; READY/BLOCKED <reason>.
 ```
 
-An added function checks changed responsibilities rather than repeating full setup. No TASK means waiting for assignment, not necessarily a broken environment. PM/publisher preserves material onboarding state in the organizational TASK; no extra ACK/report or second PM.
+An added function checks changed responsibilities rather than repeating full setup. The registration result is the onboarding evidence, not an extra ACK file. If all pre-authorized evidence matches, PM publishes activation without another owner approval. `QUEUED_AFTER_REGISTRATION` remains waiting only for its named capacity gate; it is not a hidden approval.
 
 ## Ordinary work entry
 
@@ -95,11 +96,11 @@ For PM, "check the team" means read-only audit. Manual requests work locally/rem
 
 For a remote role, the normal start command first runs an internal/same-chat COO pass scoped to that executor. When it finds an actionable TASK, the finding returns locally and the role continues with `$r2team-work start <TASK-ID>`. Automatic discovery without a user-started session requires a separately authorized participant-side heartbeat.
 
-## Optional COO
+## Required COO capability; optional separate chat
 
-See [ROLE-COO.md](ROLE-COO.md). An internal PM helper returns facts; PM performs authorized wake. A registered standalone participant COO can watch several of their functions with separate rights.
+See [ROLE-COO.md](ROLE-COO.md). Every active participant has one configured COO mode. Default `internal` returns facts to the participant's active role; `same_chat` runs in that role task; optional `standalone` can watch several of that participant's executors with separate rights.
 
-Any active executor may instead invoke a bounded read-only internal COO helper for only its own executor IDs. The helper returns the discovered assignment to its parent; it does not need registration, a thread registry or wake permission. A check in the role chat reports the action locally and then the role uses `r2team-work start`.
+During setup/register, offer a standalone COO chat once and persist the answer. If declined, keep `internal`; if accepted, ask to connect an existing chat or explicitly create one. This choice does not enable heartbeat. Internal/same-chat mode needs no registry or wake permission.
 
 ```text
 R2Team: team mode. Configure a standalone COO for participant <id>,
@@ -107,7 +108,7 @@ watching executors <IDs>.
 Agree exact scope, notify_local rights and one wake dispatcher.
 Do not grant other organizational permissions automatically.
 Prepare TEAM/profile diff and cross-check. Leave heartbeat off.
-Do not create a chat without an explicit request.
+Persist the one-time offer result. Do not create a chat without an explicit request.
 ```
 
 After approved configuration:

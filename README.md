@@ -32,6 +32,6 @@ Bounded requests inside an existing task need no additional Issue, PR, MSG or ro
 | [Scenarios](SCENARIOS.md) / [Verification](VERIFICATION.md) | Expected behavior and verification limits |
 | [Sources](SOURCES.md) / [2.4 findings](FINDINGS-2.4.md) / [Change history](CHANGELOG.md) | Rationale, generalized findings and provenance |
 
-The four instruction skills are r2team, r2team-work, r2team-coo and r2team-audit. They are not an autonomous service, do not grant tool permissions and do not enable heartbeat. Follow current project instructions; an installed skill never silently migrates an older project.
+The four instruction skills are r2team, r2team-work, r2team-coo and r2team-audit. Every active participant configures one COO capability, internal by default; a separate COO chat and heartbeat are optional. The skills are not an autonomous service, do not grant tool permissions and do not enable heartbeat. Follow current project instructions; an installed skill never silently migrates an older project.
 
 No tracker adapter, guaranteed direct transport or live provider test is implied by document validation. Preserve unpublished work and verify exact refs before handoff.

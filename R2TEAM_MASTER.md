@@ -60,6 +60,8 @@ One participant may own several functions and executors under the same provider/
 
 Durable TEAM/invites contain no local task IDs. Local standalone tasks receive an ephemeral launch prompt with PM task ID, executor, exact register/connect commands and mandatory onboarding return. Store local routes only in ignored `.codex-local/THREAD_REGISTRY.md`. Unconfirmed delivery is `NOT_DELIVERED`.
 
+Give every active participant one COO capability: internal by default, same-chat, or optional standalone. During initial setup/register offer a separate COO chat once, persist the answer, and create one only on explicit request. Heartbeat is a separate opt-in and stays off. For remote onboarding, require a stable registration ID, exact Issue/Work Item channel, PM result recipient, objective acceptance evidence, prepared first TASK and explicit reserved-or-queued capacity mode. PM's COO watches those exact channels; it never scans arbitrary commit comments or performs activation writes.
+
 For every independent TASK, require an authorized transition table and explicit `result_to_executor_id`. Local and remote roles pass the same durable baton: publish the next owner/status/role, incremented `handoff_seq`, evidence and next action to the accepted default branch, then notify through the linked provider item. An internal COO returns discoveries to its parent without a registry; only a standalone COO performs local wake.
 
 ## Provider and Git diagnostics

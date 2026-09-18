@@ -16,3 +16,17 @@ A remote executor can receive a valid Git assignment without knowing its TASK ID
 - Heartbeat remains optional and off by default.
 
 This closes the discovery/delivery gap without reintroducing committed Messages, polling journals or a second task queue.
+
+## Onboarding wait defect
+
+A valid remote registration can still stall when its result is posted to a provider location that PM's configured checks do not watch. A complete comment is not actionable if neither side has a durable route, activation rule, or prepared first TASK. Requiring the remote participant to forward the link manually recreates chat-dependent coordination.
+
+## Candidate correction
+
+- Every active participant has a COO capability. Internal is the default; same-chat or standalone are explicit alternatives. The standalone chat is offered once, is optional, and is created only on request.
+- Heartbeat remains an independent optional mechanism and is off by default. Without a supported scheduler, an idle Codex cannot discover work autonomously.
+- Each remote registration has a stable ID, exact onboarding Issue/Work Item, PM result recipient, objective evidence contract, prepared first TASK, and an explicit `IMMEDIATE_RESERVED` or `QUEUED_AFTER_REGISTRATION` capacity rule.
+- The participant posts a structured registration result or addressed question. PM's COO watches only those registered channels and returns a factual state to PM; it remains read-only.
+- PM or the named publisher may apply a pre-authorized activation without asking the owner to approve the same evidence again. The first TASK becomes `READY` only when registration and its declared capacity gate are satisfied.
+
+This closes both directions of onboarding: the participant knows exactly where to return evidence/questions, and PM knows exactly what to monitor and publish next.
