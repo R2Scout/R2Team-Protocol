@@ -71,11 +71,11 @@ Start with one participant and one PM executor; user chooses identity. John/john
 
 For each needed function choose PM execution, authorized helper, separate local chat or another person. Do not create speculative future participants. Standard profiles are not a closed list; use [ROLE-TEMPLATE.md](ROLE-TEMPLATE.md) or concise TEAM entries for custom functions.
 
-For each executor explicitly choose existing local standalone task, new local standalone task, persistent/ephemeral subagent, or remote/manual participant. Ask about functions/prohibitions, helpers/purposes/paths, parent executor, combined/separate chats, QA independence, environments and Git/tracker rights. Ken can combine QA+DevOps. A persistent subagent with its own queue may be a named executor; an ephemeral helper is not registered.
+For each executor explicitly choose existing local standalone task, new local standalone task, persistent/ephemeral subagent, or remote/manual participant. Record `location: local | remote`, direct-exchange policy and `task_return: git_checkpoint_then_tracker`; no executor may infer these from its physical chat. Ask about functions/prohibitions, helpers/purposes/paths, parent executor, combined/separate chats, QA independence, environments and Git/tracker rights. Ken can combine QA+DevOps. A persistent subagent with its own queue may be a named executor; an ephemeral helper is not registered.
 
 Fill [TEAM.md](TEAM.md). Internal subagents are not separately registered participants. Create chats only on explicit request. Confirm human-action/visual-acceptance respondents, scope deciders, provider accounts, update-check subscriptions and escalation. Locality is relative; remote auto-start is not promised.
 
-Configure `pm_response_route` and two explicit routes on every assignment: Task Issuer and Project PM, even if identical. Keep them distinct from owner/publisher. Teach every role ASK, LOOP and direct ESCALATE_PM; confirm how issuer/PM find questions on others' TASKs and how answers return to the requester. Use existing provider threads and supported scoped queries/labels, never a new inbox service. Ordinary queue checks discover unknown TASK IDs and keep pending assignments across unchanged deltas; a frozen watch list cannot prove there is no work.
+Configure `pm_response_route` and four explicit TASK routes before READY: current Owner (`owner_executor_id` plus `owner_route`), Task Issuer, Project PM and Result Recipient (`result_to_executor_id` plus exact `result_to_route`), even if some are identical. The result route is mandatory and uses `git_checkpoint_then_tracker`; on completion it becomes the next owner's route. Neither route is inferred from owner/publisher/chat parent. Teach every role ASK, LOOP and direct ESCALATE_PM; confirm how issuer/PM find questions on others' TASKs and how answers return to the requester. Use existing provider threads and supported scoped queries/labels, never a new inbox service. Ordinary queue checks discover unknown TASK IDs and keep pending assignments across unchanged deltas; a frozen watch list cannot prove there is no work.
 
 For a local standalone executor, use a portable Git invitation plus a separate ephemeral launch prompt containing PM task ID, executor, exact register/connect commands and mandatory direct onboarding return. Store bidirectional task routes only in ignored `.codex-local/THREAD_REGISTRY.md`; unconfirmed delivery is `NOT_DELIVERED`. Remote/manual participants never receive local task IDs.
 
@@ -121,7 +121,7 @@ Use actual CLI help/output/schema paths; do not invent metadata or specs for non
 
 ### N7. Publication and entry
 
-Before execution, define the first TASK's authorized transition table: every expected PASS/FAIL/BLOCKED outcome names next status, exact next executor/role, result recipient and authorized publisher. Initialize `handoff_seq`; a remote recipient must be discoverable from the accepted default-branch TASK.
+Before execution, define the first TASK's authorized transition table: every expected PASS/FAIL/BLOCKED outcome names next status, exact next executor/owner route/role, and the following stage's result recipient/route plus authorized publisher. Set `delivery_policy: git_checkpoint_then_tracker`. Initialize `handoff_seq`; a remote recipient must be discoverable from the accepted default-branch TASK and must not depend on local chat delivery.
 
 Publish approved setup through the chosen provider and verify refs/assignments. Missing push authority/access means no remote-ready claim.
 
@@ -175,7 +175,7 @@ Use register/connect from [COMMANDS.md](COMMANDS.md). Verify current TEAM and pr
 
 Read current TEAM/TASK, permitted scope, candidate/verified refs, changed paths, PR and next action, not all chats.
 
-For an executor-wide resume, discover current assignments and addressed questions before selecting work. For an explicit TASK resume, report `task_only` and do not infer queue inactivity from that TASK's HOLD. Recover Task Issuer/Project PM routes and unresolved question status/Decision alongside the work checkpoint. Missing or stale routes require clarification through a known route, not a guessed new owner.
+For an executor-wide resume, discover current assignments and addressed questions before selecting work. For an explicit TASK resume, report `task_only` and do not infer queue inactivity from that TASK's HOLD. Recover Task Issuer/Project PM/**Result Recipient** routes and unresolved question status/Decision alongside the work checkpoint. Show the Route Card before execution. Missing or stale routes require clarification through a known route, not a guessed new owner, local PM or chat parent.
 
 A change of owner requires an approved handoff/takeover: preserve available work, inspect remote head, assign the new owner and reconcile the provider. No force-push/reset or replacement task just for continuation.
 
@@ -204,6 +204,6 @@ Check:
 - Actual permitted notification test or NOT_RUN; inbox read is not task completion.
 - Protocol, AGENTS, TEAM, roles and setup agree.
 - Loaded skills and saved start/check instructions agree with accepted adoption; a held-known/new-ready scenario finds the new assignment and a task-only check reports its limited coverage.
-- Task Issuer and Project PM routes are usable and distinct from owner/publisher; addressed questions/answers remain discoverable without TASK ownership and return to the requester.
+- Owner, Task Issuer, Project PM and Result Recipient routes are usable and distinct from publisher; every independent TASK has `owner_route`, `result_to_route` and `delivery_policy: git_checkpoint_then_tracker`; addressed questions/answers remain discoverable without TASK ownership and return to the requester.
 
 Record READY, READY_WITH_LIMITS or BLOCKED with exact evidence and next action in the existing organizational TASK. Organizational readiness is not product/production acceptance. Structural package validation is not this live audit.

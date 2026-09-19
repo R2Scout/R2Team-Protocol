@@ -51,8 +51,8 @@ Tracker: <URL>; PR: <URL if available>.
 Read AGENTS.md, Setup.md join, your role contract, SKILLS.md and OPERATING_COMMUNICATION.md.
 Verify current assignment/remote head; do not rely only on the invitation's old SHA.
 Cross-check duties, boundaries, inputs, actual skills, channels and unresolved questions.
-Read `handoff_seq`, `result_to_executor_id` and the authorized next-transition table.
-Identify Task Issuer and Project PM executor/response routes; explain ASK, LOOP and ESCALATE_PM.
+Read `handoff_seq`, `owner_route`, `result_to_executor_id`, `result_to_route`, `delivery_policy` and the authorized next-transition table.
+Identify Task Issuer, Project PM and Result Recipient executor/response routes; explain ASK, LOOP, ESCALATE_PM and that remote TASK returns use Git then the tracker route, never a local chat.
 Post `R2_EVENT: REGISTRATION_RESULT`, status `READY_FOR_ACTIVATION`, evidence and questions in the exact onboarding channel. Use `R2_EVENT: ONBOARDING_QUESTION`, `to_executor_id: <pm-id>` for blockers.
 After PM publishes registration, run your COO pass and start the prepared TASK when its accepted status becomes `READY` for your executor.
 Do not begin product work while it remains pending registration/capacity.
@@ -71,7 +71,7 @@ Duties/output: <understanding>.
 Boundaries: <permissions, helpers and approvals>.
 Verified inputs/tools: <facts>.
 Questions/limits: <specific gaps or none identified>.
-Task Issuer and Project PM: <executors/routes>; addressed-question check: <method>.
+Task Issuer, Project PM and Result Recipient: <executors/routes>; transport: <mode/location + delivery policy>; addressed-question check: <method>.
 First TASK: <confirmed assignment or request to PM>; READY/BLOCKED <reason>.
 ```
 

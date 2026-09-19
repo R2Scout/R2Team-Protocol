@@ -227,11 +227,11 @@ Explain why a human step is needed and affected account/environment; give one sa
 
 ### 8.9 Clarification and bounded help
 
-Every assigned TASK and bounded request records Task Issuer and Project PM with explicit response routes, even when they are the same executor. The direct issuer, assignment publisher, current owner and stage-result recipient are distinct responsibilities. Apply [the question contract](OPERATING_COMMUNICATION.md#question-routes): ASK for clarification, LOOP for a disagreement/consensus attempt, ESCALATE_PM directly for project-authority conflicts or unresolved disagreement. The requester need not complete ASK/LOOP before requesting PM arbitration.
+Every assigned TASK and bounded request records Task Issuer and Project PM with explicit response routes, even when they are the same executor. Every independent TASK also records the current owner route plus the sole `result_to_executor_id` and `result_to_route`; its `delivery_policy` is `git_checkpoint_then_tracker`. The direct issuer, assignment publisher, current owner, stage-result recipient and physical chat parent are distinct responsibilities. Apply [the question contract](OPERATING_COMMUNICATION.md#question-routes): ASK for clarification, LOOP for a disagreement/consensus attempt, ESCALATE_PM directly for project-authority conflicts or unresolved disagreement. The requester need not complete ASK/LOOP before requesting PM arbitration.
 
 Record Question Mode, Question Status (OPEN, ANSWERED, ESCALATED, CLOSED), requester/respondent, blocking impact and Decision in the existing TASK/provider route. Respondents inspect addressed requests regardless of TASK ownership; answers return to the original requester for validation and closure. Only dependent work waits. Resume authorized work after a sufficient answer; publish any required contract change first. PM decides within recorded authority and cannot manufacture evidence, override invalid QA, replace a human gate or grant unrelated rights. Reassignment explicitly updates/confirms issuer/PM routes and preserves unresolved questions/history.
 
-Direct requests are allowed inside accepted TASK and actual rights. Include TASK/ref, sender/recipient, candidate, result, boundaries, allowed writes, and return route. Parent remains owner/publisher. Trivial clarification needs no ceremonial intake; bounded work does.
+Direct requests are allowed only inside an accepted TASK, actual rights, and TEAM-marked local/direct-allowed endpoints. Include TASK/ref, sender/recipient, candidate, result, boundaries, allowed writes, and return route. Parent remains owner/publisher. A bounded helper returns only to this explicit parent route; it cannot become the independent TASK result route. A remote/manual executor uses the recorded provider route instead. Trivial clarification needs no ceremonial intake; bounded work does.
 
 Direct exchange cannot change ownership, scope, acceptance, priority, or permission. Publish material outcome before dependency/pause. Use one conversation route rather than duplicate chat and provider threads.
 
@@ -344,12 +344,12 @@ Exact `owner_executor_id` plus an actionable TASK status is sufficient assignmen
 
 Every cross-executor transition, local or remote, uses the same TASK as the baton. Chat delivery is optional; assignment discovery must work without it.
 
-1. PM defines the authorized transition table in the TASK. Each outcome names next status, next executor, active role and result recipient. A missing route stops at `ROUTE_REQUIRED`; the current executor does not invent an owner.
-2. The current executor finishes the stage, publishes code/artifact/evidence refs, and prepares one TASK handoff checkpoint. Increment `handoff_seq`; set `previous_owner_executor_id`, `owner_executor_id`, `active_role`, `status`, `result_to_executor_id`, exact evidence and `next_action`.
+1. PM defines the authorized transition table in the TASK. Each outcome names next status, next executor, exact next `owner_route`, active role, and the **following stage's** result recipient/route. A missing route stops at `ROUTE_REQUIRED`; the current executor does not invent an owner or use its local PM/chat parent.
+2. The current executor finishes the stage, publishes code/artifact/evidence refs, and prepares one TASK handoff checkpoint. Increment `handoff_seq`; set `previous_owner_executor_id`, `owner_executor_id`, `owner_route`, `active_role`, `status`, the following stage's `result_to_executor_id`/`result_to_route`, `delivery_policy: git_checkpoint_then_tracker`, exact evidence and `next_action`.
 3. An authorized assignment publisher publishes that TASK checkpoint to the accepted default branch through normal protection/review. Until publication succeeds, the handoff is `LOCAL_ONLY` or `SYNC_REQUIRED`, not delivered. Product code may remain on its feature branch/PR.
-4. Update the linked Issue/PR with the exact TASK path, accepted commit, work ref/candidate and target logical executor. Apply the executor-specific routing label when configured. This notification cannot override the TASK.
+4. Update the new `owner_route` with the exact TASK path, accepted commit, work ref/candidate and target logical executor. Apply the executor-specific routing label when configured. This notification cannot override the TASK.
 5. The target's internal, same-chat or standalone COO discovers the default-branch TASK delta by `owner_executor_id` and `handoff_seq`. The target prints visible intake, verifies the checkpoint and starts through `r2team-work`.
-6. The target returns PASS, FAIL, BLOCKED or another authorized outcome by repeating this sequence toward the route declared in the TASK. The resulting TASK checkpoint—not a chat response—is the durable return.
+6. The target prints a Route Card at intake: current TASK owner/owner route, Task PM route, exact result recipient/route, delivery policy and its local/remote executor mode. It returns PASS, FAIL, BLOCKED or another authorized outcome by making that result recipient the next owner with its route, then setting the following stage's return route. The resulting TASK checkpoint—not a chat response—is the durable return. Task Issuer, publisher, previous owner, internal COO parent and invoking chat are never inferred as recipient.
 
 ```text
 Dev checkpoint -> TASK READY_FOR_QA, owner qa-remote, result_to dev40
@@ -357,7 +357,7 @@ QA PASS        -> TASK QA_PASSED, owner pm, result_to pm
 QA FAIL        -> TASK QA_FAILED, owner dev40, result_to dev40, defect evidence linked
 ```
 
-The previous owner is responsible for a truthful published handoff checkpoint and notification. The new owner is authoritative once the assignment checkpoint is accepted on the default branch; visible intake proves execution started. No intake is a delivery/attention problem, not grounds to erase or silently reassign the TASK.
+The previous owner is responsible for a truthful published handoff checkpoint and notification. The new owner is authoritative once the assignment checkpoint is accepted on the default branch; visible intake proves execution started. No intake is a delivery/attention problem, not grounds to erase or silently reassign the TASK. A `remote_manual` executor uses Git plus its result-route tracker pointer only; a local direct message is not an available fallback. A configured local executor may receive an optional wake after publication but still returns through the same TASK route.
 
 Wake needs separate authority, confirmed local mapping on the participant's machine, one dispatcher, and deduplication. The remote PM never needs that machine's thread ID. Uncertain delivery is not blindly retried. Wake does not grant delegation/product rights. A send result is `SENT_UNCONFIRMED`; recipient visible intake plus the required TASK/provider reply establishes durable delivery. Missing route is `NOT_DELIVERED`.
 

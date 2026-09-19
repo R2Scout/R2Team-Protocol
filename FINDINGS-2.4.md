@@ -42,3 +42,11 @@ The candidate now separates executor_queue from explicit task_only checks, requi
 Every assignment carries Task Issuer and Project PM response routes, distinct from current owner, publisher and result recipient. ASK clarifies, LOOP seeks consensus on disagreement, and ESCALATE_PM may go directly to the authorized PM. Existing TASK/provider records carry mode, status, requester/respondent, blocking impact and Decision. Issuers and PM find addressed questions on other owners' tasks; answers return to the requester. Only dependent work pauses. PM authority cannot replace evidence, independent QA or mandatory human gates.
 
 These rules add no messaging service or parallel queue. The scenarios are document-level acceptance criteria; live remote discovery, adoption and question exchange must be verified separately before claiming the operational problem is fixed.
+
+## Route confusion: chat parent versus task baton
+
+An executor can see a Codex chat that asked it to inspect work and mistake that physical parent for the recipient of its stage result. That is a protocol defect when the TASK does not make the result route mechanically distinct. It is especially harmful for remote roles: their local PM and chat topology can have no relation to the project PM or the original work issuer.
+
+The candidate adds a mandatory Result Recipient: `result_to_executor_id`, exact `result_to_route` and `delivery_policy: git_checkpoint_then_tracker`. The five identities are now explicit: Task Issuer answers clarification; Project PM arbitrates; current owner executes; Result Recipient receives the stage outcome; assignment publisher records the checkpoint. Neither a chat sender, internal COO `RETURNED_TO_PARENT`, owner nor publisher can be substituted. Every task intake prints this Route Card and stops `ROUTE_REQUIRED` when it cannot be reconstructed.
+
+TEAM records each executor's `location` and transport: remote/manual work uses only Git plus the provider route; local direct exchange remains optional and can announce but never replace the published baton. This keeps the protocol Git-first without adding a message queue, a service or remote chat registry.

@@ -5,6 +5,8 @@
 - Distinguish executor-wide queue checks from explicit single-TASK inspection; prevent a held known task or unchanged cursor from hiding pending/new work.
 - Require truthful coverage and current remote refs, plus actual project/skill/startup-prompt adoption checks.
 - Add explicit Task Issuer and Project PM routes with ASK, LOOP and direct ESCALATE_PM; preserve question status/Decision and return answers to the requester regardless of task ownership.
+- Add an explicit Result Recipient (`result_to_executor_id` plus `result_to_route`) and one independent-TASK delivery policy, `git_checkpoint_then_tracker`. This prevents a task issuer, publisher, local PM, internal COO parent or physical chat from being inferred as a handoff destination.
+- Require a Route Card at task intake and explicit executor location/transport in TEAM. A remote executor uses Git then its declared tracker route; direct chat is not a remote return fallback.
 
 - Add executor-scoped discovery of unknown new TASK IDs from bounded default-branch frontmatter deltas.
 - Make exact `owner_executor_id` plus actionable TASK status the assignment signal; provider state remains a routing aid.

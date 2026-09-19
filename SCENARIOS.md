@@ -61,6 +61,9 @@ These are acceptance scenarios for setup, team lifecycle, communication, recover
 | Dev hands work to remote QA | Accepted default-branch TASK checkpoint increments `handoff_seq`, assigns QA and declares result route | Chat-only request or provider assignment without Git baton |
 | Remote QA passes | Publish evidence and next authorized TASK transition to declared executor | Choose recipient from memory or leave result only in comment |
 | Remote QA fails | Return same TASK to declared Dev with failure evidence and candidate identity | Create unrelated replacement task or lose failure history |
+| Chat/COO found a remote TASK | Print Route Card; use only `result_to_executor_id` + `result_to_route` after the stage | Return to the invoking chat, local PM, publisher or Task Issuer by inference |
+| Remote executor completes a stage | Git checkpoint reaches accepted default branch, then exact `result_to_route` pointer | Cross-host direct chat, local registry or a recipient guessed from chat topology |
+| TASK omits result route/policy | `ROUTE_REQUIRED`; ask Project PM through its recorded provider route | Publish a result to any apparently related chat/account |
 
 ## Specifications, evidence, and delivery
 
@@ -120,6 +123,8 @@ These fixtures describe expected consuming-agent behavior. They are not executed
 | Authority conflict requires PM immediately | Direct ESCALATE_PM; retain dependent-work boundary | Mandatory ASK/LOOP before escalation |
 | PM ruling contradicts required QA/human evidence | Preserve the mandatory gate and factual verdict | Convert failed QA into PASS or invent approval |
 | TASK transferred while question is OPEN | Confirm/update issuer/PM routes and preserve question/ref/current respondent | Discard the question or infer issuer from the publisher |
+| TASK has issuer/PM/publisher different from result recipient | Route Card names all identities; result goes only to result recipient/route | Treat Task Issuer, publisher, owner or chat parent as a default return target |
+| Internal COO reports `RETURNED_TO_PARENT` | Parent role reads the TASK Route Card; no product handoff occurred | Interpret the COO parent as PM or final task recipient |
 
 ## Skill routing
 

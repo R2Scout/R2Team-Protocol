@@ -60,8 +60,12 @@ participants:
       - id: john-main
         active: true
         mode: local_standalone
+        location: local
         parent_executor_id: null
         roles: [PM, Brain, Designer, Dev, QA, DevOps]
+        transport:
+          direct_exchange: optional_local
+          task_return: git_checkpoint_then_tracker
         subagents:
           allowed: false
           purposes: []
@@ -77,7 +81,7 @@ participants:
 
 Ask about actual needed rights/helpers; do not leave every permission false while declaring autonomous execution ready. Rights may be scoped to refs, environments and operations; deploy=true without a target/scope is insufficient.
 
-Ken may hold only DevOps or combined QA+DevOps, using one or several executors. Supported modes are `local_standalone`, `remote_manual` and `subagent`. A persistent subagent with its own queue has a stable executor ID and `parent_executor_id`; an ephemeral helper stays only under its parent's helper policy. Only the current pm_executor_id performs team coordination.
+Ken may hold only DevOps or combined QA+DevOps, using one or several executors. Supported modes are `local_standalone`, `remote_manual` and `subagent`. Every executor also declares `location: local | remote` and transport. `remote_manual` uses `location: remote`, `direct_exchange: prohibited` and `task_return: git_checkpoint_then_tracker`; it does not send a TASK result to a Codex chat or require another machine's chat ID. `local_standalone` may use a permitted direct working exchange, but its independent TASK result still uses the same Git checkpoint then tracker route. A persistent subagent with its own queue has a stable executor ID and `parent_executor_id`; an ephemeral helper stays only under its parent's helper policy. Only the current pm_executor_id performs team coordination.
 
 ## Function contracts
 
@@ -110,7 +114,7 @@ For actual needed functions, record:
 
 Task-specific material questions and human actions belong in that TASK under [interaction rules](CODEX_TEAM_PROTOCOL.md#interaction), not a duplicate team registry. Asking a question does not transfer ownership. Provider notifications guarantee neither reading nor remote Codex execution.
 
-Fill `pm_response_route` with a usable existing provider discussion. Each TASK explicitly records Task Issuer and Project PM executor/routes; its PM must agree with current TEAM. The issuer is the direct work assigner, not necessarily the current owner or checkpoint publisher. Configure scoped provider queries/labels where supported so issuers and PM see addressed questions on other owners' work. Preserve the same routes when they coincide; do not infer a private cross-host chat address.
+Fill `pm_response_route` with a usable existing provider discussion. Each TASK explicitly records current Owner/`owner_route`, Task Issuer, Project PM and stage-result executor/routes; its PM must agree with current TEAM. The issuer is the direct work assigner, not necessarily the current owner or checkpoint publisher. The stage result goes only to the TASK's `result_to_executor_id` through `result_to_route`, which becomes the next owner route at the next checkpoint; PM observes/arbitrates unless explicitly named there. Configure scoped provider queries/labels where supported so issuers and PM see addressed questions on other owners' work. Preserve the same routes when they coincide; do not infer a private cross-host chat address.
 
 ## Required COO capability
 
@@ -168,4 +172,4 @@ Record prior source, tasks still on old rules, accepted cutover and responsible 
 
 ## Operational communication
 
-Apply [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md). Record approved channels/direct working-exchange permissions per executor. No new messaging authority is assumed before configuration. Working-exchange permission differs from notify_local wake permission. Bounded assistance keeps the parent owner/publisher; ownership changes require published handoff. Locality does not change persistence rules. Heartbeat stays off unless separately enabled.
+Apply [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md). Record approved channels/direct working-exchange permissions per executor. No new messaging authority is assumed before configuration. Working-exchange permission differs from notify_local wake permission. Bounded assistance keeps the parent owner/publisher; ownership changes require published handoff. Every independent TASK returns through `git_checkpoint_then_tracker`, regardless of locality. Heartbeat stays off unless separately enabled.

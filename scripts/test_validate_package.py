@@ -46,9 +46,12 @@ coo:
 """)
         self.put("templates/TASK-TEMPLATE.md", """# TASK
 handoff_seq
+owner_route
 previous_owner_executor_id
 assigned_by_executor_id
 result_to_executor_id
+result_to_route
+delivery_policy
 Authorized next transitions
 registration_id
 tracker_item
@@ -133,6 +136,19 @@ REGISTRATION_BLOCKED
         self.put("templates/TASK-TEMPLATE.md", "# TASK\nowner_executor_id\n")
         self.assertTrue(any("Missing durable-baton marker" in e
                             for e in validate(self.root)))
+
+    def test_task_template_requires_explicit_return_route_and_delivery_policy(self):
+        text = (self.root / "templates/TASK-TEMPLATE.md").read_text(encoding="utf-8")
+        self.put("templates/TASK-TEMPLATE.md", text.replace("owner_route\n", "")
+                                               .replace("result_to_route\n", "")
+                                               .replace("delivery_policy\n", ""))
+        errors = validate(self.root)
+        self.assertTrue(any("Missing durable-baton marker: owner_route" in e
+                            for e in errors))
+        self.assertTrue(any("Missing durable-baton marker: result_to_route" in e
+                            for e in errors))
+        self.assertTrue(any("Missing durable-baton marker: delivery_policy" in e
+                            for e in errors))
 
     def test_team_requires_one_coo_mode_for_each_participant(self):
         self.put("templates/TEAM.md", "# TEAM\nCOO is optional.\n")

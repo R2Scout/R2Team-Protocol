@@ -11,6 +11,7 @@ handoff_seq: 0
 status: DRAFT
 stage: DISCOVERY
 owner_executor_id: "<registered-executor>"
+owner_route: "<exact-Issue-PR-or-Work-Item-discussion-for-current-owner>"
 previous_owner_executor_id: null
 assigned_by_executor_id: "<authorized-publisher>"
 task_issuer_executor_id: "<direct-work-issuer>"
@@ -18,6 +19,8 @@ task_issuer_route: "<existing-provider-discussion>"
 project_pm_executor_id: "<current-TEAM-PM>"
 project_pm_route: "<existing-provider-discussion>"
 result_to_executor_id: "<executor-that-receives-this-stage-result>"
+result_to_route: "<exact-Issue-PR-or-Work-Item-discussion-for-this-result>"
+delivery_policy: git_checkpoint_then_tracker
 executor_mode: "<local_standalone|remote_manual|subagent>"
 parent_executor_id: null
 active_role: PM
@@ -65,7 +68,7 @@ Link to OpenSpec tasks.md when a change exists, otherwise a short plan. Do not d
 - Blockers:
 - Material open requests, if any: respondent, answer/action, version/environment, blocking impact and next step. Include a provider link if available, but preserve enough context to recover without a transcript. Routine completed exchanges need no entry. Apply [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md).
 
-Task Issuer and Project PM routes must be filled before READY, even when the executor and URL are identical. Neither route is inferred from the current owner or publisher. Material/asynchronous questions use [the question contract](OPERATING_COMMUNICATION.md#question-routes). Add entries to frontmatter `questions` only when needed:
+Task Issuer, Project PM, current-owner and stage-result routes must be filled before READY, even when their executor and URL are identical. `owner_executor_id` plus `owner_route` is the incoming baton for the current stage. `result_to_executor_id` and `result_to_route` are the **only** destination for that current owner's completed stage result. `delivery_policy` is always `git_checkpoint_then_tracker` for an independent TASK: publish the TASK checkpoint to the accepted default branch first, then post its exact pointer to the **new current owner's `owner_route`**. Neither a task-issuer route, current/previous owner, checkpoint publisher, direct-message sender nor the physical parent chat is a result route unless it is explicitly copied into both result fields. Material/asynchronous questions use [the question contract](OPERATING_COMMUNICATION.md#question-routes). Add entries to frontmatter `questions` only when needed:
 
 ```yaml
 questions:
@@ -105,13 +108,13 @@ For a handoff, identify the published branch/checkpoint and current owner. Never
 
 PM fills this table before execution. The current owner may publish only an explicitly authorized transition and still obeys branch protection/provider permissions.
 
-| Outcome | Next TASK status | Next owner executor | Next active role | Result goes to | Authorized publisher |
-| --- | --- | --- | --- | --- | --- |
-| PASS | `<status>` | `<executor-id>` | `<role>` | `<executor-id>` | `<executor-id or PM>` |
-| FAIL | `<status>` | `<executor-id>` | `<role>` | `<executor-id>` | `<executor-id or PM>` |
-| BLOCKED | `BLOCKED` | `<current or PM>` | `<role>` | `<executor-id>` | `<executor-id or PM>` |
+| Outcome | Next TASK status | Next owner executor | Next owner route | Next active role | Following stage returns to | Following result route | Authorized publisher |
+| --- | --- | --- | --- | --- | --- | --- |
+| PASS | `<status>` | `<executor-id>` | `<existing-tracker-discussion>` | `<role>` | `<executor-id>` | `<existing-tracker-discussion>` | `<executor-id or PM>` |
+| FAIL | `<status>` | `<executor-id>` | `<existing-tracker-discussion>` | `<role>` | `<executor-id>` | `<existing-tracker-discussion>` | `<executor-id or PM>` |
+| BLOCKED | `BLOCKED` | `<current or PM>` | `<existing-tracker-discussion>` | `<role>` | `<executor-id>` | `<existing-tracker-discussion>` | `<executor-id or PM>` |
 
-At every ownership change increment `handoff_seq` and update `previous_owner_executor_id`, `owner_executor_id`, `assigned_by_executor_id`, `result_to_executor_id`, status, active role, exact evidence and next action. The assignment becomes discoverable only after this TASK checkpoint reaches the accepted default branch.
+At every ownership change increment `handoff_seq` and update `previous_owner_executor_id`, `owner_executor_id`, `owner_route`, `assigned_by_executor_id`, `result_to_executor_id`, `result_to_route`, status, active role, exact evidence and next action. The assignment becomes discoverable only after this TASK checkpoint reaches the accepted default branch. The publisher notifies the newly declared `owner_route`; `result_to_*` remains the route that this new owner will use after its own stage. If a transition cannot name both owner and result routes, it is `ROUTE_REQUIRED`; do not return work to a local PM, sender chat or assumed parent.
 
 At that same boundary, explicitly confirm/update Task Issuer and Project PM routes and transfer every unresolved question with its current respondent. A checkpoint publisher is not automatically the new issuer. Preserve the previous assignment and decision history in Git.
 

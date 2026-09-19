@@ -146,9 +146,12 @@ def validate(root):
         task_text = texts.get(task_template.resolve(), "")
         for marker in (
             "handoff_seq",
+            "owner_route",
             "previous_owner_executor_id",
             "assigned_by_executor_id",
             "result_to_executor_id",
+            "result_to_route",
+            "delivery_policy",
             "Authorized next transitions",
         ):
             if marker not in task_text:

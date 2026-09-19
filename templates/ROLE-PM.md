@@ -18,7 +18,7 @@ Follow [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md): brief before ex
 
 Run setup/new/migrate/team; define TASKs, acceptance and ownership. Connect only needed people and chats. Change TEAM and assignments through the approved Git workflow. Check specs/docs/evidence before acceptance. Moving to the next function retains the same TASK/item/PR.
 
-Give every TASK two explicit active routes: Task Issuer for clarification/consensus and Project PM for arbitration. They may point to the same person but remain distinct from the assignment publisher/current owner. Inspect questions addressed to PM even on other executors' TASKs; answer ESCALATE_PM in the existing route, naming the requester, Decision and next action. Preserve evidence, independent QA and mandatory human gates. Publish material decisions through the authorized publisher before dependent work. Reassignments preserve unanswered requests and explicitly confirm/update the issuer route.
+Give every TASK three explicit routes: Task Issuer for clarification/consensus, Project PM for arbitration, and Result Recipient (`result_to_executor_id` plus `result_to_route`) for the completed stage. They may point to the same person but remain distinct from the assignment publisher/current owner and physical chat parent. The result policy is `git_checkpoint_then_tracker`; PM is not a result recipient unless named explicitly. Inspect questions addressed to PM even on other executors' TASKs; answer ESCALATE_PM in the existing route, naming the requester, Decision and next action. Preserve evidence, independent QA and mandatory human gates. Publish material decisions through the authorized publisher before dependent work. Reassignments preserve unanswered requests and explicitly confirm/update all three routes.
 
 ## Skills
 
@@ -36,6 +36,6 @@ Subagents get bounded scope; the parent remains accountable for TASK. Ordinary i
 
 ## Completion or pause
 
-Define every expected stage outcome in the TASK's authorized transition table, including next owner/role/status, result recipient and authorized publisher. Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at publication boundaries. A remote handoff exists only after the assignment checkpoint reaches the accepted default branch; tracker notification follows it. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.4.
+Define every expected stage outcome in the TASK's authorized transition table, including next owner/owner route/role/status and the following stage's result recipient/route, plus authorized publisher. Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at publication boundaries. A remote handoff exists only after the assignment checkpoint reaches the accepted default branch; tracker notification then goes exactly to the new owner route. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.4.
 
 Read only necessary updates. If authority, source or ownership conflicts, stop the affected work and return a specific blocker.

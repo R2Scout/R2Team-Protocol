@@ -18,17 +18,17 @@ An independent outcome with its own ownership, acceptance or lifecycle uses the 
 
 A registered standalone chat can assist just as an authorized subagent can, without taking ownership of the parent TASK. The current owner remains accountable and the single publisher. The assistant's TEAM function/permissions must permit the work; a direct request cannot self-assign an independent backlog task, change active ownership or expand authority. The helper's function does not change the owner's active_role.
 
-Before executing a working request, verify the parent task/ref, requester and recipient, requested result, scope/paths/candidate and return route. Show a concise intake appropriate to the work; no separate ACK file or repeated approval for already authorized steps. Conflicting or ambiguous requests are clarified, not executed.
+Before executing a working request, verify the parent task/ref, requester and recipient, requested result, scope/paths/candidate and return route. A bounded helper returns only to its declared parent/requester; it never reports an independent TASK result to that chat. Show a concise intake appropriate to the work; no separate ACK file or repeated approval for already authorized steps. Conflicting or ambiguous requests are clarified, not executed.
 
 For writes, coordinate paths and candidates, preserve other work, and return the patch/result to the publisher. Separate worktrees can share other resources; neither a different chat nor a worktree guarantees isolation. A new independent branch/PR is required only when the work actually becomes independently owned, not merely because a helper needs an isolated scratch checkout.
 
 ## Direct communication
 
-When project policy, local routing and actual tool permissions allow it, standalone chats may exchange the bounded request, context, question and answer directly. They are not limited to pointer-only wake messages for this purpose.
+When project policy, local routing and actual tool permissions allow it, standalone chats may exchange the bounded request, context, question and answer directly. They are not limited to pointer-only wake messages for this purpose. Such a direct exchange is never the implicit return route for an independent TASK.
 
 Include only what is necessary: parent TASK/ref, exact candidate or input, bounded request, limits and return route. The receiver validates the current contract and does not treat conversational text as a new product specification, permission or ownership assignment.
 
-Local chat IDs remain in ignored local configuration. Remote participants may use an existing Issue/PR thread or another agreed channel with the same persistence rules. Do not invent cross-host routing or promise automatic execution by a remote Codex. Direct messaging is optional; no new required messaging service.
+Local chat IDs remain in ignored local configuration. A `remote_manual` executor uses the provider route specified by the TASK; it does not use a local registry, cross-host chat, or a chat belonging to its task issuer/PM. `local_standalone` may use direct exchange only when its TEAM transport permits it. Do not invent cross-host routing or promise automatic execution by a remote Codex. Direct messaging is optional; no new required messaging service.
 
 A durable remote invitation contains repository, participant/executor, functions, accepted TEAM/protocol ref, stable registration ID, exact onboarding Issue/Work Item, PM recipient, prepared first TASK, evidence contract and activation/capacity mode, but no local task IDs. The participant posts a structured registration result or addressed question to that route. PM's COO detects the registered event; PM/publisher performs activation. A local standalone executor also receives a separate ephemeral launch envelope. Without confirmed return, report `NOT_DELIVERED`; notification is not connection.
 
@@ -49,7 +49,7 @@ Every assigned TASK and bounded request has two active response routes, even whe
 - `task_issuer_executor_id` and `task_issuer_route`: the direct work issuer and clarification/consensus route.
 - `project_pm_executor_id` and `project_pm_route`: the current TEAM PM and project arbitration route.
 
-Routes are existing Issue/Work Item/PR threads or the permitted bounded-request return route. Durable TASK routes contain provider references, never private chat IDs. Task Issuer is distinct from `owner_executor_id`, `parent_executor_id`, `assigned_by_executor_id` (the assignment publisher), and `result_to_executor_id` (stage result recipient). An authorized reassignment explicitly confirms or changes the issuer and preserves history; changing who publishes a checkpoint does not silently change the issuer. On PM replacement, reconcile affected routes with current TEAM before relying on them.
+Routes are existing Issue/Work Item/PR threads or the permitted bounded-request return route. Durable TASK routes contain provider references, never private chat IDs. Task Issuer is distinct from `owner_executor_id`, `parent_executor_id`, `assigned_by_executor_id` (the assignment publisher), and `result_to_executor_id`/`result_to_route` (the sole stage-result destination). An authorized reassignment explicitly confirms or changes the issuer and preserves history; changing who publishes a checkpoint does not silently change the issuer. On PM replacement, reconcile affected routes with current TEAM before relying on them.
 
 | Question Mode | Recipient and action |
 | --- | --- |
@@ -69,9 +69,21 @@ Block only work that depends on the answer; continue safe independent work withi
 
 ## Remote baton
 
-The same handoff works for local and remote executors. The current owner publishes the next authorized TASK state to the accepted default branch with incremented `handoff_seq`, exact next `owner_executor_id`, `active_role`, `result_to_executor_id`, evidence and next action. The linked Issue/PR carries a pointer and logical-executor label when configured. The recipient discovers the assignment from Git, prints intake, and later returns the result through another authorized TASK transition. Chat history is never the return address.
+The same handoff works for local and remote executors. The current owner publishes the next authorized TASK state to the accepted default branch with incremented `handoff_seq`, exact next `owner_executor_id`, `owner_route`, `active_role`, the next stage's `result_to_executor_id`/`result_to_route`, `delivery_policy: git_checkpoint_then_tracker`, evidence and next action. The linked Issue/PR carries a pointer and logical-executor label when configured. The publisher posts that pointer to the new `owner_route`; the recipient discovers the assignment from Git, prints intake, and later returns the result through another authorized TASK transition. Chat history is never the return address.
 
-If the TASK lacks an authorized outcome route, stop at `ROUTE_REQUIRED` and ask PM in the linked provider channel. If the TASK update is not accepted remotely, report `LOCAL_ONLY` or `SYNC_REQUIRED`; notification alone is not a handoff.
+At intake, display this Route Card before work:
+
+```text
+TASK: TASK-.../revision, owner: <this executor> via <owner_route>
+Task PM: <project_pm_executor_id> via <project_pm_route>
+Result: <result_to_executor_id> via <result_to_route>
+Transport: git_checkpoint_then_tracker; executor: <mode>/<location>
+Chat sender/parent: non-authoritative unless explicitly identical to Result
+```
+
+Use the fields mechanically: Task Issuer answers clarification; Project PM arbitrates; current owner performs the current stage; current `result_to_*` names who receives its result; the next checkpoint makes that recipient the new owner and copies its route to `owner_route`, while setting the following stage's result fields. A current/previous owner, assignment publisher, internal COO parent, chat that invoked the role, or a local PM is never substituted for Result. If either owner or result route is absent, stale, inaccessible or conflicts with the authorized transition, stop at `ROUTE_REQUIRED`; do not send a handoff anywhere.
+
+If the TASK lacks an authorized outcome route, stop at `ROUTE_REQUIRED` and ask PM in the linked provider channel. If the TASK update is not accepted remotely, report `LOCAL_ONLY` or `SYNC_REQUIRED`; notification alone is not a handoff. For a remote executor the provider pointer to the new `owner_route` is mandatory after Git publication; direct chat is neither a fallback nor a receipt. For a local executor direct chat may announce the already-published pointer only when configured; it never changes either route.
 
 ## OpenSpec boundary
 
