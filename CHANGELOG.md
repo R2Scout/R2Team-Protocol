@@ -2,6 +2,10 @@
 
 ## 2.4 — candidate
 
+- Distinguish executor-wide queue checks from explicit single-TASK inspection; prevent a held known task or unchanged cursor from hiding pending/new work.
+- Require truthful coverage and current remote refs, plus actual project/skill/startup-prompt adoption checks.
+- Add explicit Task Issuer and Project PM routes with ASK, LOOP and direct ESCALATE_PM; preserve question status/Decision and return answers to the requester regardless of task ownership.
+
 - Add executor-scoped discovery of unknown new TASK IDs from bounded default-branch frontmatter deltas.
 - Make exact `owner_executor_id` plus actionable TASK status the assignment signal; provider state remains a routing aid.
 - Separate internal-subagent, same-chat and standalone COO modes so internal helpers return to their parent without requiring a registry or wake.

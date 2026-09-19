@@ -42,6 +42,8 @@ Specify whether subagents are allowed, their purposes, paths and outputs. They d
 
 Every function follows [the interaction cycle](CODEX_TEAM_PROTOCOL.md#interaction): intake, human guidance, addressed clarification and agreement. Internal helpers report to their parent; one executor publishes TASK. A question or reply expands no authority.
 
+Identify the TASK's Task Issuer and Project PM routes at intake. Every function may ASK, LOOP or ESCALATE_PM under [the question contract](OPERATING_COMMUNICATION.md#question-routes); only dependent work waits. Check requests/replies addressed to this executor even when it does not own the TASK. A queue-wide start checks all current assignments to this executor; inspecting one held TASK cannot establish that the queue is empty.
+
 Preserve artifacts, material evidence, blockers and next action under [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md). Bounded requests can return directly; ownership handoffs require publication first. No mandatory MSG/report/queue for a new function.
 
 ## Readiness

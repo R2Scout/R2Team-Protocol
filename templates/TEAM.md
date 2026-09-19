@@ -16,6 +16,7 @@ protocol_source:
   package_path: null
   package_sha256: null
 pm_executor_id: null
+pm_response_route: null
 participants: []
 tracker:
   provider: null
@@ -41,6 +42,7 @@ Replace the placeholders; this is not an actual assignment:
 
 ```yaml
 pm_executor_id: john-main
+pm_response_route: "<existing-project-provider-discussion>"
 participants:
   - id: john
     tracker_actor: "<verified-provider-identity>"
@@ -108,6 +110,8 @@ For actual needed functions, record:
 
 Task-specific material questions and human actions belong in that TASK under [interaction rules](CODEX_TEAM_PROTOCOL.md#interaction), not a duplicate team registry. Asking a question does not transfer ownership. Provider notifications guarantee neither reading nor remote Codex execution.
 
+Fill `pm_response_route` with a usable existing provider discussion. Each TASK explicitly records Task Issuer and Project PM executor/routes; its PM must agree with current TEAM. The issuer is the direct work assigner, not necessarily the current owner or checkpoint publisher. Configure scoped provider queries/labels where supported so issuers and PM see addressed questions on other owners' work. Preserve the same routes when they coincide; do not infer a private cross-host chat address.
+
 ## Required COO capability
 
 Every active participant has exactly one COO mode covering all of that participant's active executor IDs: `internal` by default, `same_chat`, or `standalone`. The capability is mandatory; a separate COO executor/chat is optional. Internal and same-chat modes require no registry and have no wake rights. A standalone COO is registered with `roles: [COO]` and may use only separately granted local wake rights.
@@ -145,6 +149,8 @@ Fill exact IDs and boundaries. `git_task_delta` lets a remote COO discover new T
 PM/authorized owner and local environment owner approve rights. COO cannot change its own authority/scope or schedule. Configuration describes agreed policy, not proof that tool permissions were technically applied.
 
 Session-start and before-idle checks run only while the participant is active. A separately authorized heartbeat uses the same [COO procedure](ROLE-COO.md); no idle Codex is assumed to run without a supported scheduler. Internal helper scheduling belongs to the parent. Local cursor/dedup is ignored technical state, not the Git project source.
+
+Ordinary checks use executor-wide scope, not a frozen TASK list. Cache unresolved assignments/questions together with the last verified default-branch SHA; rebuild the bounded baseline if that cache is incomplete. Explicit single-TASK checks report their narrower coverage. Updating this policy does not rewrite or enable an existing heartbeat: inspect its saved scope during adoption and change it only under its existing authority.
 
 ## Actual tool readiness
 

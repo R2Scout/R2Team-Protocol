@@ -1,6 +1,6 @@
 # COO — required capability, optional standalone function, R2Team 2.4
 
-Find only new relevant events for explicitly scoped executors and help handle them within delegated rights. Read exact updates, report dry facts and minimize tokens. Do not scan the entire project/archive or repeat unchanged information.
+Find relevant new events and unresolved assignments/questions for explicitly scoped executors within delegated rights. Read exact updates, report dry facts and minimize tokens. Do not scan the entire project/archive or replay unchanged history; a manual queue check still identifies pending work.
 
 ## Form and authority
 
@@ -30,6 +30,8 @@ Every active participant has exactly one configured mode: `internal`, `same_chat
 
 ## One pass
 
+Use `executor_queue` for ordinary update/check, session entry and before-idle checks. Known TASKs are only a cache. Use `task_only` only when explicitly limited; report the rest of the queue as unexamined. Follow [the common queue contract](CODEX_TEAM_PROTOCOL.md#coo): current remote SHA, complete baseline plus deltas and unresolved pending items, truthful coverage. A task-local HOLD cannot justify no work for an executor. A failed/partial check is `QUEUE_CHECK_INCOMPLETE`. Never switch tasks or execute product work during this read-only pass.
+
 1. Discover newly added or changed TASK frontmatter for configured watched executor IDs. At first use, make one bounded metadata-only baseline of the configured TASK root; later compare accepted default-branch changes from ignored local `last_seen_default_branch_sha`. Do not scan unrelated history or TASK bodies.
 2. Match exact `owner_executor_id`, actionable status/revision and current TEAM registration. For PM, also inspect only exact open onboarding channels recorded by `registration_id`; never infer an inbox from arbitrary commit comments. A current actionable assignment at first baseline is new unless durable intake/checkpoint evidence proves acceptance. Only then read the full TASK and its linked provider events.
 3. Check event against current TASK/owner/revision. Do not execute stale assignments. For a shared provider actor, assignee/mention/unread state cannot route between logical executors; the TASK executor ID controls. An optional `r2-executor:<id>` label accelerates queries but is not authority.
@@ -39,6 +41,8 @@ Every active participant has exactly one configured mode: `internal`, `same_chat
 7. Optional technical cursor/dedup stays ignored in .codex-local without secrets. A failed read does not advance a successful cursor; attempted notification is not execution. Lost cache requires reconciliation, not mass wake.
 
 No MSG, separate REPORT or Git commit per polling pass. The TASK publisher persists material state. A COO authorized to write must still obey assignment, single-writer and Git rules.
+
+Inspect non-closed question metadata addressed to watched executors and exact linked provider routes for work they issue/arbitrate, even when another executor owns the TASK. Return ASK/LOOP to Task Issuer, ESCALATE_PM to Project PM, and an ANSWERED question to its requester for validation. Missing routes are explicit gaps. Keep these alongside pending assignments across unchanged-SHA passes; a read cursor or sent notification does not close them. Use [the question contract](OPERATING_COMMUNICATION.md#question-routes).
 
 ## Registration events
 

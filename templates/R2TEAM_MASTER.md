@@ -6,6 +6,8 @@ Read the relevant [protocol](CODEX_TEAM_PROTOCOL.md), [setup](Setup.md), [team](
 
 ## Operating modes
 
+For each executor, compare accepted project source/ref with actually loaded work/COO skills and saved startup/watch prompts. Demonstrate discovery of an unknown READY task alongside a known HOLD task and honest task-only coverage. Configure explicit Task Issuer and Project PM routes and verify addressed-question return without ownership transfer. Missing live evidence is NOT_RUN; publication alone does not prove adoption.
+
 - Bootstrap/update the four R2Team skills and required OpenSpec/Superpowers capabilities from approved exact refs.
 - Run new/migrate setup from a single Project Charter; add a Pilot Addendum only for synthetic protocol tests.
 - Add/register/connect/migrate/disconnect participants, functions and executors.

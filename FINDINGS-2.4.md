@@ -30,3 +30,15 @@ A valid remote registration can still stall when its result is posted to a provi
 - PM or the named publisher may apply a pre-authorized activation without asking the owner to approve the same evidence again. The first TASK becomes `READY` only when registration and its declared capacity gate are satisfied.
 
 This closes both directions of onboarding: the participant knows exactly where to return evidence/questions, and PM knows exactly what to monitor and publish next.
+
+## Known-task HOLD hides another assignment
+
+A report that one remembered TASK is still HOLD is correct for that TASK but cannot establish that its executor has no work. Another READY assignment may already be on the accepted default branch. The failure can arise from a frozen watch list, an explicitly narrow request, stale source, or mismatched project/skill adoption; the exact invocation is needed to distinguish these causes. Do not attribute an unobserved remote execution path to one cause without evidence.
+
+The candidate now separates executor_queue from explicit task_only checks, requires fresh remote metadata discovery before queue-wide inactivity claims, and preserves pending assignments across unchanged-SHA passes. HOLD stays task-local unless a wider restriction is recorded. Incomplete checks have an explicit outcome. Setup/migration verifies actual role/skill adoption, including saved entry/watch prompts, rather than equating installed files with current behavior.
+
+## Explicit clarification and arbitration routes
+
+Every assignment carries Task Issuer and Project PM response routes, distinct from current owner, publisher and result recipient. ASK clarifies, LOOP seeks consensus on disagreement, and ESCALATE_PM may go directly to the authorized PM. Existing TASK/provider records carry mode, status, requester/respondent, blocking impact and Decision. Issuers and PM find addressed questions on other owners' tasks; answers return to the requester. Only dependent work pauses. PM authority cannot replace evidence, independent QA or mandatory human gates.
+
+These rules add no messaging service or parallel queue. The scenarios are document-level acceptance criteria; live remote discovery, adoption and question exchange must be verified separately before claiming the operational problem is fixed.

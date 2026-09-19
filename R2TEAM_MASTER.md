@@ -41,6 +41,8 @@ Read only the exact TASKs, provider items, PRs, refs and local routes needed for
 
 Installation does not adopt the protocol, create assignments or authorize product work.
 
+For each executor, compare the accepted project source/ref with actually loaded work/COO skills and saved startup/watch prompts. Demonstrate executor-wide discovery with a known HOLD task and an unknown READY task, plus honest task-only coverage. Configure explicit Task Issuer and Project PM response routes and demonstrate addressed-question return without requiring task ownership. Missing live evidence is NOT_RUN; do not declare a remote role upgraded from package publication alone.
+
 ## Project Charter and launch mode
 
 Collect one Project Charter for both production and synthetic-pilot modes: outcome, provider/repository, constraints, desired participants/functions/executors, permissions, QA independence, communication, OpenSpec, branches/PRs, CI/deployment, multi-repo dependencies and first result. Setup must reuse confirmed answers rather than ask again.

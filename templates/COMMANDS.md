@@ -32,7 +32,7 @@ Confirm the target directory and guide me through setup. This chat will be PM.
 
 This routes to Setup mode `new`. A new project is not expected to have TEAM/TASK yet. The wizard confirms the initial PM and creates the agreed configuration. For an existing MVP or older protocol use Setup mode `migrate`; do not initialize a new project over its files.
 
-The full template package is needed for setup. Installing SKILL.md alone does not copy project templates. Provide a verified package path or repository URL and full commit SHA. The distribution is https://github.com/R2Scout/R2Team-Protocol. Resolve release v2.4 to its actual commit and verify the source; do not silently use main/latest.
+The full template package is needed for setup. Installing SKILL.md alone does not copy project templates. Provide a verified package path or repository URL and full commit SHA. The distribution is https://github.com/R2Scout/R2Team-Protocol. Version 2.4 is a candidate until its release is published: use the explicitly approved full candidate commit, not an assumed v2.4 tag or main/latest.
 
 ## Add → register → connect
 
@@ -75,9 +75,13 @@ Publish the structured result in the exact onboarding channel if authorized; the
 
 At stage completion, use the TASK's authorized transition table. Increment `handoff_seq`, publish the next owner/status/role/result route and evidence to the accepted default branch, then update the linked provider item. The remote recipient discovers that baton by executor ID. Missing route is `ROUTE_REQUIRED`; an unaccepted TASK update is not a completed handoff.
 
+`start` without an ID checks `executor_queue`; an explicit `start TASK-ID` or `task TASK-ID` checks `task_only` and never silently substitutes another task. Queue checks resolve the current remote default-branch SHA and include unknown assignments plus still-pending work from earlier passes. HOLD of one TASK does not block another eligible READY assignment. A partial/failed or incompatible check reports `QUEUE_CHECK_INCOMPLETE`, not no work. Manual output identifies scope, executor, SHA, actionable/held IDs and next action; a read-only check never starts product work.
+
 `task TASK-ID` is inspection only. `task TASK-ID discuss ...` identifies the question, participating executors/accounts, criteria and authorized decider. Use the existing Issue/Work Item for requirements or PR thread for code review. Silence is not consent. A comment does not change scope; approval and an updated contract are required before dependent work.
 
 The current publisher preserves material open questions, decisions, evidence and next_action in Git before handoff/pause. Comments alone are not recoverable from a clone. Human setup or visual confirmation gets step-by-step guidance: purpose, safe action, expected result, response verification, next step until result, explicit pause or handoff.
+
+Every assignment names Task Issuer and Project PM with active response routes. Use the existing discuss command or natural language with Question Mode: ASK for issuer clarification, LOOP for disagreement/consensus, ESCALATE_PM for direct PM arbitration. Example: `$r2team-work task TASK-042 discuss PM` with `Question Mode: ESCALATE_PM` and the specific conflict. No new command, task or message file is needed. Record OPEN/ANSWERED/ESCALATED/CLOSED and Decision in the existing route; recipients inspect addressed questions regardless of TASK ownership. Answers return to the original requester; only dependent work waits. See the question-routes section of the adopted project's OPERATING_COMMUNICATION.md.
 
 Use the project's OpenSpec and Superpowers routing, reading the applicable SKILL.md. Do not apply every workflow to a trivial operation or skip required approval/testing. Missing dependencies are reported and installation or an explicit equivalent agreed.
 
@@ -98,6 +102,8 @@ Every active participant has one COO capability. Internal is the default; a stan
 An internal COO helper returns findings to its parent; it does not send external notifications. A standalone COO may notify its local roles within explicit rights. A GitHub/TFS event does not start remote Codex automatically.
 
 Both commands first discover newly assigned TASKs for configured watched executor IDs from accepted default-branch TASK deltas. This is how a remote COO learns an unknown new TASK ID. Shared provider-account unread/assignee state is not sufficient; TASK `owner_executor_id` controls. `update` reports only; `check` may use one authorized local wake.
+
+Also discover non-closed question metadata and scoped provider questions/replies addressed to the watched executors. A saved cursor is not acceptance: keep unresolved work in the pending set, or rebuild a bounded baseline when that set is missing. An explicitly limited single-TASK pass reports `task_only`; it cannot certify an empty executor queue. No new delta and no available work are different results.
 
 When invoked as an internal subagent, COO returns `RETURNED_TO_PARENT` and never asks for a registry. When invoked in the executor's own role chat, it returns `ACTION_FOUND_LOCAL` and the role proceeds with `$r2team-work start TASK-ID`. Only a separately registered standalone COO performs local wake.
 

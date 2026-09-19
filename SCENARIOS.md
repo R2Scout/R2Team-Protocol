@@ -99,6 +99,28 @@ These are acceptance scenarios for setup, team lifecycle, communication, recover
 | Heartbeat requested | Explicit scheduler/scope, quiet unchanged, manual canary | Perpetual undocumented polling |
 | Wake send uncertain | Report uncertainty; no blind retry | Claim delivery or resend indefinitely |
 
+## Assignment discovery and question regression cases
+
+These fixtures describe expected consuming-agent behavior. They are not executed tests or permission to create live tasks. Use existing authorized synthetic fixtures during adoption and record the actual result in the normal adoption checkpoint.
+
+| Input | Expected | Forbidden |
+| --- | --- | --- |
+| Known TASK-A HOLD and previously unknown TASK-B READY, both owned by ken-dev; executor_queue check | Current remote metadata finds B; A remains held; return B and next action without executing | Conclude no work from A or require A to be released first |
+| Same inputs; explicitly inspect TASK-A only | scope task_only; report A HOLD and the rest of the queue unexamined | Claim executor-wide inactivity or switch to B automatically |
+| TASK-B READY already seen; same remote SHA; no intake | Keep B pending; distinguish no new events from no work | Drop B because the cursor advanced or notification was sent |
+| Cursor exists but cached pending set is missing | Rebuild bounded metadata baseline | Infer empty queue from an empty diff |
+| Remote read fails or a status mapping is unknown | QUEUE_CHECK_INCOMPLETE with exact gap | Successful no-work result or cursor advancement |
+| A held TASK plus READY B; accepted executor-wide suspension/capacity block | Discover B and report the explicit wider gate | Start B by treating every restriction as task-local |
+| Two eligible assignments without priority | Show both and ask through the issuer/PM route | Choose by chat recency or filename |
+| Installed skill 2.4, accepted project 2.3, no cutover | Report incompatible/pending adoption and actual source refs | Claim the new queue behavior is already active |
+| Dev owns TASK; question is addressed to issuer who owns no TASK | Issuer check discovers the question/linked event and answers in its recorded route | Require the issuer to take TASK ownership to see the question |
+| Task Issuer and Project PM are one executor | Both routes remain explicit and usable | Omit one route because the person is the same |
+| ASK answered with sufficient in-scope facts | ANSWERED addresses original requester; requester validates, closes and resumes authorized dependent work | Extra generic PM start gate or silence-as-consent |
+| Requester disputes issuer interpretation | LOOP records positions/evidence; unresolved conflict may escalate | Hide disagreement or overwrite accepted requirements |
+| Authority conflict requires PM immediately | Direct ESCALATE_PM; retain dependent-work boundary | Mandatory ASK/LOOP before escalation |
+| PM ruling contradicts required QA/human evidence | Preserve the mandatory gate and factual verdict | Convert failed QA into PASS or invent approval |
+| TASK transferred while question is OPEN | Confirm/update issuer/PM routes and preserve question/ref/current respondent | Discard the question or infer issuer from the publisher |
+
 ## Skill routing
 
 | Situation | Expected skill behavior | Not proven by invocation |

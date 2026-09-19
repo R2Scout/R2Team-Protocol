@@ -13,6 +13,10 @@ stage: DISCOVERY
 owner_executor_id: "<registered-executor>"
 previous_owner_executor_id: null
 assigned_by_executor_id: "<authorized-publisher>"
+task_issuer_executor_id: "<direct-work-issuer>"
+task_issuer_route: "<existing-provider-discussion>"
+project_pm_executor_id: "<current-TEAM-PM>"
+project_pm_route: "<existing-provider-discussion>"
 result_to_executor_id: "<executor-that-receives-this-stage-result>"
 executor_mode: "<local_standalone|remote_manual|subagent>"
 parent_executor_id: null
@@ -34,6 +38,7 @@ candidate_sha: null
 verified_sha: null
 merged_sha: null
 next_action: "<one-specific-action>"
+questions: []
 ---
 ```
 
@@ -59,6 +64,21 @@ Link to OpenSpec tasks.md when a change exists, otherwise a short plan. Do not d
 - Remaining:
 - Blockers:
 - Material open requests, if any: respondent, answer/action, version/environment, blocking impact and next step. Include a provider link if available, but preserve enough context to recover without a transcript. Routine completed exchanges need no entry. Apply [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md).
+
+Task Issuer and Project PM routes must be filled before READY, even when the executor and URL are identical. Neither route is inferred from the current owner or publisher. Material/asynchronous questions use [the question contract](OPERATING_COMMUNICATION.md#question-routes). Add entries to frontmatter `questions` only when needed:
+
+```yaml
+questions:
+  - ref: "<existing-question-comment-or-exchange-reference>"
+    mode: ASK
+    status: OPEN
+    from_executor_id: "<requester>"
+    to_executor_id: "<Task-Issuer-or-Project-PM>"
+    blocking: "<dependent-work-or-none>"
+    decision: null
+```
+
+Question Mode is `ASK`, `LOOP` or `ESCALATE_PM`; Question Status is `OPEN`, `ANSWERED`, `ESCALATED` or `CLOSED`. On ANSWERED, address `to_executor_id` to the original requester. Keep a concise Decision and unresolved objections here, with exact refs; do not duplicate the discussion transcript. These fields allow discovery without reading unrelated TASK bodies. The question does not change task ownership. Whole-task BLOCKED is appropriate only when no safe next action remains.
 
 Setup checkpoints include mode, last completed step, confirmed answers/refs and the next question.
 
@@ -92,6 +112,8 @@ PM fills this table before execution. The current owner may publish only an expl
 | BLOCKED | `BLOCKED` | `<current or PM>` | `<role>` | `<executor-id>` | `<executor-id or PM>` |
 
 At every ownership change increment `handoff_seq` and update `previous_owner_executor_id`, `owner_executor_id`, `assigned_by_executor_id`, `result_to_executor_id`, status, active role, exact evidence and next action. The assignment becomes discoverable only after this TASK checkpoint reaches the accepted default branch.
+
+At that same boundary, explicitly confirm/update Task Issuer and Project PM routes and transfer every unresolved question with its current respondent. A checkpoint publisher is not automatically the new issuer. Preserve the previous assignment and decision history in Git.
 
 ## Completion
 

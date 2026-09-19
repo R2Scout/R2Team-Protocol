@@ -30,6 +30,8 @@ Check:
 - Active TASK contract/revision, stage/status, single publisher, branch/head, Issue/Work Item/PR mapping, next_action, open questions/human approvals and evidence candidate SHA.
 - Linked OpenSpec/spec/design/docs/ADR and implementation/test coverage required by stage. Record known gaps; don't declare full specification merely because files exist. No archive/init/sync as part of audit.
 - Role cross-check and real tool/skill access; distinguish installed files from successful discovery and live use.
+- Accepted protocol/ref versus actually loaded work/COO skills and saved entry/watch scope; unknown-TASK discovery and unchanged-SHA pending retention. A task-only HOLD report cannot establish an empty executor queue. Missing evidence is NOT_RUN, a partial check is QUEUE_CHECK_INCOMPLETE.
+- Explicit Task Issuer/Project PM executor/routes separate from owner/publisher; questions carry mode/status/Decision and current recipient. Verify addressed-question discovery on others' TASKs, answer return to requester, preserved unresolved questions on transfer, and PM arbitration within evidence/QA/human gates.
 - Provider accounts/access and notification scope, optional local mapping excluded from Git, single wake dispatcher, no accidental heartbeat or false remote wake promises.
 - Checkpoints support takeover by a clean authorized executor; combined QA/DevOps or same-person helpers are not independent human review.
 

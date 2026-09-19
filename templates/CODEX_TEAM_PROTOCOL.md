@@ -172,7 +172,7 @@ Increment revision for material scope/acceptance/owner contract changes, not eac
 
 Body: outcome; scope/bounds; acceptance; plan/OpenSpec tasks; current refs/partial results/remaining work; exact evidence/limitations; decisions/questions/blockers/human actions; handoff and next actor/action.
 
-States: DRAFT -> READY -> IN_PROGRESS -> REVIEW -> DONE, plus BLOCKED/CANCELLED. Stages: DISCOVERY, DESIGN, IMPLEMENTATION, QA, INTEGRATION, DEPLOYMENT. QA FAIL returns to READY/IMPLEMENTATION with evidence/owner. BLOCKED means no safe next action. Merge alone is not DONE.
+States: DRAFT -> READY -> IN_PROGRESS -> REVIEW -> DONE, plus HOLD/BLOCKED/CANCELLED and onboarding PENDING_REGISTRATION/PENDING_CAPACITY. Stages: DISCOVERY, DESIGN, IMPLEMENTATION, QA, INTEGRATION, DEPLOYMENT. QA FAIL returns to READY/IMPLEMENTATION with evidence/owner. BLOCKED means no safe next action; HOLD is an explicit deferral with a recorded release condition and authorized publisher. The held TASK cannot start until its accepted transition releases it, but other eligible assignments are unaffected unless an executor-wide constraint is recorded. Merge alone is not DONE.
 
 <a id="workflow"></a>
 ## 8. Workflow
@@ -226,6 +226,10 @@ Confirm exact source/artifact digest, environment, authority, migration, rollbac
 Explain why a human step is needed and affected account/environment; give one safe bounded step and expected evidence; avoid secrets; inspect response and guide the next step; continue until verified success, blocker, or pause. Human statement is not automated PASS. Continue independent safe work where possible.
 
 ### 8.9 Clarification and bounded help
+
+Every assigned TASK and bounded request records Task Issuer and Project PM with explicit response routes, even when they are the same executor. The direct issuer, assignment publisher, current owner and stage-result recipient are distinct responsibilities. Apply [the question contract](OPERATING_COMMUNICATION.md#question-routes): ASK for clarification, LOOP for a disagreement/consensus attempt, ESCALATE_PM directly for project-authority conflicts or unresolved disagreement. The requester need not complete ASK/LOOP before requesting PM arbitration.
+
+Record Question Mode, Question Status (OPEN, ANSWERED, ESCALATED, CLOSED), requester/respondent, blocking impact and Decision in the existing TASK/provider route. Respondents inspect addressed requests regardless of TASK ownership; answers return to the original requester for validation and closure. Only dependent work waits. Resume authorized work after a sufficient answer; publish any required contract change first. PM decides within recorded authority and cannot manufacture evidence, override invalid QA, replace a human gate or grant unrelated rights. Reassignment explicitly updates/confirms issuer/PM routes and preserves unresolved questions/history.
 
 Direct requests are allowed inside accepted TASK and actual rights. Include TASK/ref, sender/recipient, candidate, result, boundaries, allowed writes, and return route. Parent remains owner/publisher. Trivial clarification needs no ceremonial intake; bounded work does.
 
@@ -320,13 +324,17 @@ Direct exchange and wake differ: exchange may contain bounded work; wake only po
 <a id="coo"></a>
 ### 13.4 COO and heartbeat
 
+Operational queue checks, work-session entry and before-idle checks use `executor_queue` scope. Resolve the current remote default branch before discovery, including TASKs not previously watched. An explicitly limited TASK check uses `task_only` and reports its unexamined queue; do not silently broaden it or claim executor-wide inactivity. Report scope, watched executors, verified SHA, pending/actionable/held IDs and incomplete reads. A TASK-local HOLD/BLOCKED does not suspend its executor or other eligible READY work; a wider restriction must be explicit in accepted state. A READY assignment still needs valid rights, inputs, capacity and stage gates, but not a second generic PM start message.
+
+Carry unresolved assignments/questions forward from the complete metadata baseline while applying added/changed/deleted TASK and TEAM deltas. A last-seen SHA without its pending set cannot prove an empty queue: rebuild the bounded baseline. Previously observed READY work remains pending until intake/checkpoint evidence; no new delta is not the same as no work. Failed reads, unknown status mappings or incompatible adoption are `QUEUE_CHECK_INCOMPLETE`. Keep technical cache ignored; no service, committed inbox or per-pass report is required.
+
 COO is a mandatory participant capability, not a mandatory separate role or chat. Default: one internal, exact-delta, read-only, dry, minimal-token helper covering that participant's executor IDs. It checks known IDs and performs bounded executor-scoped assignment discovery so a remote participant can find a newly assigned TASK that was not previously watched. No broad scan, second PM, acceptance gate, mandatory relay, or advancing past failed reads.
 
 Each active participant has exactly one configured COO mode. An internal subagent returns findings to its invoking parent executor without registration, registry or wake. A same-chat check reports the role's own assignment locally and never wakes itself. A standalone COO is an optional registered executor and alone uses `notify_local`, local thread mapping and a dispatcher. Ambiguous mode stops as `COO_MODE_AMBIGUOUS`.
 
 Setup/register offers a separate COO chat once and persists `accepted`, `declined`, or `not_supported`. Declining leaves internal mode active; the wizard does not ask again unless the participant requests a change. Accepting requires an explicit choice of an existing chat or creation request. Heartbeat is a separate opt-in and stays off by default. This baseline capability is independent of product-helper policy and grants no writes, cross-participant monitoring, external wake or PM authority.
 
-Discovery reads `watched_executor_ids` from accepted TEAM. First use performs one metadata-only baseline of configured TASK frontmatter; later passes compare added/changed TASK frontmatter and relevant TEAM changes from ignored local `last_seen_default_branch_sha`. Match exact `owner_executor_id` and current revision before reading the complete TASK and linked provider events. PM's mode also checks exact open onboarding channels recorded by `registration_id`; it does not scan arbitrary commit comments. Current actionable assignments at first baseline remain new until durable intake/checkpoint evidence proves acceptance.
+Discovery reads `watched_executor_ids` from accepted TEAM. First use performs one metadata-only baseline of configured TASK frontmatter; later passes compare TASK metadata and relevant TEAM changes from ignored local `last_seen_default_branch_sha`. Match exact `owner_executor_id` and current revision before reading the complete TASK and linked provider events. Also match non-closed `questions` addressed to watched executors and check linked question routes for TASKs they issue/arbitrate, regardless of ownership. PM's mode also checks exact open onboarding channels recorded by `registration_id`; it does not scan arbitrary commit comments. Current actionable assignments at first baseline remain new until durable intake/checkpoint evidence proves acceptance.
 
 When logical executors share one GitHub/TFS account, provider assignee, mention and unread state cannot route work. TASK ownership remains authority; an executor-specific provider label may optimize discovery but cannot replace it. Discovery/dedup state stays ignored and local—never add a committed inbox, polling journal or Messages replacement.
 
@@ -398,6 +406,8 @@ Create role chats only when requested; otherwise PM uses helpers. Role chat gets
 ### 14.6 Role cross-check
 
 New/changed executor states participant/executor/functions; duties/outputs; boundaries/approvals/helpers; tools/spec inputs; queue/task/return route; unknowns. It accepts assigned TASK or asks PM for the first via existing route. No ACK file. Adding function cross-checks changed scope, not all setup.
+
+Cross-check the accepted project source/ref against the actually loaded work/COO skills and any saved startup/watch prompt. A newer installed skill does not prove adoption. Demonstrate unknown-TASK discovery with one held and one eligible assignment, identify both question routes, and show how an addressed question on another owner's TASK is found. Record evidence/NOT_RUN in the existing adoption checkpoint; incompatible rules cannot certify a complete queue.
 
 Ready means source/TEAM/rights known, tools verified or blocked, and a safe next action exists—not automatic product-work authority.
 

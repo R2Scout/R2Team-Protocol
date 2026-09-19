@@ -41,6 +41,32 @@ An accepted answer may return directly. A notification, tool acknowledgement or 
 
 Every active participant has one COO capability for assignments and registered onboarding events, internal by default; it is not a mandatory relay for conversations and does not gain authority to assign helpers from a wake permission. A separate COO chat and heartbeat remain optional. Internal subagents remain bounded by their parent and environment instructions; they do not independently contact other role chats.
 
+<a id="question-routes"></a>
+## Task Issuer, Project PM and questions
+
+Every assigned TASK and bounded request has two active response routes, even when they resolve to the same executor:
+
+- `task_issuer_executor_id` and `task_issuer_route`: the direct work issuer and clarification/consensus route.
+- `project_pm_executor_id` and `project_pm_route`: the current TEAM PM and project arbitration route.
+
+Routes are existing Issue/Work Item/PR threads or the permitted bounded-request return route. Durable TASK routes contain provider references, never private chat IDs. Task Issuer is distinct from `owner_executor_id`, `parent_executor_id`, `assigned_by_executor_id` (the assignment publisher), and `result_to_executor_id` (stage result recipient). An authorized reassignment explicitly confirms or changes the issuer and preserves history; changing who publishes a checkpoint does not silently change the issuer. On PM replacement, reconcile affected routes with current TEAM before relying on them.
+
+| Question Mode | Recipient and action |
+| --- | --- |
+| `ASK` | Task Issuer clarifies a fact or interpretation where there is no material disagreement |
+| `LOOP` | Task Issuer and requester record their positions, evidence, affected scope and consensus sought |
+| `ESCALATE_PM` | Project PM resolves legitimacy, authority, scope, priority or assignment conflicts, or an unresolved LOOP |
+
+Any executor may ask before or during work. ASK/LOOP is not a prerequisite for a question already requiring PM authority. Internal helpers identify the intended route and return through their parent; this does not grant independent external messaging.
+
+Use one existing provider discussion and the TASK's `questions` metadata for material/asynchronous requests. Each entry identifies the existing question/ref, `mode`, `status`, `from_executor_id`, `to_executor_id`, blocking impact and `decision`. Preserve a concise question, positions and answer in the TASK body at the normal publication boundaries so recovery does not depend on a link alone. This is part of the TASK, not a new message, journal or Work Item. A routine factual answer completed in a permitted direct exchange needs no durable question entry.
+
+Question Status progresses as follows: `OPEN` waits for the named respondent; `ESCALATED` waits for Project PM; `ANSWERED` addresses the original requester for validation; `CLOSED` records that the answer resolved the question within authority. Keep the original requester and discussion reference across transitions. An unresolved answer returns to OPEN/LOOP or ESCALATED with the remaining disagreement. The authorized publisher records these changes; a requester without TASK write permission posts in the provider route and asks the publisher to preserve the checkpoint.
+
+Task Issuer and PM inspect questions addressed to them even on TASKs owned by someone else. Their scoped checks include the exact linked provider routes for TASKs they issue or arbitrate, not just their own assignments. Answers name the requester and required next action in that same route. A provider comment can expose a pending question before its checkpoint is published; it cannot authorize a changed contract by itself. Provider filters/labels may make routes queryable where supported; TASK fields remain authoritative.
+
+Block only work that depends on the answer; continue safe independent work within existing authority and capacity. Silence is not agreement. The requester resumes already-authorized work after validating the answer without a second generic start approval. Changes to scope/acceptance/assignment require an authorized published TASK/spec revision first. Project PM's decision is final only within recorded project authority: it cannot invent evidence, turn invalid QA into PASS, replace a mandatory human gate or grant unrelated infrastructure/account permissions. Missing/ambiguous routes are `ROUTE_REQUIRED`, not a reason to guess an address or reinterpret the task.
+
 ## Remote baton
 
 The same handoff works for local and remote executors. The current owner publishes the next authorized TASK state to the accepted default branch with incremented `handoff_seq`, exact next `owner_executor_id`, `active_role`, `result_to_executor_id`, evidence and next action. The linked Issue/PR carries a pointer and logical-executor label when configured. The recipient discovers the assignment from Git, prints intake, and later returns the result through another authorized TASK transition. Chat history is never the return address.

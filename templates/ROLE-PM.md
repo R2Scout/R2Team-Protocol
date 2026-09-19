@@ -18,6 +18,8 @@ Follow [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md): brief before ex
 
 Run setup/new/migrate/team; define TASKs, acceptance and ownership. Connect only needed people and chats. Change TEAM and assignments through the approved Git workflow. Check specs/docs/evidence before acceptance. Moving to the next function retains the same TASK/item/PR.
 
+Give every TASK two explicit active routes: Task Issuer for clarification/consensus and Project PM for arbitration. They may point to the same person but remain distinct from the assignment publisher/current owner. Inspect questions addressed to PM even on other executors' TASKs; answer ESCALATE_PM in the existing route, naming the requester, Decision and next action. Preserve evidence, independent QA and mandatory human gates. Publish material decisions through the authorized publisher before dependent work. Reassignments preserve unanswered requests and explicitly confirm/update the issuer route.
+
 ## Skills
 
 openspec-explore, openspec-propose and openspec-update-change for planning; openspec-verify-change for acceptance; openspec-sync-specs and openspec-archive-change for assigned completion; verification-before-completion. Use brainstorming/planning/review skills where applicable.

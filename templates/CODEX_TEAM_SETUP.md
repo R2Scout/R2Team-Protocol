@@ -52,6 +52,7 @@ Read AGENTS.md, Setup.md join, your role contract, SKILLS.md and OPERATING_COMMU
 Verify current assignment/remote head; do not rely only on the invitation's old SHA.
 Cross-check duties, boundaries, inputs, actual skills, channels and unresolved questions.
 Read `handoff_seq`, `result_to_executor_id` and the authorized next-transition table.
+Identify Task Issuer and Project PM executor/response routes; explain ASK, LOOP and ESCALATE_PM.
 Post `R2_EVENT: REGISTRATION_RESULT`, status `READY_FOR_ACTIVATION`, evidence and questions in the exact onboarding channel. Use `R2_EVENT: ONBOARDING_QUESTION`, `to_executor_id: <pm-id>` for blockers.
 After PM publishes registration, run your COO pass and start the prepared TASK when its accepted status becomes `READY` for your executor.
 Do not begin product work while it remains pending registration/capacity.
@@ -65,10 +66,12 @@ See [the common rule](CODEX_TEAM_PROTOCOL.md#role-cross-check). Fill with actual
 
 ```text
 R2Team 2.4 adopted: executor <id>, functions <list>, TEAM <ref>.
+Loaded work/COO skills and saved entry/watch prompt: <verified source/ref and compatibility>.
 Duties/output: <understanding>.
 Boundaries: <permissions, helpers and approvals>.
 Verified inputs/tools: <facts>.
 Questions/limits: <specific gaps or none identified>.
+Task Issuer and Project PM: <executors/routes>; addressed-question check: <method>.
 First TASK: <confirmed assignment or request to PM>; READY/BLOCKED <reason>.
 ```
 
@@ -81,6 +84,8 @@ An added function checks changed responsibilities rather than repeating full set
 ```text
 R2Team: check my updates.
 One read-only pass over my assignments, addressed questions, replies and related PRs.
+Use executor_queue scope and the current remote default branch; discover new TASK IDs.
+Keep unresolved READY assignments across unchanged deltas; HOLD applies to its TASK.
 Report exact changes and next action. Do not execute tasks, send notifications,
 change status or enable heartbeat.
 ```
@@ -88,6 +93,7 @@ change status or enable heartbeat.
 ```text
 R2Team: start my work session.
 Check relevant updates and continue one clear authorized next action with intake.
+Discover all current assignments to my executor before selecting a TASK.
 If no valid task or bounded request exists, ask PM; clarify ambiguity or missing rights.
 Do not self-assign independent work or enable automation.
 ```
@@ -142,6 +148,7 @@ Use [interaction rules](CODEX_TEAM_PROTOCOL.md#interaction), [communication poli
 
 - Human action: purpose -> safe step -> expected result -> reply -> check -> next step, until outcome or explicit pause. Never request secrets or call unverified confirmation PASS.
 - Clarification: authorized direct exchange or existing Issue/PR; identify respondent and blocked portion. Ownership remains unchanged.
+- ASK targets Task Issuer; LOOP records disagreement/consensus sought; ESCALATE_PM may go directly to Project PM. Carry mode/status/Decision in the existing TASK route, return the answer to the requester and resume only after validation. See [question routes](OPERATING_COMMUNICATION.md#question-routes).
 - Agreement: subject, required viewpoints, criteria and authorized decider; preserve material options/objections and the accepted outcome. Silence does not approve new scope.
 - Preserve material open questions/results before dependent work, ownership handoff, blocking stop/session end and acceptance. Do not create MSG/ACK or a parallel journal.
 - Check addressed updates at entry and safe boundaries; no automatic remote execution is promised.
@@ -152,6 +159,7 @@ Use [interaction rules](CODEX_TEAM_PROTOCOL.md#interaction), [communication poli
 Perform a bounded part of TASK <id/revision> as <function>.
 Outcome: <result>; inputs: <exact files/requirements/candidate>.
 Allowed paths/actions: <list>; restrictions: <list>.
+Task Issuer: <parent executor/return route>; Project PM: <executor/route, escalated through parent>.
 Read applicable SKILL.md: <skill>.
 Do not modify TEAM, assignments, official TASK/checkpoints or other ROLE files.
 Do not read entire inter-role journals or send external notifications.
@@ -165,6 +173,7 @@ The parent validates and preserves material output. A QA helper is not an indepe
 ```text
 Within TASK-042 revision 3, check Unicode export on candidate <SHA>.
 The parent owner remains <executor>.
+Task Issuer: <executor and reply route>; Project PM: <executor and provider route>.
 Allowed: read and run the specified tests. No code changes, merge or deploy.
 Validate the contract and show a brief before execution.
 Return observations and evidence to <owner> through this agreed route.

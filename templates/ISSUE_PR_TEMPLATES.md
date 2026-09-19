@@ -9,6 +9,8 @@ TASK: <repo-relative path>
 Working branch: <branch>
 Published checkpoint: <full SHA and source link>
 Executor/function: <executor>/<role>; assignee: <provider identity>
+Task Issuer: <executor/function>; route: <existing discussion URL>
+Project PM: <executor>; route: <existing discussion URL>
 Outcome: <one sentence>
 Acceptance and state: see TASK.
 PR: <URL or pending before first substantive commit>
@@ -35,6 +37,8 @@ Do not automatically close an item at merge if its DoD includes unfinished deplo
 TASK <id/revision> -> <executor>/<function>.
 Checkpoint <full SHA>, branch <name>, TASK <pinned URL>.
 Next action: <action>. Boundaries and evidence are in TASK.
+Task Issuer: <executor and route>; Project PM: <executor and route>.
+Unresolved questions: <reference, mode/status, current respondent or none>.
 Reply: update this TASK through its publishing owner and report via <item/PR URL>.
 ```
 
@@ -58,13 +62,18 @@ For a blocker, use `R2_EVENT: ONBOARDING_QUESTION`, the same IDs, `blocking: tru
 
 ```text
 Question: TASK <id/revision>, <author> -> <executor/function/person>.
+Question Mode: <ASK|LOOP|ESCALATE_PM>; Question Status: <OPEN|ESCALATED>.
+Task Issuer: <executor/route>; Project PM: <executor/route>.
 @<verified-account>; TASK/checkpoint: <Git reference>.
 Clarify: <specific question and necessary context>.
 Proposal: <option/rationale, if useful>.
 Waiting on this answer: <dependent part>. Reply in this discussion.
+Decision: pending.
 ```
 
 Keep one channel. A question does not change owner; a changed contract requires authorized acceptance and Git persistence. No second question record or ACK merely for tracking.
+
+ASK targets Task Issuer; LOOP records both positions/evidence and consensus sought; ESCALATE_PM targets PM directly when authority is required. See [question routes](OPERATING_COMMUNICATION.md#question-routes). Preserve queryable recipients and status in the existing TASK metadata; provider fields/labels are optional projections.
 
 ## Human action / visual acceptance
 
@@ -96,6 +105,8 @@ Participants provide options, evidence and risks without concurrently rewriting 
 
 ```text
 Reply to <comment URL or identified exchange>; TASK <id/revision>.
+Question Mode: <existing mode>; Question Status: ANSWERED.
+To executor: <original requester>.
 Decision/clarification: <content>; rationale: <brief>.
 Accepted by: <authorized decider, or still a proposal>.
 Scope change: <none or approval required>.
@@ -104,6 +115,8 @@ Next action/recipient: <action and executor>; @<account where applicable>.
 ```
 
 A proposal is not an accepted decision. The publisher preserves material open questions/results before dependent work, handoff or session end. A resulting comment URL can be added at the next ordinary checkpoint; no second immediate commit just for a backlink.
+
+The requester validates the answer and records CLOSED or the remaining dispute in the same route. Keep only dependent work paused; a sufficient in-scope answer needs no second start approval. PM decisions never substitute for evidence or mandatory gates.
 
 ## Notification
 

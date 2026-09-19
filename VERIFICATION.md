@@ -1,6 +1,6 @@
 # R2Team 2.4 distribution verification
 
-Prepared for protocol version 2.4 candidate on 2026-09-18. This is distribution evidence, not acceptance of a user project.
+Prepared for protocol version 2.4 candidate; local queue/question-route update checked on 2026-09-19. This is distribution evidence, not acceptance of a user project.
 
 ## Fresh local checks
 
@@ -23,11 +23,14 @@ Verify that `candidate/r2team-2.4` resolves to the approved candidate commit, th
 
 [SCENARIOS.md](SCENARIOS.md) covers setup, brownfield migration, team combinations, bounded local/remote help, material decisions, ownership transfer, exact-candidate QA, provider uncertainty, human-assisted steps, required COO capability with optional standalone/wake, and recovery without chat transcripts. These are reviewed contracts, not executed multi-agent simulations.
 
+The 2026-09-19 update adds explicit executor_queue/task_only coverage, HOLD plus unknown READY, unchanged-SHA pending retention, missing-cache/fetch failure, version-adoption mismatch, addressed questions on other owners' TASKs, ASK/LOOP/direct PM escalation and answer return. These scenarios were reviewed against the written instructions; consuming-agent execution remains NOT_RUN. Existing validator tests and skill format checks are structural evidence only and do not prove these behaviors.
+
 ## NOT_RUN by this release
 
 - Migration of a real 1.10 project or adoption by existing role chats.
 - Live direct inter-chat delivery, remote participant wake, or scheduled heartbeat.
 - Live end-to-end remote registration auto-activation and capacity release.
+- Live remote queue-discovery and Task Issuer/Project PM question-response regression scenarios, including a new attempt by the originally affected executor.
 - Real GitHub/TFS item-to-PR lifecycle, provider adapter, or multi-repository rollout.
 - Product implementation, database/infrastructure changes, deployment, or independent QA.
 - Installation/replacement of skills on another machine.
