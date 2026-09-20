@@ -1,6 +1,6 @@
-# R2Team 2.4 distribution verification
+# R2Team 2.5 distribution verification
 
-Prepared for protocol version 2.4 candidate; local queue/question-route update checked on 2026-09-19. This is distribution evidence, not acceptance of a user project.
+Prepared for protocol version 2.5 candidate; local queue/question-route and Route Card update checked on 2026-09-20. This is distribution evidence, not acceptance of a user project.
 
 ## Fresh local checks
 
@@ -17,7 +17,7 @@ The exact commands and final outputs are captured during release preparation. Pa
 
 ## Candidate publication gate
 
-Verify that `candidate/r2team-2.4` resolves to the approved candidate commit, then validate a fresh clone at that commit. Main merge, annotated `v2.4` tag and release remain `NOT_RUN` until separately authorized. Publication proves repository provenance, not live agent/provider behavior.
+Verify that `candidate/r2team-2.5` resolves to the approved candidate commit, then validate a fresh clone at that commit. Main merge, annotated `v2.5` tag and release remain `NOT_RUN` until separately authorized. Publication proves repository provenance, not live agent/provider behavior.
 
 ## Document-level scenarios
 

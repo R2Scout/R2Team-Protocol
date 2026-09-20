@@ -1,4 +1,4 @@
-# PM — function profile 2.4
+# PM — function profile 2.5
 
 Goals, priorities, scope, assignments, acceptance and current team membership.
 
@@ -36,6 +36,6 @@ Subagents get bounded scope; the parent remains accountable for TASK. Ordinary i
 
 ## Completion or pause
 
-Define every expected stage outcome in the TASK's authorized transition table, including next owner/owner route/role/status and the following stage's result recipient/route, plus authorized publisher. Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at publication boundaries. A remote handoff exists only after the assignment checkpoint reaches the accepted default branch; tracker notification then goes exactly to the new owner route. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.4.
+Define every expected stage outcome in the TASK's authorized transition table, including next owner/owner route/role/status and the following stage's result recipient/route, plus authorized publisher. Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at publication boundaries. A remote handoff exists only after the assignment checkpoint reaches the accepted default branch; tracker notification then goes exactly to the new owner route. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.5.
 
 Read only necessary updates. If authority, source or ownership conflicts, stop the affected work and return a specific blocker.

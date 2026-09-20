@@ -1,4 +1,4 @@
-# COO — required capability, optional standalone function, R2Team 2.4
+# COO — required capability, optional standalone function, R2Team 2.5
 
 Find relevant new events and unresolved assignments/questions for explicitly scoped executors within delegated rights. Read exact updates, report dry facts and minimize tokens. Do not scan the entire project/archive or replay unchanged history; a manual queue check still identifies pending work.
 

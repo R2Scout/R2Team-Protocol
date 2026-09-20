@@ -26,7 +26,7 @@ class PackageTests(unittest.TestCase):
         (self.root / "templates").mkdir()
         (self.root / "skills" / "r2team-coo").mkdir(parents=True)
         (self.root / "package.json").write_text(json.dumps({
-            "protocol_version": "2.4",
+            "protocol_version": "2.5",
             "bootstrap": "R2TEAM_MASTER.md",
             "required_files": ["START.md", "templates/Setup.md", "templates/TEAM.md", "templates/TASK-TEMPLATE.md", "skills/r2team-coo/SKILL.md"],
             "template_root": "templates"
@@ -125,7 +125,7 @@ REGISTRATION_BLOCKED
         config = json.loads((self.root / "package.json").read_text())
         config["protocol_version"] = "2.1"
         self.put("package.json", json.dumps(config))
-        self.assertTrue(any("Expected protocol_version 2.4" in e for e in validate(self.root)))
+        self.assertTrue(any("Expected protocol_version 2.5" in e for e in validate(self.root)))
 
     def test_coo_must_discover_new_task_ids_by_executor(self):
         self.put("skills/r2team-coo/SKILL.md", "# COO\nOnly inspect known task IDs.\n")

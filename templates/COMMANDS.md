@@ -1,4 +1,4 @@
-# R2Team 2.4 — Command Help
+# R2Team 2.5 — Command Help
 
 Open project `R2TEAM_MASTER.md` in the persistent local `R2Team Master - <project>` task for bootstrap, Project Charter, setup orchestration, provider/Git troubleshooting, team lifecycle changes or protocol consultation. Master routes actual procedures to the skills below and does not replace PM authority.
 
@@ -32,7 +32,7 @@ Confirm the target directory and guide me through setup. This chat will be PM.
 
 This routes to Setup mode `new`. A new project is not expected to have TEAM/TASK yet. The wizard confirms the initial PM and creates the agreed configuration. For an existing MVP or older protocol use Setup mode `migrate`; do not initialize a new project over its files.
 
-The full template package is needed for setup. Installing SKILL.md alone does not copy project templates. Provide a verified package path or repository URL and full commit SHA. The distribution is https://github.com/R2Scout/R2Team-Protocol. Version 2.4 is a candidate until its release is published: use the explicitly approved full candidate commit, not an assumed v2.4 tag or main/latest.
+The full template package is needed for setup. Installing SKILL.md alone does not copy project templates. Provide a verified package path or repository URL and full commit SHA. The distribution is https://github.com/R2Scout/R2Team-Protocol. Version 2.5 is a candidate until its release is published: use the explicitly approved full candidate commit, not an assumed v2.5 tag or main/latest.
 
 ## Add → register → connect
 

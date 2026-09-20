@@ -1,4 +1,4 @@
-# DEV — function profile 2.4
+# DEV — function profile 2.5
 
 Implement approved scope, tests and technical documentation.
 
@@ -34,6 +34,6 @@ Subagents get bounded scope; the parent remains accountable for TASK. Ordinary i
 
 ## Completion or pause
 
-Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at the publication boundaries. Return the result only to `result_to_executor_id`/`result_to_route` using `git_checkpoint_then_tracker`: increment `handoff_seq`, make that recipient the next owner, copy its route to `owner_route`, set the following stage's result fields, publish the TASK checkpoint to the accepted default branch, then post its exact pointer in the new owner route. For durable handoff, authorized commit/push precedes tracker/PR notification under [TRACKER_GUIDE.md](TRACKER_GUIDE.md). Do not substitute the issuer, publisher, local PM or chat parent; a remote executor never uses direct chat for this return. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.4.
+Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at the publication boundaries. Return the result only to `result_to_executor_id`/`result_to_route` using `git_checkpoint_then_tracker`: increment `handoff_seq`, make that recipient the next owner, copy its route to `owner_route`, set the following stage's result fields, publish the TASK checkpoint to the accepted default branch, then post its exact pointer in the new owner route. For durable handoff, authorized commit/push precedes tracker/PR notification under [TRACKER_GUIDE.md](TRACKER_GUIDE.md). Do not substitute the issuer, publisher, local PM or chat parent; a remote executor never uses direct chat for this return. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.5.
 
 Read only necessary updates. If authority, source or ownership conflicts, stop the affected work and return a specific blocker.

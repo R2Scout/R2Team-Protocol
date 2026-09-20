@@ -1,4 +1,4 @@
-# Installing R2Team 2.4
+# Installing R2Team 2.5
 
 Four instruction skills are supplied: r2team, r2team-work, r2team-coo and r2team-audit. They are folders with SKILL.md, not shell commands or a service. OpenSpec/Superpowers are separate dependencies described in [SKILLS.md](templates/SKILLS.md).
 
@@ -18,7 +18,7 @@ If same-name skills exist, show the differences and ask before replacing them.
 Do not migrate projects or enable automations.
 ```
 
-The installer uses its supported repo/ref/path interface. For the candidate, resolve `candidate/r2team-2.4` and pin its full approved commit. No `v2.4` release tag is implied. Never include tokens in invitations.
+The installer uses its supported repo/ref/path interface. For the candidate, resolve `candidate/r2team-2.5` and pin its full approved commit. No `v2.5` release tag is implied. Never include tokens in invitations.
 
 Default destination: $CODEX_HOME/skills or ~/.codex/skills; typically C:\Users\<user>\.codex\skills on Windows. Each participant has their own installation.
 
@@ -27,7 +27,7 @@ Default destination: $CODEX_HOME/skills or ~/.codex/skills; typically C:\Users\<
 Transfer the complete distribution without .git, runtime data or secrets, or clone the exact commit. Supply a trusted independent SHA-256 for package.json when transferring a bundle.
 
 ```text
-Verify R2Team protocol version 2.4 at <absolute-path>.
+Verify R2Team protocol version 2.5 at <absolute-path>.
 Compare package.json to the supplied trusted hash and run scripts/validate_package.py.
 Install only the four skills/ folders into this machine's Codex skill directory.
 Check user/project scope duplicates, show differences and obtain approval before replacement.
@@ -81,4 +81,4 @@ Continue with $r2team-work start; read-only updates with $r2team-coo update; see
 
 Compare installed skills with the exact new package and approve replacement while preserving local customizations. This applies to older 1.20 and R2Team 2.0 skills.
 
-Updating procedure skills does not switch a project's protocol. Existing rules continue until [explicit migration](templates/MIGRATE_TO_2.4.md). Do not run OpenSpec init/archive merely to install skills.
+Updating procedure skills does not switch a project's protocol. Existing rules continue until [explicit migration](templates/MIGRATE_TO_2.5.md). Do not run OpenSpec init/archive merely to install skills.

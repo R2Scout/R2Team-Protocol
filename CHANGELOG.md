@@ -1,5 +1,13 @@
 # R2Team change history
 
+## 2.5 — candidate
+
+- Consolidate the 2.4 candidate work: remote executor-queue discovery, closed onboarding, question routes and one COO capability per active participant.
+- Add the Route Card: explicit current owner route, Task Issuer route, Project PM route, result recipient route, delivery policy and executor location.
+- Make a stage result become the next owner; require the checkpoint to declare that next owner's route and the following stage's result route separately.
+- Forbid deriving a handoff from chat topology, local PM, publisher, issuer or internal COO `RETURNED_TO_PARENT`.
+- Add a 2.4-to-2.5 migration procedure and structural package checks for the owner/result route fields.
+
 ## 2.4 — candidate
 
 - Distinguish executor-wide queue checks from explicit single-TASK inspection; prevent a held known task or unchanged cursor from hiding pending/new work.

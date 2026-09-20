@@ -1,4 +1,4 @@
-# R2Team 2.4 scenarios
+# R2Team 2.5 scenarios
 
 These are acceptance scenarios for setup, team lifecycle, communication, recovery, and distribution behavior. Document review is not evidence that access, roles, integrations, or skills work on every machine.
 
@@ -10,11 +10,11 @@ These are acceptance scenarios for setup, team lifecycle, communication, recover
 | GitHub, one PM with helpers | One participant/executor, needed functions/helpers, first real TASK | Create six mandatory chats/issues |
 | Brownfield MVP without OpenSpec | Preserve code/docs, assess coverage/gaps, baseline changed area incrementally | Rewrite whole project or claim complete specs |
 | Existing OpenSpec | Preserve config/specs/active changes/tasks; use version-compatible CLI | Reinitialize/reset/archive to fit protocol |
-| 1.10 with active MSG/PR | Preserve history; choose per-task/coordinated cutover; roles adopt 2.4 | Stop old transport before cutover |
+| 1.10 with active MSG/PR | Preserve history; choose per-task/coordinated cutover; roles adopt 2.5 | Stop old transport before cutover |
 | 1.10 with retained chats and fresh queue authorized | Re-run setup around current specs; cross-check each chat; explicitly retire only approved old org artifacts | Recreate chats or erase OpenSpec tasks |
 | One retained chat rejects/does not understand | Mark its adoption BLOCKED/PENDING; other roles continue only in their scope | Declare universal migration |
 | Organizational docs outside Git | Agree canonical Git root/placement and publish | Treat local folder as remotely recoverable |
-| Trusted target package unavailable | SOURCE_BLOCKED with exact missing source | Reconstruct 2.4 from memory/latest |
+| Trusted target package unavailable | SOURCE_BLOCKED with exact missing source | Reconstruct 2.5 from memory/latest |
 | Proposal accepted but apply not authorized | Stop at installed workflow gate | Begin product implementation during setup |
 | Existing custom skills | Inventory, backup, diff, ask before replacement | Overwrite through init/update |
 | Audit requested | Read-only scoped evidence report | Repair files, enable heartbeat, or migrate |
@@ -115,7 +115,7 @@ These fixtures describe expected consuming-agent behavior. They are not executed
 | Remote read fails or a status mapping is unknown | QUEUE_CHECK_INCOMPLETE with exact gap | Successful no-work result or cursor advancement |
 | A held TASK plus READY B; accepted executor-wide suspension/capacity block | Discover B and report the explicit wider gate | Start B by treating every restriction as task-local |
 | Two eligible assignments without priority | Show both and ask through the issuer/PM route | Choose by chat recency or filename |
-| Installed skill 2.4, accepted project 2.3, no cutover | Report incompatible/pending adoption and actual source refs | Claim the new queue behavior is already active |
+| Installed skill 2.5, accepted project 2.4, no cutover | Report incompatible/pending adoption and actual source refs | Claim the new Route Card behavior is already active |
 | Dev owns TASK; question is addressed to issuer who owns no TASK | Issuer check discovers the question/linked event and answers in its recorded route | Require the issuer to take TASK ownership to see the question |
 | Task Issuer and Project PM are one executor | Both routes remain explicit and usable | Omit one route because the person is the same |
 | ASK answered with sufficient in-scope facts | ANSWERED addresses original requester; requester validates, closes and resumes authorized dependent work | Extra generic PM start gate or silence-as-consent |
@@ -146,7 +146,7 @@ These fixtures describe expected consuming-agent behavior. They are not executed
 | Check | Expected |
 | --- | --- |
 | Public language | All maintained distribution files, help, commits, release notes in English |
-| Manifest | Protocol 2.4 as the sole release identifier, required paths and matching SHA-256 |
+| Manifest | Protocol 2.5 as the sole release identifier, required paths and matching SHA-256 |
 | Links/anchors | Structural validator PASS |
 | Validator suite | Current complete suite PASS |
 | Skills | Four skill directories pass official quick_validate |
