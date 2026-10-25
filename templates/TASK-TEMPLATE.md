@@ -43,12 +43,9 @@ merged_sha: null
 workspace_policy: inherited_from_team
 workspace_leases: []
 workspace_disposition: NOT_APPLICABLE
-closure_owner_executor_id: null
-workspace_review_date: null
-retention_class: null
-branch_disposition: null
-artifact_manifest_ref: null
-close_receipt_ref: null
+candidate_dispositions: []
+artifact_manifests: []
+close_receipts: []
 next_action: "<one-specific-action>"
 questions: []
 ---
@@ -107,9 +104,13 @@ Setup checkpoints include mode, last completed step, confirmed answers/refs and 
 
 ## Workspace lifecycle
 
-Keep TASK, candidate, and workspace lease identities separate. Reuse a compatible lease across TASK revisions, corrections, handoffs, and review. Record each lease by logical ID, purpose, class, owner, exact base/candidate, mutability, custody, state, and portable recovery reference; put physical paths, sizes, processes, native handles, and host observations only in ignored local state.
+Keep TASK, candidate, and workspace lease identities separate. Reuse a compatible lease across TASK revisions, corrections, handoffs, and review. `workspace_disposition` is a derived TASK summary, never the historical record.
 
-At each publication boundary update `workspace_leases`, `workspace_disposition`, closure owner/review date, retention, branch disposition, artifact manifest, and close receipt as applicable. A stage cannot be administratively complete while one of its leases remains silently `ACTIVE`; use a terminal or explicitly blocking disposition. Workspace closure does not change a product or QA verdict.
+Each `workspace_leases[]` item records `lease_id`, purpose, class, `owner_executor_id`, `closure_owner_executor_id`, exact base/candidate/HEAD/tree, mutability, custody, state, `retention_class`, `review_date`, `recovery_ref`, exception reference, and `close_receipt_ref`. Put physical paths, sizes, processes, native handles, and host observations only in ignored local state.
+
+Each `candidate_dispositions[]` item binds candidate SHA/tree and branch ref to exactly one disposition (`MERGED_TO_DEFAULT`, `SUPERSEDED_BY_SHA`, `REJECTED`, or `EVIDENCE_ARCHIVED`), evidence/reference, owner, and recorded time. Each `artifact_manifests[]` item records manifest ref, content hash, retention class, durable recovery location, owner, and access boundary. Each `close_receipts[]` item binds its receipt ref to one lease ID and actual closure result. Append new records; do not overwrite earlier candidate or lease history.
+
+At each publication boundary update `workspace_leases`, `candidate_dispositions`, `artifact_manifests`, `close_receipts`, and the derived `workspace_disposition` as applicable. A stage cannot be administratively complete while one of its leases remains silently `ACTIVE`; use a terminal or explicitly blocking disposition. Workspace closure does not change a product or QA verdict.
 
 For accepted integration, bind Git-suitable evidence into the protected checkpoint or record a sanitized hash-bound durable manifest with retention, recovery location, owner, and access boundary. Temporary material may be removed only after evidence-export, exclusive-ownership, dependency, shared-cache/retained-input, containment, and explicit-authority gates all pass. Otherwise retain, transfer, or block with an owner and review date.
 

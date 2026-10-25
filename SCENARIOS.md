@@ -34,7 +34,7 @@ These are acceptance scenarios for setup, team lifecycle, communication, recover
 | Add DevOps function to existing QA | Cross-check changed duties/rights/skills and task assignment | Repeat full setup or infer deploy rights |
 | Function has several instances | Address exact executor/active role in TASK | Ambiguous role-only assignment |
 | One provider account backs several executors | TASK/request names executor/function; provider access verified | Treat inbox/read state as per-chat queue |
-| Participant leaves | Publish/transfer affected work, deactivate assignments, preserve history | Delete history/branches/accounts automatically |
+| Participant leaves | Publish/transfer affected work, deactivate assignments, preserve history | Erase history, branches, or accounts as a side effect |
 | Team shrinks to PM+helpers | Reverse assignments safely; same specs/tasks/history | Redesign protocol or lose evidence |
 | Role has no first task | Cross-check and request it through PM route | Self-assign from backlog |
 | No PM response route | Report precise NOT_DELIVERED/BLOCKED | Pretend acceptance/delivery |
@@ -150,7 +150,7 @@ These fixtures describe expected consuming-agent behavior. They are not executed
 | Destination has 35 GiB free | Reuse-only; no new persistent placement | Treat threshold as delete authority |
 | Destination has 20 GiB free and owner-approved recovery need | One bounded recovery allocation after full preflight | Ordinary author/review allocation |
 | QA exact candidate supports detached materialization | Ephemeral detached review; verdict published before disposition | Persistent mutable QA branch by default |
-| QA PASS but dirty evidence blocks closure | PASS remains; lease becomes `RETAINED_PROTECTED` or `BLOCKED_DIRTY` | Rewrite verdict or force cleanup |
+| QA PASS but dirty evidence blocks closure | PASS remains; lease becomes `RETAINED_PROTECTED` or `BLOCKED_DIRTY` | Rewrite verdict or mutate retained material |
 | Accepted merge with Git-suitable evidence | Provider read-back; evidence in protected checkpoint; every completed-stage lease enters closure review | Leave owned lease silently ACTIVE |
 | Evidence cannot enter Git | Sanitized manifest, hash, retention, durable recovery location, owner, access boundary | Chat-only or disposable-worktree evidence |
 | Codex-managed checkout | Application archive lifecycle after authorized preflight | Shell removal |

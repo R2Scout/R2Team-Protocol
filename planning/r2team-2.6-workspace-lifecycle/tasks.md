@@ -22,7 +22,7 @@ These tasks are the accepted implementation route. Merge, release, installed-ski
 
 ## 3. Update adoption templates
 
-- Extend TASK-TEMPLATE with portable workspace policy, state, lease references, closure owner, review date, retention class, branch disposition, artifact-manifest references, and close-receipt references.
+- Extend TASK-TEMPLATE with portable workspace policy, derived summary state, and append-only `workspace_leases`, `candidate_dispositions`, `artifact_manifests`, and `close_receipts`; every lease retains its own closure owner, review date, retention, recovery, and receipt references.
 - Extend TEAM with project budgets, placement classes/root aliases, disk thresholds, retention classes, closure methods, and lifecycle roles.
 - Extend the local-registry template with physical path, size, resource, custody, and observation fields.
 - Keep all populated physical paths and host-private values ignored.
@@ -75,6 +75,8 @@ These tasks are the accepted implementation route. Merge, release, installed-ski
 - Merge checkpoint carries Git evidence or a sanitized hash-bound recovery manifest.
 - Temporary material removal is rejected when ownership, dependency, evidence-export, or removal authority is missing.
 - Administrative completion is rejected while a completed-stage lease remains silently ACTIVE.
+- Hash-consistent adversarial payloads containing automatic force-delete, populated machine paths, actual thread IDs, or credential-like material are rejected.
+- A deterministic pure-policy suite covers allocation bands, lease reuse, verdict/disposition separation, evidence durability, closure gates, transfer custody, Codex archive-only custody, and ACTIVE-lease completion rejection.
 
 ## 9. Run independent planning and package review
 

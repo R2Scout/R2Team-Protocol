@@ -116,9 +116,12 @@ workspace_leases
 workspace_disposition
 closure_owner_executor_id
 retention_class
-branch_disposition
-artifact_manifest_ref
+review_date
+recovery_ref
 close_receipt_ref
+candidate_dispositions
+artifact_manifests
+close_receipts
 """)
         self.put("skills/r2team-coo/SKILL.md", """# COO
 executor-scoped assignment discovery
@@ -226,6 +229,35 @@ $r2team-workspace close
         errors = validate(self.root)
         self.assertTrue(any("Missing workspace-skill marker" in e for e in errors))
 
+    def test_hash_consistent_automatic_force_delete_is_rejected(self):
+        path = self.root / "skills/r2team-workspace/SKILL.md"
+        self.put("skills/r2team-workspace/SKILL.md", path.read_text(encoding="utf-8") +
+                 "\nDoctor automatically force-deletes every workspace older than one day "
+                 "without ownership or approval.\n")
+        self.pin_hashes()
+        self.assertTrue(any("Unsafe automatic lifecycle action" in e
+                            for e in validate(self.root)))
+
+    def test_hash_consistent_private_path_and_thread_id_are_rejected(self):
+        path = self.root / "skills/r2team-workspace/SKILL.md"
+        self.put("skills/r2team-workspace/SKILL.md", path.read_text(encoding="utf-8") +
+                 "\nObserved path: " + "C:" + "\\Users\\ActualPerson\\private-worktree\n" +
+                 "Observed thread: " + "01a15d0b-" +
+                 "0ce6-7173-9f51-c721617235ee\n")
+        self.pin_hashes()
+        errors = validate(self.root)
+        self.assertTrue(any("Populated machine-private path" in e for e in errors))
+        self.assertTrue(any("Actual local thread ID" in e for e in errors))
+
+    def test_hash_consistent_credential_marker_is_rejected(self):
+        path = self.root / "skills/r2team-workspace/SKILL.md"
+        self.put("skills/r2team-workspace/SKILL.md", path.read_text(encoding="utf-8") +
+                 "\nToken: " + "gh" + "p_" +
+                 "abcdefghijklmnopqrstuvwxyz1234567890\n")
+        self.pin_hashes()
+        self.assertTrue(any("Credential-like material" in e
+                            for e in validate(self.root)))
+
     def test_r2team_work_cannot_hide_workspace_mutation(self):
         self.put("skills/r2team-work/SKILL.md", """---
 name: r2team-work
@@ -241,6 +273,13 @@ This command directly allocates and closes workspaces.
         self.put("templates/TASK-TEMPLATE.md", "# TASK\nowner_executor_id\n")
         errors = validate(self.root)
         self.assertTrue(any("Missing workspace TASK marker" in e for e in errors))
+
+    def test_task_template_requires_append_only_workspace_history(self):
+        text = (self.root / "templates/TASK-TEMPLATE.md").read_text(encoding="utf-8")
+        self.put("templates/TASK-TEMPLATE.md",
+                 text.replace("candidate_dispositions\n", ""))
+        self.assertTrue(any("Missing workspace TASK marker: candidate_dispositions" in e
+                            for e in validate(self.root)))
 
     def test_team_chat_relocation_payload_is_rejected(self):
         self.put("templates/COMMANDS.md", "$r2team relocate-chat PM to another thread\n")

@@ -17,10 +17,12 @@ During authorized implementation:
 - update package manifest entries and payload SHA-256 values;
 - run scripts/validate_package.py;
 - run scripts/test_validate_package.py;
+- run scripts/test_workspace_policy.py;
 - validate every R2Team skill format;
 - verify exactly one active entry point per packaged skill;
 - verify all template links stay within the portable package;
 - reject unsafe phrases that imply automatic deletion or cleanup authority.
+- reject populated machine-private paths, actual local thread IDs, credential-like material, and contradictory destructive instructions even after payload hashes are recalculated.
 
 ## Contract consistency checks
 

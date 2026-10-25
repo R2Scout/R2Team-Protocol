@@ -61,6 +61,7 @@
 ## Close receipt
 
 - A close receipt MUST record lease, TASK, owner, closer, base, branch, HEAD, tree, candidate, dirty/untracked/ignored classification, artifact manifest, recovery route, native-resource disposition, branch disposition, retention class, closure method, actual result, and remaining owner or blocker.
+- TASK lifecycle history MUST use append-only per-lease and per-candidate records: `workspace_leases`, `candidate_dispositions`, `artifact_manifests`, and `close_receipts`. An aggregate workspace disposition MUST NOT overwrite a lease, candidate, manifest, or receipt record.
 - Unknown material state MUST produce RETAINED_PROTECTED or BLOCKED_DIRTY, not fabricated closure.
 - Codex-managed worktrees MUST close only through the Codex application archive lifecycle.
 - Required ignored artifacts MUST be preserved separately before application archive.

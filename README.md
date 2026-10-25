@@ -13,7 +13,7 @@ Bounded requests inside an existing task need no additional Issue, PR, MSG or ro
 ## Start and references
 
 1. Obtain the approved full 2.6 candidate commit or use an approved bundle with a trusted manifest hash. No `v2.6` release tag is claimed by this candidate; do not silently substitute `main/latest`.
-2. Verify the payload and local links with `python scripts/validate_package.py` and `python -B scripts/test_validate_package.py`.
+2. Verify the payload and local links with `python scripts/validate_package.py`, `python -B scripts/test_validate_package.py`, and `python -B scripts/test_workspace_policy.py`.
 3. Read [START.md](START.md). Choose new, migrate, team, join, resume or audit.
 4. Install procedure skills separately using [SKILL-INSTALL.md](SKILL-INSTALL.md) only with machine-owner approval. Updating this repository does not update installed copies or adopted projects.
 

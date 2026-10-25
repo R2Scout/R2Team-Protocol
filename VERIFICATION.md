@@ -4,10 +4,11 @@ Prepared for the protocol version 2.6 workspace-lifecycle candidate on 2026-10-2
 
 ## Fresh local checks
 
-- PASS: all 32 validator tests passed, including version, bootstrap, manifest-path, payload-hash, mandatory COO configuration, remote onboarding route, durable baton, workspace skill boundary, lifecycle template fields, and relocation exclusion guards.
+- PASS: all 36 validator tests passed, including hash-consistent adversarial destructive-instruction, populated-path, actual-thread-ID, credential, append-only lifecycle-history, version, bootstrap, manifest, durable-baton, workspace-skill, and relocation-exclusion guards.
+- PASS: all 20 deterministic workspace-policy tests passed, covering lease reuse, capacity bands, exceptions, verdict/disposition separation, evidence durability, closure gates, Codex archive-only custody, transfer, and ACTIVE-lease completion rejection.
 - PASS: all five distribution skills, including `r2team-workspace`, pass the official skill-creator `quick_validate.py` using PyYAML 6.0.3 in an isolated validation dependency directory.
 - PASS: package structure, required payload hashes, local Markdown links, anchors and fences.
-- PASS: a fresh isolated package copy built only from `package.json` plus `required_files` passed package validation, all 32 behavior tests, and all five skill-format checks.
+- PASS: a fresh isolated package copy built only from `package.json` plus `required_files` passed package validation, all 36 validator tests, all 20 workspace-policy tests, and all five skill-format checks.
 - PASS: public distribution Markdown is English-only.
 - PASS: `templates/COMMANDS.md` and `skills/r2team/references/commands.md` are byte-identical.
 - PASS: specialized CMMI setup is absent from the main package and maintained separately.
@@ -24,7 +25,7 @@ Bind the final implementation to an exact commit/tree, push the authorized branc
 
 [SCENARIOS.md](SCENARIOS.md) covers setup, brownfield migration, team combinations, bounded local/remote help, material decisions, ownership transfer, exact-candidate QA, provider uncertainty, human-assisted steps, required COO capability with optional standalone/wake, and recovery without chat transcripts. These are reviewed contracts, not executed multi-agent simulations.
 
-The 2.6 additions cover lease reuse, budget/capacity blocks, ephemeral review, candidate-verdict/closure separation, durable merge evidence, retained/transfer/blocking dispositions, Codex-managed custody, temporary-material removal gates, and relocation exclusion. These are reviewed contracts; consuming-agent execution and live cleanup remain `NOT_RUN`. Validator tests and skill-format checks prove structural behavior only.
+The 2.6 additions cover lease reuse, budget/capacity blocks, ephemeral review, candidate-verdict/closure separation, durable merge evidence, retained/transfer/blocking dispositions, Codex-managed custody, temporary-material removal gates, append-only lease/candidate history, privacy/safety adversarial payloads, and relocation exclusion. These deterministic policy and validator fixtures do not execute live cleanup; consuming-agent execution remains `NOT_RUN`.
 
 ## NOT_RUN by this release
 

@@ -36,6 +36,7 @@ def validate(root):
     if not template_root.is_relative_to(root):
         return errors + ["Unsafe manifest path: template_root"]
     seen = set()
+    required_texts = {}
     hashes = manifest.get("sha256")
     if hashes is not None and not isinstance(hashes, dict):
         return errors + ["Invalid SHA-256 map"]
@@ -49,7 +50,12 @@ def validate(root):
         seen.add(name)
         if not path.is_file():
             errors.append(f"Missing required file: {name}")
-        elif hashes is not None:
+            continue
+        try:
+            required_texts[name] = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeError):
+            errors.append(f"Invalid UTF-8 or unreadable required file: {name}")
+        if hashes is not None:
             expected = hashes.get(name)
             if expected is None:
                 errors.append(f"Missing SHA-256: {name}")
@@ -62,6 +68,57 @@ def validate(root):
                         errors.append(f"SHA-256 mismatch: {name}")
                 except OSError:
                     errors.append(f"Unreadable payload: {name}")
+
+    unsafe_patterns = (
+        re.compile(r"\b(?:automatic(?:ally)?|auto)\s+(?:force[-\s]*)?"
+                   r"(?:delete|remove|clean(?:up)?|terminate|stop|kill|archive|revoke)\w*",
+                   re.IGNORECASE),
+        re.compile(r"\bforce[-\s]?(?:delete|remove|clean(?:up)?|terminate|stop|kill|archive|revoke)\w*",
+                   re.IGNORECASE),
+        re.compile(r"\b(?:delete|remove|clean(?:up)?|terminate|stop|kill|archive|revoke)\w*"
+                   r"[^.\n]{0,120}\bwithout\s+(?:ownership|approval|authority|preflight)\b",
+                   re.IGNORECASE),
+        re.compile(r"\b(?:age|merge|receipt|budget|disk pressure|review date|free space)\b"
+                   r"[^.\n]{0,100}\b(?:authorizes?|grants?|permits?)\b"
+                   r"[^.\n]{0,80}\b(?:delete|remove|cleanup|terminate|kill|archive|revoke)\b",
+                   re.IGNORECASE),
+    )
+    credential_pattern = re.compile(
+        r"(?:ghp\x5f[A-Za-z0-9]{20,}|github_pat\x5f[A-Za-z0-9_]{20,}|"
+        r"-----BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY-----)")
+    thread_pattern = re.compile(
+        r"\b01[a-f0-9]{6}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\b",
+        re.IGNORECASE)
+    windows_path_pattern = re.compile(r"\b[A-Za-z]:\\[^\r\n`\"']+")
+    unix_home_pattern = re.compile(r"/(?:home|Users)/[^/\s<>]+/[^^\s`\"']*")
+
+    for name, text in required_texts.items():
+        if credential_pattern.search(text):
+            errors.append(f"Credential-like material in required file: {name}")
+        if thread_pattern.search(text):
+            errors.append(f"Actual local thread ID in required file: {name}")
+        private_path = False
+        for match in windows_path_pattern.finditer(text):
+            value = match.group(0)
+            if "<" not in value and "${" not in value and "%" not in value:
+                private_path = True
+                break
+        if not private_path:
+            private_path = any("<" not in match.group(0)
+                               for match in unix_home_pattern.finditer(text))
+        if private_path:
+            errors.append(f"Populated machine-private path in required file: {name}")
+        if name.lower().endswith(".md"):
+            for pattern in unsafe_patterns:
+                match = pattern.search(text)
+                if not match:
+                    continue
+                line_start = text.rfind("\n", 0, match.start()) + 1
+                prefix = text[line_start:match.start()].lower()
+                if re.search(r"\b(?:must not|does not|do not|never|no command)\b", prefix):
+                    continue
+                errors.append(f"Unsafe automatic lifecycle action in required file: {name}")
+                break
     for path in root.rglob("*"):
         if path.name == ".codex-local":
             errors.append(f"Local runtime data must not ship: {path.relative_to(root)}")
@@ -197,9 +254,12 @@ def validate(root):
             "workspace_disposition",
             "closure_owner_executor_id",
             "retention_class",
-            "branch_disposition",
-            "artifact_manifest_ref",
+            "review_date",
+            "recovery_ref",
             "close_receipt_ref",
+            "candidate_dispositions",
+            "artifact_manifests",
+            "close_receipts",
         ):
             if marker not in task_text:
                 errors.append(f"Missing workspace TASK marker: {marker}")
@@ -284,7 +344,7 @@ def main():
         for error in errors:
             print("FAIL:", error)
         return 1
-    print("PASS: package structure and local Markdown links. No runtime/provider/skill execution tested.")
+    print("PASS: package structure, hashes, local Markdown links, and lifecycle safety/privacy guards. No runtime/provider/skill execution tested.")
     return 0
 
 if __name__ == "__main__":
