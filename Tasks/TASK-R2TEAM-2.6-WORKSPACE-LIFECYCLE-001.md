@@ -1,7 +1,7 @@
 ---
 protocol_version: "2.5"
 id: "TASK-R2TEAM-2.6-WORKSPACE-LIFECYCLE-001"
-revision: 4
+revision: 5
 handoff_seq: 0
 status: REVIEW_READY
 stage: QA
@@ -26,10 +26,10 @@ branch: "planning/r2team-2.6-workspace-lifecycle"
 pr: null
 openspec_change: null
 base_sha: "a5adba57d133e58360347ac2c709e88433061e90"
-candidate_sha: "50fce2e22086e940a7d16221072d87187c4abefd"
+candidate_sha: "2889fc84df324048d31ef6fef80352a9d63efc6c"
 verified_sha: null
 merged_sha: null
-next_action: "Obtain independent review of implementation candidate 50fce2e22086e940a7d16221072d87187c4abefd / tree e9463cf931b053415f4b4bec7c5737758d5771dc, then prepare the PR without merging."
+next_action: "Obtain fresh independent review of successor candidate 2889fc84df324048d31ef6fef80352a9d63efc6c / tree 167f91c1fd0ea57d957a7d300bcb5952c9751562, then prepare the PR without merging if PASS."
 questions: []
 ---
 
@@ -81,21 +81,23 @@ The distribution repository is not converted into an adopted product team by thi
 
 # Current checkpoint
 
-- Completed: planning checkpoint published; Issue #1 updated; lifecycle-only 2.6 package implemented test-first; separate `r2team-workspace` packaged; validator, 32 behavior tests, all five skill-format checks, static public scan, diff check, and fresh-package validation passed; implementation candidate pushed.
-- Remaining: independent exact-candidate review; address any accepted findings; prepare the PR.
+- Completed: planning checkpoint and initial implementation published; independent review returned AMEND on initial candidate `50fce2e22086e940a7d16221072d87187c4abefd`; both findings were addressed test-first in successor candidate `2889fc84df324048d31ef6fef80352a9d63efc6c` by semantic safety/privacy validation, deterministic allocation/closure policy fixtures, and append-only per-lease/per-candidate TASK history.
+- Remaining: fresh independent exact-candidate review of the successor; address any accepted findings; prepare the PR only after PASS.
 - Blockers: none for the authorized stages. Merge, release, installed-skill replacement, downstream adoption, and live cleanup remain separately gated.
 
 # Evidence
 
 - Exact base: a5adba57d133e58360347ac2c709e88433061e90
 - Planning checkpoint: 96609ff8e721b4c1f83841ebc9bfdcae3e4852e0 / tree 76706d15dbe96da6de6531e02cf547613b8a567d
-- Implementation candidate: 50fce2e22086e940a7d16221072d87187c4abefd / tree e9463cf931b053415f4b4bec7c5737758d5771dc
+- Rejected implementation candidate: 50fce2e22086e940a7d16221072d87187c4abefd / tree e9463cf931b053415f4b4bec7c5737758d5771dc / independent verdict AMEND
+- Successor implementation candidate: 2889fc84df324048d31ef6fef80352a9d63efc6c / tree 167f91c1fd0ea57d957a7d300bcb5952c9751562
 - Environment: isolated ordinary Git worktree on branch planning/r2team-2.6-workspace-lifecycle
 - Subject: R2Team 2.6 workspace lifecycle distribution package and planning artifacts
 - Structural validator: PASS
-- Behavioral validator suite: PASS, 32 tests
+- Behavioral validator suite: PASS, 36 tests including hash-consistent destructive/private adversarial payloads
+- Deterministic workspace policy suite: PASS, 20 allocation, evidence, transfer, closure, custody, and completion scenarios
 - Skill format validation: PASS, five packaged skills
-- Fresh-package review: PASS for manifest-only isolated payload, validator, behavior tests, and skill formats
+- Fresh-package review: PASS for manifest-only isolated payload, validator, 36 validator tests, 20 policy tests, and five skill formats
 - Runtime/product verification: NOT_RUN and out of scope
 - Downstream adoption: NOT_RUN and independently gated
 - Tracker: https://github.com/R2Scout/R2Team-Protocol/issues/1
@@ -107,6 +109,8 @@ The protocol PM returned AMEND on the submitted governance proposal. The reconci
 The disk/worktree system architect returned AMEND on the merge-evidence and workspace-closure wording, with one accepted safety clarification: temporary material is removed only after verified evidence export when it is exclusively owned by the closing lease, has no live process or dependent lease, is not a shared immutable cache or retained recovery input, and the closer already has explicit removal authority. Otherwise it receives a retained, transferred, or blocked disposition with an owner and review date.
 
 The owner accepted the reconciled plan: R2Team 2.6 is limited to workspace lifecycle, team/chat relocation moves to a distinct 2.7 TASK and checkpoint, and operational workspace behavior is packaged as a separate `r2team-workspace` skill rather than hidden mutation in `r2team-work`.
+
+Independent review of candidate `50fce2e22086e940a7d16221072d87187c4abefd` returned AMEND: marker-only validation accepted a hash-consistent destructive/private payload, and singular TASK disposition/manifest/receipt fields could overwrite multi-lease or multi-candidate history. The successor adds negative semantic guards plus pure lifecycle transition tests and replaces those fields with append-only `workspace_leases`, `candidate_dispositions`, `artifact_manifests`, and `close_receipts`; `workspace_disposition` remains derived summary only.
 
 # Authorized next transitions
 
