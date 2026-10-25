@@ -85,7 +85,13 @@ def validate(root):
     )
     credential_pattern = re.compile(
         r"(?:ghp\x5f[A-Za-z0-9]{20,}|github_pat\x5f[A-Za-z0-9_]{20,}|"
-        r"-----BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY-----)")
+        r"-----BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY-----|"
+        r"\bsk-[A-Za-z0-9_-]{8,})")
+    credential_assignment_pattern = re.compile(
+        r"(?im)\b[A-Z][A-Z0-9_]*(?:API_KEY|SECRET|TOKEN|PASSWORD|PRIVATE_KEY)\b"
+        r"\s*[:=]\s*([^\r\n#,]+)")
+    bearer_pattern = re.compile(
+        r"(?im)\bAuthorization\s*:\s*Bearer\s+([^\s,;]+)")
     thread_pattern = re.compile(
         r"\b01[a-f0-9]{6}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\b",
         re.IGNORECASE)
@@ -93,7 +99,24 @@ def validate(root):
     unix_home_pattern = re.compile(r"/(?:home|Users)/[^/\s<>]+/[^^\s`\"']*")
 
     for name, text in required_texts.items():
-        if credential_pattern.search(text):
+        credential_found = credential_pattern.search(text) is not None
+        for pattern in (credential_assignment_pattern, bearer_pattern):
+            for match in pattern.finditer(text):
+                value = match.group(1).strip().strip("\"'")
+                lowered = value.lower()
+                placeholder = (
+                    not value or
+                    lowered in {"null", "none", "not_configured", "redacted"} or
+                    (value.startswith("<") and value.endswith(">")) or
+                    (value.startswith("${") and value.endswith("}")) or
+                    (value.startswith("%") and value.endswith("%"))
+                )
+                if not placeholder:
+                    credential_found = True
+                    break
+            if credential_found:
+                break
+        if credential_found:
             errors.append(f"Credential-like material in required file: {name}")
         if thread_pattern.search(text):
             errors.append(f"Actual local thread ID in required file: {name}")
@@ -250,6 +273,7 @@ def validate(root):
                 errors.append(f"Missing onboarding-route marker: {marker}")
         for marker in (
             "workspace_policy",
+            "workspace_exceptions",
             "workspace_leases",
             "workspace_disposition",
             "closure_owner_executor_id",
@@ -275,7 +299,7 @@ def validate(root):
             "RETAINED_PROTECTED",
             "provider read-back",
             "sanitized manifest",
-            "silently ACTIVE",
+            "blocks administrative completion",
             "explicit removal authority",
         ):
             if marker not in protocol_text:

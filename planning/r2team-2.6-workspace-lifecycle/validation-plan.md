@@ -55,6 +55,9 @@ During authorized implementation:
 15. Administrative completion fails when a completed-stage lease remains silently ACTIVE.
 16. Temporary material is removed only when evidence export, exclusive ownership, dependency, shared-cache, retained-input, and explicit-authority checks all pass.
 17. A failed removal gate produces retained, transferred, or blocked state with an owner and review date.
+18. Every terminal custody state allows administrative completion only with required evidence; every blocking/nonterminal state rejects it.
+19. A structured default-budget exception requires all identity, purpose, capacity, custody, disjoint-lane, preserved-candidate, and review-date fields and cannot bypass hard-cap, disk, or single-writer gates.
+20. Hash-consistent populated OpenAI/Azure/generic secret assignments and bearer tokens are rejected while explicit placeholders remain valid.
 
 ## Safety checks
 

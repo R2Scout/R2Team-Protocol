@@ -18,11 +18,11 @@ These tasks are the accepted implementation route. Merge, release, installed-ski
 - Add budget and disk-allocation gates.
 - Keep acceptance and custody evidence separate.
 - Add the protected merge-evidence gate and merge-triggered closure review.
-- Require a terminal or explicitly blocking disposition for every completed-stage lease.
+- Require `CLOSED`, `RETAINED_PROTECTED`, or `TRANSFERRED_TO_NEXT_TASK` with required evidence for every completed-stage lease; any blocking/nonterminal state prevents administrative completion.
 
 ## 3. Update adoption templates
 
-- Extend TASK-TEMPLATE with portable workspace policy, derived summary state, and append-only `workspace_leases`, `candidate_dispositions`, `artifact_manifests`, and `close_receipts`; every lease retains its own closure owner, review date, retention, recovery, and receipt references.
+- Extend TASK-TEMPLATE with portable workspace policy, structured `workspace_exceptions`, derived summary state, and append-only `workspace_leases`, `candidate_dispositions`, `artifact_manifests`, and `close_receipts`; every lease retains its own closure owner, review date, retention, recovery, and receipt references.
 - Extend TEAM with project budgets, placement classes/root aliases, disk thresholds, retention classes, closure methods, and lifecycle roles.
 - Extend the local-registry template with physical path, size, resource, custody, and observation fields.
 - Keep all populated physical paths and host-private values ignored.

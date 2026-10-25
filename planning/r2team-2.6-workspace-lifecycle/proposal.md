@@ -51,7 +51,7 @@ Evidence suitable for Git is merged through the same protected workflow as the T
 
 Evidence that survives only in chat, an expiring log, or a disposable worktree is insufficient.
 
-After provider read-back confirms the merge SHA, every workspace lease owned by the completed stage enters closure review. It reaches CLOSED, RETAINED_PROTECTED, TRANSFERRED_TO_NEXT_TASK, or an explicit blocking state. No lease remains silently ACTIVE after administrative completion.
+After provider read-back confirms the merge SHA, every workspace lease owned by the completed stage enters closure review. Administrative completion requires CLOSED, RETAINED_PROTECTED, or TRANSFERRED_TO_NEXT_TASK with required evidence. An explicit blocking/nonterminal state preserves the candidate verdict but prevents administrative completion and names its owner and review date.
 
 Temporary material is removed only after verified evidence export when it is exclusively owned by the closing lease, has no live process or dependent lease, is not a shared immutable cache or retained recovery input, and the closer already holds explicit removal authority. Otherwise it is retained, transferred, or blocked with an owner and review date.
 

@@ -55,7 +55,7 @@ ALLOCATION_BLOCKED
 RETAINED_PROTECTED
 provider read-back
 sanitized manifest
-No lease remains silently ACTIVE
+Any blocking or nonterminal lease blocks administrative completion
 explicit removal authority
 """)
         self.put("templates/COMMANDS.md", """# Commands
@@ -112,6 +112,7 @@ QUEUED_AFTER_REGISTRATION
 first_task_id
 READY_FOR_ACTIVATION
 workspace_policy
+workspace_exceptions
 workspace_leases
 workspace_disposition
 closure_owner_executor_id
@@ -252,11 +253,51 @@ $r2team-workspace close
     def test_hash_consistent_credential_marker_is_rejected(self):
         path = self.root / "skills/r2team-workspace/SKILL.md"
         self.put("skills/r2team-workspace/SKILL.md", path.read_text(encoding="utf-8") +
-                 "\nToken: " + "gh" + "p_" +
+                 "\nTo" + "ken" + ": " + "gh" + "p_" +
                  "abcdefghijklmnopqrstuvwxyz1234567890\n")
         self.pin_hashes()
         self.assertTrue(any("Credential-like material" in e
                             for e in validate(self.root)))
+
+    def test_hash_consistent_api_and_client_secret_assignments_are_rejected(self):
+        path = self.root / "skills/r2team-workspace/SKILL.md"
+        payload = ("\n" + "OPENAI_" + "API_KEY=" + "sk-" + "dummy-not-secret\n" +
+                   "AZURE_CLIENT_" + "SECRET=" + "dummy-client-secret\n")
+        self.put("skills/r2team-workspace/SKILL.md",
+                 path.read_text(encoding="utf-8") + payload)
+        self.pin_hashes()
+        self.assertTrue(any("Credential-like material" in e
+                            for e in validate(self.root)))
+
+    def test_hash_consistent_bearer_token_is_rejected(self):
+        path = self.root / "skills/r2team-workspace/SKILL.md"
+        payload = "\nAuthorization: " + "Bear" + "er dummy-token-value\n"
+        self.put("skills/r2team-workspace/SKILL.md",
+                 path.read_text(encoding="utf-8") + payload)
+        self.pin_hashes()
+        self.assertTrue(any("Credential-like material" in e
+                            for e in validate(self.root)))
+
+    def test_hash_consistent_generic_secret_and_token_are_rejected(self):
+        path = self.root / "skills/r2team-workspace/SKILL.md"
+        payload = ("\nSERVICE_" + "SECRET=" + "dummy-service-secret\n" +
+                   "DEPLOY_" + "TOKEN=" + "dummy-deploy-token\n")
+        self.put("skills/r2team-workspace/SKILL.md",
+                 path.read_text(encoding="utf-8") + payload)
+        self.pin_hashes()
+        self.assertTrue(any("Credential-like material" in e
+                            for e in validate(self.root)))
+
+    def test_explicit_credential_placeholders_are_allowed(self):
+        path = self.root / "skills/r2team-workspace/SKILL.md"
+        payload = ("\n" + "OPENAI_" + "API_KEY=<set-locally>\n" +
+                   "AZURE_CLIENT_" + "SECRET=${AZURE_CLIENT_SECRET}\n" +
+                   "SERVICE_" + "TOKEN=null\n")
+        self.put("skills/r2team-workspace/SKILL.md",
+                 path.read_text(encoding="utf-8") + payload)
+        self.pin_hashes()
+        self.assertFalse(any("Credential-like material" in e
+                             for e in validate(self.root)))
 
     def test_r2team_work_cannot_hide_workspace_mutation(self):
         self.put("skills/r2team-work/SKILL.md", """---

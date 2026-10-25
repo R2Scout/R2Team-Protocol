@@ -45,7 +45,7 @@ Align changed specs/docs before integration and archive only after the full agre
 
 - Keep TASK identity, exact candidate identity, and workspace lease identity separate. Reuse a compatible lease across revisions and handoffs; a new revision does not itself justify another persistent worktree.
 - Use the separate `r2team-workspace` skill for lifecycle status/open/close/doctor behavior. Status/doctor are read-only; `r2team-work` must not hide workspace mutation.
-- Treat result acceptance and workspace disposition as separate evidence axes. After accepted merge read-back, every completed-stage lease reaches a terminal or explicitly blocking disposition; none remains silently ACTIVE.
+- Treat result acceptance and workspace disposition as separate evidence axes. After accepted merge read-back, every completed-stage lease must reach `CLOSED`, `RETAINED_PROTECTED`, or `TRANSFERRED_TO_NEXT_TASK` with required evidence. Any blocking/nonterminal lease prevents administrative completion without rewriting the candidate verdict.
 - Put Git-suitable evidence in the protected checkpoint. Represent non-Git evidence by sanitized hash-bound durable recovery metadata. Remove temporary material only after every ownership, dependency, evidence, containment, retained-input/shared-cache, and explicit-authority gate passes.
 
 Git stores confirmed project state; the configured tracker is its operational projection. Do not force-push, delete, deploy, alter databases/access or publish without authority. Keep credentials and local thread IDs out of Git. Read exact paths/refs and changes, not all chats or history. Recovery must work from the last published checkpoint without a transcript.

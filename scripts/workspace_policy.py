@@ -1,30 +1,60 @@
 """Pure decision model for R2Team 2.6 workspace lifecycle fixtures."""
 import re
+from datetime import date
 
 
-TERMINAL_OR_BLOCKING = {
+TERMINAL_CUSTODY = {
     "CLOSED",
     "RETAINED_PROTECTED",
     "TRANSFERRED_TO_NEXT_TASK",
-    "BLOCKED_DIRTY",
-    "BLOCKED_DEPENDENCY",
-    "BLOCKED_AUTHORITY",
 }
+
+
+def _valid_exception(exception, today):
+    if not isinstance(exception, dict):
+        return False
+    required = (
+        "task_id",
+        "reason",
+        "lease_id",
+        "owner",
+        "purpose",
+        "capacity_evidence",
+        "review_date",
+        "changed_base",
+        "custody_known",
+        "disjoint_lane",
+        "candidate_preserved",
+        "recovery_rule",
+    )
+    if any(not exception.get(field) for field in required):
+        return False
+    try:
+        review_date = date.fromisoformat(exception["review_date"])
+        observed_date = date.fromisoformat(today) if today else date.today()
+    except (TypeError, ValueError):
+        return False
+    return review_date >= observed_date
 
 
 def allocation_decision(*, active_task, project_active, free_gib,
                         compatible_lease=False, recovery=False,
-                        owner_exception=False):
+                        exception=None, today=None,
+                        active_mutable_for_purpose=0):
     if compatible_lease:
         return "REUSE_EXISTING"
-    if active_task >= 3 or project_active >= 150 or free_gib < 15:
+    if (project_active >= 150 or free_gib < 15 or
+            active_mutable_for_purpose >= 1):
         return "ALLOCATION_BLOCKED"
+    exception_valid = _valid_exception(exception, today)
     if free_gib < 30:
-        if recovery and owner_exception:
+        if recovery and exception_valid:
             return "ALLOW_RECOVERY"
         return "ALLOCATION_BLOCKED"
     if free_gib <= 50:
         return "ALLOCATION_BLOCKED"
+    if active_task >= 3:
+        return "ALLOW_EXCEPTION" if exception_valid else "ALLOCATION_BLOCKED"
     return "ALLOW_NORMAL"
 
 
@@ -65,7 +95,7 @@ def transfer_decision(head, tree, next_owner, *, active_writers):
 
 
 def completion_decision(lease_states):
-    if all(state in TERMINAL_OR_BLOCKING for state in lease_states):
+    if all(state in TERMINAL_CUSTODY for state in lease_states):
         return "ADMIN_COMPLETION_ALLOWED"
     return "ADMIN_COMPLETION_BLOCKED"
 

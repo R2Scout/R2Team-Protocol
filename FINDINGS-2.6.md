@@ -16,6 +16,8 @@ The protocol already bound work to TASKs, branches, candidates, and evidence, bu
 8. Physical paths are local observations. Portable project policy uses logical leases and root aliases; ignored local state maps them to a machine.
 9. Lifecycle operations need a distinct skill boundary. Hiding allocation/closure inside ordinary TASK execution makes authority and side effects hard to inspect.
 10. Governance changes should not bundle unrelated relocation. Team/chat relocation has different evidence, rollback, and acceptance needs and therefore remains a distinct later change.
+11. A blocking lease state is not terminal custody. It preserves the product verdict but prevents administrative completion until the lease becomes closed, retained-protected, or transferred with required evidence.
+12. A default-budget exception is a structured, expiring exact-lease decision. It never bypasses project hard caps, disk floors, reuse-only bands, single-writer custody, containment, or evidence gates.
 
 ## Consequence
 

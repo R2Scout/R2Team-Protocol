@@ -11,6 +11,25 @@ from workspace_policy import (
 )
 
 
+def valid_exception(**overrides):
+    value = {
+        "task_id": "TASK-42",
+        "reason": "changed exact base requires a disjoint compatibility lane",
+        "lease_id": "lease-review-2",
+        "owner": "qa-main",
+        "purpose": "qa",
+        "capacity_evidence": "destination 80 GiB free",
+        "review_date": "2026-11-01",
+        "changed_base": True,
+        "custody_known": True,
+        "disjoint_lane": True,
+        "candidate_preserved": True,
+        "recovery_rule": "retain protected candidate and return to the recorded owner",
+    }
+    value.update(overrides)
+    return value
+
+
 class WorkspacePolicyTests(unittest.TestCase):
     def test_task_revision_reuses_compatible_author_lease(self):
         self.assertEqual("REUSE_EXISTING", allocation_decision(
@@ -31,7 +50,7 @@ class WorkspacePolicyTests(unittest.TestCase):
     def test_owner_approved_recovery_allocation_is_bounded(self):
         self.assertEqual("ALLOW_RECOVERY", allocation_decision(
             active_task=1, project_active=20, free_gib=20,
-            recovery=True, owner_exception=True))
+            recovery=True, exception=valid_exception(), today="2026-10-25"))
 
     def test_recovery_band_rejects_ordinary_allocation(self):
         self.assertEqual("ALLOCATION_BLOCKED", allocation_decision(
@@ -40,7 +59,52 @@ class WorkspacePolicyTests(unittest.TestCase):
     def test_below_floor_blocks_even_recovery(self):
         self.assertEqual("ALLOCATION_BLOCKED", allocation_decision(
             active_task=1, project_active=20, free_gib=10,
-            recovery=True, owner_exception=True))
+            recovery=True, exception=valid_exception(), today="2026-10-25"))
+
+    def test_fourth_workspace_with_complete_exception_is_allowed(self):
+        self.assertEqual("ALLOW_EXCEPTION", allocation_decision(
+            active_task=3, project_active=20, free_gib=80,
+            exception=valid_exception(), today="2026-10-25"))
+
+    def test_exception_missing_required_field_is_blocked(self):
+        for field in (
+                "task_id", "reason", "lease_id", "owner", "purpose",
+                "capacity_evidence", "review_date", "changed_base",
+                "custody_known", "disjoint_lane", "candidate_preserved",
+                "recovery_rule"):
+            with self.subTest(field=field):
+                self.assertEqual("ALLOCATION_BLOCKED", allocation_decision(
+                    active_task=3, project_active=20, free_gib=80,
+                    exception=valid_exception(**{field: ""}),
+                    today="2026-10-25"))
+
+    def test_expired_exception_is_blocked(self):
+        self.assertEqual("ALLOCATION_BLOCKED", allocation_decision(
+            active_task=3, project_active=20, free_gib=80,
+            exception=valid_exception(review_date="2026-10-24"),
+            today="2026-10-25"))
+
+    def test_exception_requires_changed_base_known_custody_disjoint_lane_and_preserved_candidate(self):
+        for field in ("changed_base", "custody_known", "disjoint_lane",
+                      "candidate_preserved"):
+            with self.subTest(field=field):
+                self.assertEqual("ALLOCATION_BLOCKED", allocation_decision(
+                    active_task=3, project_active=20, free_gib=80,
+                    exception=valid_exception(**{field: False}),
+                    today="2026-10-25"))
+
+    def test_exception_never_bypasses_hard_cap_disk_floor_or_single_writer(self):
+        exception = valid_exception()
+        self.assertEqual("ALLOCATION_BLOCKED", allocation_decision(
+            active_task=3, project_active=150, free_gib=80,
+            exception=exception, today="2026-10-25"))
+        self.assertEqual("ALLOCATION_BLOCKED", allocation_decision(
+            active_task=3, project_active=20, free_gib=10,
+            exception=exception, today="2026-10-25"))
+        self.assertEqual("ALLOCATION_BLOCKED", allocation_decision(
+            active_task=3, project_active=20, free_gib=80,
+            active_mutable_for_purpose=1,
+            exception=exception, today="2026-10-25"))
 
     def test_verdict_and_workspace_disposition_remain_separate(self):
         self.assertEqual(
@@ -99,10 +163,25 @@ class WorkspacePolicyTests(unittest.TestCase):
         self.assertEqual("ADMIN_COMPLETION_BLOCKED",
                          completion_decision(["CLOSED", "ACTIVE"]))
 
-    def test_terminal_or_explicit_block_allows_administrative_completion(self):
+    def test_every_terminal_custody_state_allows_administrative_completion(self):
+        for state in ("CLOSED", "RETAINED_PROTECTED",
+                      "TRANSFERRED_TO_NEXT_TASK"):
+            with self.subTest(state=state):
+                self.assertEqual("ADMIN_COMPLETION_ALLOWED",
+                                 completion_decision([state]))
+
+    def test_every_nonterminal_or_blocking_state_rejects_administrative_completion(self):
+        for state in ("REQUESTED", "ACTIVE", "CLOSE_PENDING",
+                      "BLOCKED_DIRTY", "BLOCKED_DEPENDENCY",
+                      "BLOCKED_AUTHORITY", "UNKNOWN"):
+            with self.subTest(state=state):
+                self.assertEqual("ADMIN_COMPLETION_BLOCKED",
+                                 completion_decision([state]))
+
+    def test_only_terminal_custody_mix_allows_administrative_completion(self):
         self.assertEqual("ADMIN_COMPLETION_ALLOWED",
                          completion_decision(["CLOSED", "RETAINED_PROTECTED",
-                                              "BLOCKED_DIRTY"]))
+                                              "TRANSFERRED_TO_NEXT_TASK"]))
 
     def test_git_or_hash_bound_manifest_is_durable_evidence(self):
         self.assertEqual("EVIDENCE_DURABLE", evidence_decision("git"))
