@@ -1,10 +1,10 @@
 ---
 protocol_version: "2.5"
 id: "TASK-R2TEAM-2.6-WORKSPACE-LIFECYCLE-001"
-revision: 3
+revision: 4
 handoff_seq: 0
-status: READY
-stage: IMPLEMENTATION
+status: REVIEW_READY
+stage: QA
 owner_executor_id: "r2team-protocol-pm"
 owner_route: "https://github.com/R2Scout/R2Team-Protocol/issues/1"
 previous_owner_executor_id: null
@@ -26,10 +26,10 @@ branch: "planning/r2team-2.6-workspace-lifecycle"
 pr: null
 openspec_change: null
 base_sha: "a5adba57d133e58360347ac2c709e88433061e90"
-candidate_sha: null
+candidate_sha: "50fce2e22086e940a7d16221072d87187c4abefd"
 verified_sha: null
 merged_sha: null
-next_action: "Publish the minimum recoverable planning checkpoint, update Issue #1, then implement the accepted lifecycle-only 2.6 scope test-first on the isolated branch."
+next_action: "Obtain independent review of implementation candidate 50fce2e22086e940a7d16221072d87187c4abefd / tree e9463cf931b053415f4b4bec7c5737758d5771dc, then prepare the PR without merging."
 questions: []
 ---
 
@@ -81,15 +81,21 @@ The distribution repository is not converted into an adopted product team by thi
 
 # Current checkpoint
 
-- Completed: isolated clean planning lane created from accepted R2Team 2.5 main SHA; planning artifacts prepared; merge-evidence and workspace-closure consensus reached with the disk/worktree system architect; owner accepted the lifecycle-only 2.6 scope, separate `r2team-workspace` skill, planning checkpoint, Issue update, implementation, validation, and PR preparation stages.
-- Remaining: publish the planning checkpoint; update Issue #1; implement test-first; validate the exact candidate; obtain independent review; prepare the PR.
+- Completed: planning checkpoint published; Issue #1 updated; lifecycle-only 2.6 package implemented test-first; separate `r2team-workspace` packaged; validator, 32 behavior tests, all five skill-format checks, static public scan, diff check, and fresh-package validation passed; implementation candidate pushed.
+- Remaining: independent exact-candidate review; address any accepted findings; prepare the PR.
 - Blockers: none for the authorized stages. Merge, release, installed-skill replacement, downstream adoption, and live cleanup remain separately gated.
 
 # Evidence
 
 - Exact base: a5adba57d133e58360347ac2c709e88433061e90
+- Planning checkpoint: 96609ff8e721b4c1f83841ebc9bfdcae3e4852e0 / tree 76706d15dbe96da6de6531e02cf547613b8a567d
+- Implementation candidate: 50fce2e22086e940a7d16221072d87187c4abefd / tree e9463cf931b053415f4b4bec7c5737758d5771dc
 - Environment: isolated ordinary Git worktree on branch planning/r2team-2.6-workspace-lifecycle
-- Subject: planning artifacts only
+- Subject: R2Team 2.6 workspace lifecycle distribution package and planning artifacts
+- Structural validator: PASS
+- Behavioral validator suite: PASS, 32 tests
+- Skill format validation: PASS, five packaged skills
+- Fresh-package review: PASS for manifest-only isolated payload, validator, behavior tests, and skill formats
 - Runtime/product verification: NOT_RUN and out of scope
 - Downstream adoption: NOT_RUN and independently gated
 - Tracker: https://github.com/R2Scout/R2Team-Protocol/issues/1
