@@ -26,3 +26,26 @@ assignment_discovery:
 ```
 
 This cursor is not project truth. A first baseline still treats current actionable TASKs for the watched executor as `NEW_UNACKNOWLEDGED` unless durable intake/checkpoint evidence proves acceptance.
+
+## Workspace lease observations
+
+The same ignored local registry may map portable lease identity to machine-private facts. Never copy populated values into Git:
+
+```yaml
+workspace_leases:
+  - lease_id: "<portable-logical-id>"
+    task_id: "<TASK-ID>"
+    purpose: "<author|integration|qa|design|recovery>"
+    owner_executor_id: "<registered-executor>"
+    physical_path: "<absolute-local-path>"
+    custody: "<ordinary-canonical|codex-managed|external-authorized|legacy-retained>"
+    observed_head: "<full-sha-or-UNKNOWN>"
+    observed_tree: "<full-tree-or-UNKNOWN>"
+    observed_size_bytes: null
+    native_resources: []
+    process_observations: []
+    state: "<REQUESTED|ACTIVE|CLOSE_PENDING|CLOSED|RETAINED_PROTECTED|TRANSFERRED_TO_NEXT_TASK|BLOCKED_DIRTY|BLOCKED_DEPENDENCY|BLOCKED_AUTHORITY|UNKNOWN>"
+    last_observed_at: "<ISO-8601-or-NOT_RUN>"
+```
+
+Local observations do not change accepted TASK ownership, candidate identity, authority, retention, or disposition. A missing/stale observation is `UNKNOWN` or `INVENTORY_INCOMPLETE`, never evidence that a workspace is safe to close.

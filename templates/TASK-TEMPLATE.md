@@ -1,10 +1,10 @@
-# TASK template — R2Team 2.5
+# TASK template — R2Team 2.6
 
 Use the body below for Tasks/TASK-<id>-<name>.md, removing these explanatory instructions. Choose a collision-free ID. Role handoff alone does not create another TASK; bounded helper requests remain inside the parent TASK.
 
 ```yaml
 ---
-protocol_version: "2.5"
+protocol_version: "2.6"
 id: "<unique-task-id>"
 revision: 1
 handoff_seq: 0
@@ -40,6 +40,13 @@ base_sha: null
 candidate_sha: null
 verified_sha: null
 merged_sha: null
+workspace_policy: inherited_from_team
+workspace_exceptions: []
+workspace_leases: []
+workspace_disposition: NOT_APPLICABLE
+candidate_dispositions: []
+artifact_manifests: []
+close_receipts: []
 next_action: "<one-specific-action>"
 questions: []
 ---
@@ -95,6 +102,20 @@ Setup checkpoints include mode, last completed step, confirmed answers/refs and 
 - Limits and NOT_RUN:
 - References to retained artifacts and summaries:
 - Provider completed/merged state, merge commit and remote branch read-back:
+
+## Workspace lifecycle
+
+Keep TASK, candidate, and workspace lease identities separate. Reuse a compatible lease across TASK revisions, corrections, handoffs, and review. `workspace_disposition` is a derived TASK summary, never the historical record.
+
+Each `workspace_exceptions[]` item records exact TASK, reason, lease ID, owner, purpose, capacity evidence, review date, current/prior exact base, exact preserved candidate, known custody, disjoint lane, and recovery rule. TASK, lease, bases, candidate, owner, and purpose must match the requested allocation exactly; changed-base, custody-known, disjoint-lane, and candidate-preserved predicates must be boolean true. It cannot bypass the project hard cap, disk floor/reuse-only band, single-writer rule, ownership, containment, or evidence gates.
+
+Each `workspace_leases[]` item records `lease_id`, purpose, class, `owner_executor_id`, `closure_owner_executor_id`, exact base/candidate/HEAD/tree, mutability, custody, state, `retention_class`, `review_date`, `recovery_ref`, exception reference, and `close_receipt_ref`. Put physical paths, sizes, processes, native handles, and host observations only in ignored local state.
+
+Each `candidate_dispositions[]` item binds candidate SHA/tree and branch ref to exactly one disposition (`MERGED_TO_DEFAULT`, `SUPERSEDED_BY_SHA`, `REJECTED`, or `EVIDENCE_ARCHIVED`), evidence/reference, owner, and recorded time. Each `artifact_manifests[]` item records manifest ref, content hash, retention class, durable recovery location, owner, and access boundary. Each `close_receipts[]` item binds its receipt ref to one lease ID and actual closure result. Append new records; do not overwrite earlier candidate or lease history.
+
+At each publication boundary update `workspace_exceptions`, `workspace_leases`, `candidate_dispositions`, `artifact_manifests`, `close_receipts`, and the derived `workspace_disposition` as applicable. Administrative completion requires every terminal lease record to include `closure_owner_executor_id`, `retention_class`, `recovery_ref`, `review_date`, and `close_receipt_ref`; a transferred lease also names the next TASK/owner and transfer-custody reference. Bare labels and any blocking/nonterminal lease prevent administrative completion. Workspace closure does not change a product or QA verdict.
+
+For accepted integration, bind Git-suitable evidence into the protected checkpoint or record a sanitized hash-bound durable manifest with retention, recovery location, owner, and access boundary. Temporary material may be removed only after evidence-export, exclusive-ownership, dependency, shared-cache/retained-input, containment, and explicit-authority gates all pass. Otherwise retain, transfer, or block with an owner and review date.
 
 Candidate, verified, merged and deployed versions are not interchangeable. A link to an expiring log is not a durable result summary.
 

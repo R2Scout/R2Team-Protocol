@@ -1,0 +1,141 @@
+---
+protocol_version: "2.5"
+id: "TASK-R2TEAM-2.6-WORKSPACE-LIFECYCLE-001"
+revision: 8
+handoff_seq: 1
+status: REVIEW_READY
+stage: PM
+owner_executor_id: "r2team-protocol-owner"
+owner_route: "https://github.com/R2Scout/R2Team-Protocol/issues/1"
+previous_owner_executor_id: "r2team-protocol-pm"
+assigned_by_executor_id: "r2team-protocol-pm"
+task_issuer_executor_id: "r2team-protocol-owner"
+task_issuer_route: "https://github.com/R2Scout/R2Team-Protocol/issues/1"
+project_pm_executor_id: "r2team-protocol-pm"
+project_pm_route: "https://github.com/R2Scout/R2Team-Protocol/issues/1"
+result_to_executor_id: "r2team-protocol-owner"
+result_to_route: "https://github.com/R2Scout/R2Team-Protocol/issues/1"
+delivery_policy: git_checkpoint_then_tracker
+executor_mode: "local_standalone"
+parent_executor_id: null
+active_role: PM
+tracker_item: "https://github.com/R2Scout/R2Team-Protocol/issues/1"
+tracker_item_type: github_issue
+requirement_ref: "planning/r2team-2.6-workspace-lifecycle/normative-deltas.md"
+branch: "planning/r2team-2.6-workspace-lifecycle"
+pr: "https://github.com/R2Scout/R2Team-Protocol/pull/2"
+openspec_change: null
+base_sha: "a5adba57d133e58360347ac2c709e88433061e90"
+candidate_sha: "c3cb38914cd6bf788281005589c4c1a74ec648c7"
+verified_sha: "c3cb38914cd6bf788281005589c4c1a74ec648c7"
+merged_sha: null
+next_action: "Protocol owner reviews PR #2 and makes the separately gated merge decision; do not merge, release, install, adopt downstream, or perform live cleanup under this checkpoint."
+questions: []
+---
+
+# Outcome
+
+Define a reviewable R2Team 2.6 workspace-lifecycle contract that prevents unbounded physical worktree growth while preserving candidate identity, independent review, evidence, local custody, and recoverability.
+
+# Scope and boundaries
+
+Included:
+
+- workspace identity, lease, budget, retention, closure, and recovery semantics;
+- TASK, TEAM, role, setup, command, skill, migration, and validator deltas;
+- allocation and disk gates;
+- close receipts and Codex-managed custody;
+- project-local adoption and backward compatibility.
+
+Excluded:
+
+- merge, release, installed-skill replacement, downstream adoption, and live cleanup;
+- modification of the paused dirty candidate/r2team-2.6 checkout;
+- cleanup or removal of any existing worktree, branch, process, cache, data, or evidence;
+- team/chat relocation, which requires a distinct R2Team 2.7 TASK and checkpoint.
+
+The distribution repository is not converted into an adopted product team by this planning TASK. Logical executor names identify this authorized governance route; physical task or thread IDs must not enter Git.
+
+# Acceptance
+
+- Proposal, design, normative deltas, implementation tasks, and validation plan are complete and mutually consistent.
+- TASK identity, candidate identity, and workspace identity are explicitly separated.
+- Result acceptance and workspace disposition remain independent evidence axes.
+- Accepted integration records durable evidence in Git or a sanitized hash-bound durable recovery reference.
+- Administrative completion requires every lease to be CLOSED, RETAINED_PROTECTED, or TRANSFERRED_TO_NEXT_TASK with its required evidence; every blocking/nonterminal state keeps administrative completion blocked without rewriting the candidate verdict.
+- Temporary material is removed only when ownership, dependency, evidence-export, and removal-authority gates all pass.
+- Defaults and exception rules are explicit without granting destructive authority.
+- Machine-private paths remain outside Git.
+- The plan preserves R2Team 2.5 operation until a separately accepted 2.6 release.
+- The paused predecessor candidate remains byte-for-byte untouched by this lane.
+- R2Team 2.6 contains workspace lifecycle only; team/chat relocation is excluded for 2.7.
+- Operational workspace commands are packaged in a separate `r2team-workspace` skill; `r2team-work` does not gain hidden workspace mutation.
+
+# Plan
+
+- [Proposal](../planning/r2team-2.6-workspace-lifecycle/proposal.md)
+- [Design](../planning/r2team-2.6-workspace-lifecycle/design.md)
+- [Normative deltas](../planning/r2team-2.6-workspace-lifecycle/normative-deltas.md)
+- [Implementation tasks](../planning/r2team-2.6-workspace-lifecycle/tasks.md)
+- [Validation plan](../planning/r2team-2.6-workspace-lifecycle/validation-plan.md)
+
+# Current checkpoint
+
+- Completed: independent reviews returned AMEND on implementation candidates `50fce2e22086e940a7d16221072d87187c4abefd`, `2889fc84df324048d31ef6fef80352a9d63efc6c`, and `8beb080f0016214e8ed0c871697fd3d4a0a52376`. Successor `c3cb38914cd6bf788281005589c4c1a74ec648c7` closed all accepted findings and received independent PASS against TASK revision 7 at checkpoint `4cbc76ca3dceee4a26a90503737d0cb63c26dc0f`. PR #2 is prepared without merge.
+- Remaining: protocol-owner review and a separately authorized merge decision for PR #2.
+- Blockers: no source/package blocker remains. Merge, accepted-main publication, release, installed-skill replacement, downstream adoption, and live cleanup remain separately gated and NOT_RUN.
+
+# Evidence
+
+- Exact base: a5adba57d133e58360347ac2c709e88433061e90
+- Planning checkpoint: 96609ff8e721b4c1f83841ebc9bfdcae3e4852e0 / tree 76706d15dbe96da6de6531e02cf547613b8a567d
+- Rejected implementation candidate: 50fce2e22086e940a7d16221072d87187c4abefd / tree e9463cf931b053415f4b4bec7c5737758d5771dc / independent verdict AMEND
+- Rejected successor candidate: 2889fc84df324048d31ef6fef80352a9d63efc6c / tree 167f91c1fd0ea57d957a7d300bcb5952c9751562 / independent verdict AMEND
+- Rejected second successor candidate: 8beb080f0016214e8ed0c871697fd3d4a0a52376 / tree 668fe890f11098c686c24dd4a80534ad67692832 / independent verdict AMEND
+- Current successor implementation candidate: c3cb38914cd6bf788281005589c4c1a74ec648c7 / tree 96c5c418099a5a29e96ce6f4a6239f748311e9a1
+- Independent review: PASS for the exact candidate against TASK revision 7 / checkpoint 4cbc76ca3dceee4a26a90503737d0cb63c26dc0f
+- Environment: isolated ordinary Git worktree on branch planning/r2team-2.6-workspace-lifecycle
+- Subject: R2Team 2.6 workspace lifecycle distribution package and planning artifacts
+- Structural validator: PASS
+- Behavioral validator suite: PASS, 42 tests including hash-consistent destructive/private and OpenAI/Azure/bearer/generic/bare/cloud-secret adversarial payloads plus explicit-placeholder acceptance
+- Deterministic workspace policy suite: PASS, 32 allocation, exact exception binding, terminal evidence, transfer, closure, custody, and completion scenarios
+- Skill format validation: PASS, five packaged skills using official `quick_validate.py` with PyYAML 6.0.3 installed only in an isolated temporary directory
+- Fresh-package review: PASS for manifest-only isolated payload, validator, 42 validator tests, 32 policy tests, and five skill formats
+- Runtime/product verification: NOT_RUN and out of scope
+- Downstream adoption: NOT_RUN and independently gated
+- Tracker: https://github.com/R2Scout/R2Team-Protocol/issues/1
+- Pull request: https://github.com/R2Scout/R2Team-Protocol/pull/2
+
+# Decisions and handoff
+
+The protocol PM returned AMEND on the submitted governance proposal. The reconciled model is accepted for planning, not implementation. The existing dirty candidate/r2team-2.6 checkout is predecessor material and must not be used as this change's planning authority.
+
+The disk/worktree system architect returned AMEND on the merge-evidence and workspace-closure wording, with one accepted safety clarification: temporary material is removed only after verified evidence export when it is exclusively owned by the closing lease, has no live process or dependent lease, is not a shared immutable cache or retained recovery input, and the closer already has explicit removal authority. Otherwise it receives a retained, transferred, or blocked disposition with an owner and review date.
+
+The owner accepted the reconciled plan: R2Team 2.6 is limited to workspace lifecycle, team/chat relocation moves to a distinct 2.7 TASK and checkpoint, and operational workspace behavior is packaged as a separate `r2team-workspace` skill rather than hidden mutation in `r2team-work`.
+
+Independent review of candidate `50fce2e22086e940a7d16221072d87187c4abefd` returned AMEND: marker-only validation accepted a hash-consistent destructive/private payload, and singular TASK disposition/manifest/receipt fields could overwrite multi-lease or multi-candidate history. The successor adds negative semantic guards plus pure lifecycle transition tests and replaces those fields with append-only `workspace_leases`, `candidate_dispositions`, `artifact_manifests`, and `close_receipts`; `workspace_disposition` remains derived summary only.
+
+Independent review of successor `2889fc84df324048d31ef6fef80352a9d63efc6c` returned AMEND: blocking lease states incorrectly permitted administrative completion, the default three-workspace exception was unreachable and unstructured, and populated API/client/bearer/generic secrets were not rejected. Its successor `8beb080f0016214e8ed0c871697fd3d4a0a52376` restricted completion to the three true terminal custody state labels, validated every structured exception field including the recovery rule and review date without bypassing hard gates, and added the required hash-consistent credential fixtures and guard.
+
+Independent review of successor `8beb080f0016214e8ed0c871697fd3d4a0a52376` returned AMEND: terminal state strings lacked state-specific evidence validation, structured exceptions were not bound to the current allocation and accepted string truthiness, and bare/common cloud secret names were missed. Current successor `c3cb38914cd6bf788281005589c4c1a74ec648c7` requires full terminal lease records, exact allocation identity and boolean predicate binding, and expanded bare/cloud credential guards with documented placeholder parity.
+
+Fresh independent review of successor `c3cb38914cd6bf788281005589c4c1a74ec648c7`, tree `96c5c418099a5a29e96ce6f4a6239f748311e9a1`, returned PASS against TASK revision 7 at checkpoint `4cbc76ca3dceee4a26a90503737d0cb63c26dc0f`. PR #2 is prepared under the existing owner authorization. This PASS and PR do not authorize merge, release, installed-skill replacement, downstream adoption, live cleanup, process stop, branch deletion, or application-managed archive.
+
+# Authorized next transitions
+
+| Outcome | Next TASK status | Next owner executor | Next owner route | Next active role | Following stage returns to | Following result route | Authorized publisher |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| PASS | REVIEW_READY | r2team-protocol-owner | https://github.com/R2Scout/R2Team-Protocol/issues/1 | PM | r2team-protocol-pm | https://github.com/R2Scout/R2Team-Protocol/issues/1 | owner-authorized publisher |
+| AMEND | DRAFT | r2team-protocol-pm | https://github.com/R2Scout/R2Team-Protocol/issues/1 | PM | r2team-protocol-owner | https://github.com/R2Scout/R2Team-Protocol/issues/1 | r2team-protocol-pm |
+| BLOCKED | BLOCKED | r2team-protocol-pm | https://github.com/R2Scout/R2Team-Protocol/issues/1 | PM | r2team-protocol-owner | https://github.com/R2Scout/R2Team-Protocol/issues/1 | r2team-protocol-pm |
+
+# Publication gate
+
+The owner authorized the minimum planning checkpoint, Issue #1 update, isolated implementation, validation, independent exact-candidate review, and PR preparation. Before each authorized checkpoint:
+
+1. Confirm the exact planning diff from the accepted base.
+2. Keep the commit and push limited to the accepted planning or implementation scope.
+3. Run the planning validation plan.
+4. Preserve the paused predecessor checkout unchanged.
+5. Stop before merge, accepted-main publication, release, installed-skill replacement, downstream adoption, or live cleanup.

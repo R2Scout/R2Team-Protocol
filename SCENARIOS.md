@@ -1,4 +1,4 @@
-# R2Team 2.5 scenarios
+# R2Team 2.6 scenarios
 
 These are acceptance scenarios for setup, team lifecycle, communication, recovery, and distribution behavior. Document review is not evidence that access, roles, integrations, or skills work on every machine.
 
@@ -10,11 +10,11 @@ These are acceptance scenarios for setup, team lifecycle, communication, recover
 | GitHub, one PM with helpers | One participant/executor, needed functions/helpers, first real TASK | Create six mandatory chats/issues |
 | Brownfield MVP without OpenSpec | Preserve code/docs, assess coverage/gaps, baseline changed area incrementally | Rewrite whole project or claim complete specs |
 | Existing OpenSpec | Preserve config/specs/active changes/tasks; use version-compatible CLI | Reinitialize/reset/archive to fit protocol |
-| 1.10 with active MSG/PR | Preserve history; choose per-task/coordinated cutover; roles adopt 2.5 | Stop old transport before cutover |
+| 1.10 with active MSG/PR | Preserve history; choose per-task/coordinated cutover; roles adopt 2.6 | Stop old transport before cutover |
 | 1.10 with retained chats and fresh queue authorized | Re-run setup around current specs; cross-check each chat; explicitly retire only approved old org artifacts | Recreate chats or erase OpenSpec tasks |
 | One retained chat rejects/does not understand | Mark its adoption BLOCKED/PENDING; other roles continue only in their scope | Declare universal migration |
 | Organizational docs outside Git | Agree canonical Git root/placement and publish | Treat local folder as remotely recoverable |
-| Trusted target package unavailable | SOURCE_BLOCKED with exact missing source | Reconstruct 2.5 from memory/latest |
+| Trusted target package unavailable | SOURCE_BLOCKED with exact missing source | Reconstruct 2.6 from memory/latest |
 | Proposal accepted but apply not authorized | Stop at installed workflow gate | Begin product implementation during setup |
 | Existing custom skills | Inventory, backup, diff, ask before replacement | Overwrite through init/update |
 | Audit requested | Read-only scoped evidence report | Repair files, enable heartbeat, or migrate |
@@ -34,7 +34,7 @@ These are acceptance scenarios for setup, team lifecycle, communication, recover
 | Add DevOps function to existing QA | Cross-check changed duties/rights/skills and task assignment | Repeat full setup or infer deploy rights |
 | Function has several instances | Address exact executor/active role in TASK | Ambiguous role-only assignment |
 | One provider account backs several executors | TASK/request names executor/function; provider access verified | Treat inbox/read state as per-chat queue |
-| Participant leaves | Publish/transfer affected work, deactivate assignments, preserve history | Delete history/branches/accounts automatically |
+| Participant leaves | Publish/transfer affected work, deactivate assignments, preserve history | Erase history, branches, or accounts as a side effect |
 | Team shrinks to PM+helpers | Reverse assignments safely; same specs/tasks/history | Redesign protocol or lose evidence |
 | Role has no first task | Cross-check and request it through PM route | Self-assign from backlog |
 | No PM response route | Report precise NOT_DELIVERED/BLOCKED | Pretend acceptance/delivery |
@@ -115,7 +115,7 @@ These fixtures describe expected consuming-agent behavior. They are not executed
 | Remote read fails or a status mapping is unknown | QUEUE_CHECK_INCOMPLETE with exact gap | Successful no-work result or cursor advancement |
 | A held TASK plus READY B; accepted executor-wide suspension/capacity block | Discover B and report the explicit wider gate | Start B by treating every restriction as task-local |
 | Two eligible assignments without priority | Show both and ask through the issuer/PM route | Choose by chat recency or filename |
-| Installed skill 2.5, accepted project 2.4, no cutover | Report incompatible/pending adoption and actual source refs | Claim the new Route Card behavior is already active |
+| Installed skill 2.6, accepted project 2.5, no cutover | Report incompatible/pending adoption and actual source refs | Claim workspace lifecycle is already active |
 | Dev owns TASK; question is addressed to issuer who owns no TASK | Issuer check discovers the question/linked event and answers in its recorded route | Require the issuer to take TASK ownership to see the question |
 | Task Issuer and Project PM are one executor | Both routes remain explicit and usable | Omit one route because the person is the same |
 | ASK answered with sufficient in-scope facts | ANSWERED addresses original requester; requester validates, closes and resumes authorized dependent work | Extra generic PM start gate or silence-as-consent |
@@ -141,15 +141,37 @@ These fixtures describe expected consuming-agent behavior. They are not executed
 | Skill missing | BLOCKED or explicit equivalent | Permission to invent usage |
 | Install/update skills | Trusted source/ref, diff, machine-owner approval | Protocol migration/project adoption |
 
+## Workspace lifecycle
+
+| Input | Expected | Forbidden |
+| --- | --- | --- |
+| TASK revision/correction in compatible author lease | Reuse the lease; update TASK/candidate facts | Allocate a revision-named persistent worktree |
+| Fourth active lease without accepted exception | `ALLOCATION_BLOCKED`; preserve existing work | Cleanup or silent allocation |
+| Fourth lease with changed exact base plus complete unexpired structured exception, known custody, disjoint lane, preserved candidate, free capacity, and no competing mutable writer | `ALLOW_EXCEPTION` for the named lease/purpose only | General budget waiver or reuse across another TASK/purpose |
+| Exception TASK/lease/base/candidate/owner/purpose differs from the requested allocation, bases are unchanged, or any safety predicate is string `"false"` | `ALLOCATION_BLOCKED` | Replay an exception or treat non-empty text as boolean evidence |
+| Exception is incomplete/expired or hard cap, disk floor, reuse-only band, or single-writer gate fails | `ALLOCATION_BLOCKED` | Let the exception bypass a hard safety gate |
+| Destination has 35 GiB free | Reuse-only; no new persistent placement | Treat threshold as delete authority |
+| Destination has 20 GiB free and owner-approved recovery need | One bounded recovery allocation after full preflight | Ordinary author/review allocation |
+| QA exact candidate supports detached materialization | Ephemeral detached review; verdict published before disposition | Persistent mutable QA branch by default |
+| QA PASS but dirty evidence blocks closure | PASS remains; lease becomes `RETAINED_PROTECTED` or `BLOCKED_DIRTY` | Rewrite verdict or mutate retained material |
+| Accepted merge with Git-suitable evidence | Provider read-back; evidence in protected checkpoint; every completed-stage lease enters closure review | Leave owned lease silently ACTIVE |
+| Evidence cannot enter Git | Sanitized manifest, hash, retention, durable recovery location, owner, access boundary | Chat-only or disposable-worktree evidence |
+| Codex-managed checkout | Application archive lifecycle after authorized preflight | Shell removal |
+| Temporary output has a live process/dependent lease or is shared/retained | Retain/transfer/block with owner and review date | Remove because merge completed or disk is low |
+| Any lease is `BLOCKED_*`, `REQUESTED`, `ACTIVE`, `CLOSE_PENDING`, or `UNKNOWN` | Preserve candidate verdict; `ADMIN_COMPLETION_BLOCKED` | Mark TASK administratively complete |
+| Terminal state appears without closure owner, retention, recovery, review date, receipt, or required transfer custody | `ADMIN_COMPLETION_BLOCKED` until the full lease record is published | Treat `CLOSED`, `RETAINED_PROTECTED`, or `TRANSFERRED_TO_NEXT_TASK` text as evidence |
+| Transfer to next TASK | Preserve old HEAD/tree, next owner, lease/custody/recovery route | Duplicate mutable ownership |
+| Team/chat relocation request during 2.6 work | Separate 2.7 TASK/checkpoint/candidate/acceptance | Add relocation commands or payload to 2.6 |
+
 ## Distribution release
 
 | Check | Expected |
 | --- | --- |
 | Public language | All maintained distribution files, help, commits, release notes in English |
-| Manifest | Protocol 2.5 as the sole release identifier, required paths and matching SHA-256 |
+| Manifest | Protocol 2.6 as the sole release identifier, required paths and matching SHA-256 |
 | Links/anchors | Structural validator PASS |
 | Validator suite | Current complete suite PASS |
-| Skills | Four skill directories pass official quick_validate |
+| Skills | Five skill directories, including r2team-workspace, pass official quick_validate |
 | Help copies | templates/COMMANDS.md and skills/r2team/references/commands.md byte-identical |
 | Specialized CMMI | Absent from main package; maintained in separate TFS repository |
 | Candidate publication | Candidate branch resolves to exact approved commit; no release tag implied |

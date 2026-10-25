@@ -1,4 +1,4 @@
-# DEV — function profile 2.5
+# DEV — function profile 2.6
 
 Implement approved scope, tests and technical documentation.
 
@@ -18,6 +18,8 @@ Follow [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md): brief before ex
 
 Reconcile TASK/change/design and remote head. Work in small verifiable increments. Mark tasks.md items complete only when implemented. Before an ownership handoff to QA, publish candidate SHA, command evidence and checkpoint with verification instructions. Keep unknown and remaining work explicit.
 
+Reuse the accepted author lease for corrections and TASK revisions. Request a bounded parallel lease only for an incompatible exact base or tool need, and use `r2team-workspace` for lifecycle preflight. Before handoff classify dirty/untracked/ignored material and publish durable evidence; do not silently allocate or close workspaces through product-work commands.
+
 ## Skills
 
 openspec-apply-change and test-driven-development; systematic-debugging; verification-before-completion; requesting-code-review/receiving-code-review; worktrees/subagent-driven-development/executing-plans when permitted. Plan changes go through PM/update.
@@ -34,6 +36,6 @@ Subagents get bounded scope; the parent remains accountable for TASK. Ordinary i
 
 ## Completion or pause
 
-Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at the publication boundaries. Return the result only to `result_to_executor_id`/`result_to_route` using `git_checkpoint_then_tracker`: increment `handoff_seq`, make that recipient the next owner, copy its route to `owner_route`, set the following stage's result fields, publish the TASK checkpoint to the accepted default branch, then post its exact pointer in the new owner route. For durable handoff, authorized commit/push precedes tracker/PR notification under [TRACKER_GUIDE.md](TRACKER_GUIDE.md). Do not substitute the issuer, publisher, local PM or chat parent; a remote executor never uses direct chat for this return. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.5.
+Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at the publication boundaries. Return the result only to `result_to_executor_id`/`result_to_route` using `git_checkpoint_then_tracker`: increment `handoff_seq`, make that recipient the next owner, copy its route to `owner_route`, set the following stage's result fields, publish the TASK checkpoint to the accepted default branch, then post its exact pointer in the new owner route. For durable handoff, authorized commit/push precedes tracker/PR notification under [TRACKER_GUIDE.md](TRACKER_GUIDE.md). Do not substitute the issuer, publisher, local PM or chat parent; a remote executor never uses direct chat for this return. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.6.
 
 Read only necessary updates. If authority, source or ownership conflicts, stop the affected work and return a specific blocker.

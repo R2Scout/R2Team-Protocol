@@ -1,6 +1,6 @@
-# Setup — R2Team 2.5 guided wizard
+# Setup — R2Team 2.6 guided wizard
 
-Protocol version 2.5. Run only when requested; reading/editing the distribution does not start a project. Full rules: [protocol](CODEX_TEAM_PROTOCOL.md). Entry prompts: [CODEX_TEAM_SETUP.md](CODEX_TEAM_SETUP.md).
+Protocol version 2.6. Run only when requested; reading/editing the distribution does not start a project. Full rules: [protocol](CODEX_TEAM_PROTOCOL.md). Entry prompts: [CODEX_TEAM_SETUP.md](CODEX_TEAM_SETUP.md).
 
 ## Wizard rules
 
@@ -38,11 +38,12 @@ For `new` or `migrate`, also choose `launch_mode: production | synthetic_pilot`.
 
 1. Confirm package source/path, target project, applicable instructions and shell.
 2. Check Git root/status/branch/HEAD/remote/worktrees without printing credential-bearing URLs.
-3. Read current TEAM/legacy state, PM, affected active writers/tasks and scoped automations. Leave unrelated projectless schedules alone.
-4. Verify exact package commit or trusted bundle manifest hash before payload hashes. Integrity without a trusted source is not provenance. HEAD/tag does not identify dirty files. The target protocol version must match the requested version.
-5. If code and organizational files are split or the root is not Git, agree canonical placement and remote. Local files are not remotely published state.
-6. Missing source is BLOCKED; do not reconstruct the package from memory.
-7. Audit can be read-only without an assignment; TEAM/assignment changes require PM authority.
+3. Inventory existing workspace custody read-only: logical purpose/owner where known, dirty/untracked/ignored risk, destination-filesystem capacity, application-managed checkouts, durable evidence/recovery, and unknowns. Do not close, relocate, clean, stop, or archive anything during preflight.
+4. Read current TEAM/legacy state, PM, affected active writers/tasks and scoped automations. Leave unrelated projectless schedules alone.
+5. Verify exact package commit or trusted bundle manifest hash before payload hashes. Integrity without a trusted source is not provenance. HEAD/tag does not identify dirty files. The target protocol version must match the requested version.
+6. If code and organizational files are split or the root is not Git, agree canonical placement and remote. Local files are not remotely published state.
+7. Missing source is BLOCKED; do not reconstruct the package from memory.
+8. Audit can be read-only without an assignment; TEAM/assignment changes require PM authority.
 
 Local preparation can be approved without a remote, but is LOCAL_ONLY. Creating a remote repository requires explicit authorization.
 
@@ -130,7 +131,9 @@ Run the audit below. Report ready/NOT_RUN, first TASK, owner and next action. Th
 <a id="migrate"></a>
 ## 3. MIGRATE
 
-Use [MIGRATE_TO_2.5.md](MIGRATE_TO_2.5.md), then applicable N5-N7. Preserve active work by default. A user-approved fresh organizational queue may retain specs/chats while retiring old tasks/messages; it must not erase OpenSpec tasks.md or falsely mark unfinished work DONE. Each retained role must actually adopt the cutover.
+Use [MIGRATE_TO_2.6.md](MIGRATE_TO_2.6.md), then applicable N5-N7. Preserve active work by default. A user-approved fresh organizational queue may retain specs/chats while retiring old tasks/messages; it must not erase OpenSpec tasks.md or falsely mark unfinished work DONE. Each retained role must actually adopt the cutover.
+
+Adoption defines project workspace budgets, portable root aliases/placement classes, retention classes, closure methods, and reconciliation owner. Existing workspaces become `legacy-retained` until a separately authorized reconciliation classifies custody and evidence. Add lifecycle fields at the next material TASK revision or handoff; migration itself does not allocate, relocate, archive, or close a workspace.
 
 For an MVP, map capabilities/sources/gaps and cover the next changed area, not a speculative full import. Existing documents are evidence, not automatically correct requirements.
 

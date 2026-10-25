@@ -1,10 +1,10 @@
 # TEAM — R2Team configuration
 
-Template for protocol version 2.5. PM fills it during setup; empty configuration is not ready. Never commit real thread IDs, other machines' absolute paths or credentials.
+Template for protocol version 2.6. PM fills it during setup; empty configuration is not ready. Never commit real thread IDs, other machines' absolute paths or credentials.
 
 ```yaml
 protocol_name: R2Team
-protocol_version: "2.5"
+protocol_version: "2.6"
 integration_revision: 0
 setup_status: NOT_CONFIGURED
 project:
@@ -32,9 +32,26 @@ toolchain:
   openspec_source_ref: null
   superpowers_source_ref: null
   skill_install_method: null
+workspace_lifecycle:
+  max_active_per_task: 3
+  max_mutable_per_executor_task_purpose: 1
+  project_target_active: 50
+  project_hard_cap_active: 150
+  free_space_gib:
+    normal_above: 50
+    reuse_only_from: 30
+    recovery_only_from: 15
+    freeze_below: 15
+  placement_classes: [ordinary-canonical, codex-managed, external-authorized, legacy-retained]
+  root_aliases: {}
+  retention_classes: []
+  closure_methods: []
+  reconciliation_owner_executor_id: null
 ```
 
 Use a real commit and repository-relative package path, or the trusted hash of an exact bundle. HEAD does not identify a dirty working tree. Increment project integration_revision when adopting changed rules/team configuration.
+
+Workspace policy is portable. `root_aliases` name project-approved placement classes without storing physical paths. Populated path, observed size, process/native-resource, custody, and timestamp data belongs in ignored `.codex-local/` state. Projects may adopt stricter budgets or record exact TASK exceptions; thresholds never grant cleanup, relocation, process-stop, or deletion authority.
 
 ## Participants and executors
 
