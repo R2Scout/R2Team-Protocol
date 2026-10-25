@@ -1,14 +1,14 @@
 ---
 protocol_version: "2.5"
 id: "TASK-R2TEAM-2.6-WORKSPACE-LIFECYCLE-001"
-revision: 7
-handoff_seq: 0
+revision: 8
+handoff_seq: 1
 status: REVIEW_READY
-stage: QA
-owner_executor_id: "r2team-protocol-pm"
+stage: PM
+owner_executor_id: "r2team-protocol-owner"
 owner_route: "https://github.com/R2Scout/R2Team-Protocol/issues/1"
-previous_owner_executor_id: null
-assigned_by_executor_id: "r2team-protocol-owner"
+previous_owner_executor_id: "r2team-protocol-pm"
+assigned_by_executor_id: "r2team-protocol-pm"
 task_issuer_executor_id: "r2team-protocol-owner"
 task_issuer_route: "https://github.com/R2Scout/R2Team-Protocol/issues/1"
 project_pm_executor_id: "r2team-protocol-pm"
@@ -23,13 +23,13 @@ tracker_item: "https://github.com/R2Scout/R2Team-Protocol/issues/1"
 tracker_item_type: github_issue
 requirement_ref: "planning/r2team-2.6-workspace-lifecycle/normative-deltas.md"
 branch: "planning/r2team-2.6-workspace-lifecycle"
-pr: null
+pr: "https://github.com/R2Scout/R2Team-Protocol/pull/2"
 openspec_change: null
 base_sha: "a5adba57d133e58360347ac2c709e88433061e90"
 candidate_sha: "c3cb38914cd6bf788281005589c4c1a74ec648c7"
-verified_sha: null
+verified_sha: "c3cb38914cd6bf788281005589c4c1a74ec648c7"
 merged_sha: null
-next_action: "Obtain fresh independent review of successor candidate c3cb38914cd6bf788281005589c4c1a74ec648c7 / tree 96c5c418099a5a29e96ce6f4a6239f748311e9a1, then prepare the PR without merging if PASS."
+next_action: "Protocol owner reviews PR #2 and makes the separately gated merge decision; do not merge, release, install, adopt downstream, or perform live cleanup under this checkpoint."
 questions: []
 ---
 
@@ -81,9 +81,9 @@ The distribution repository is not converted into an adopted product team by thi
 
 # Current checkpoint
 
-- Completed: independent reviews returned AMEND on implementation candidates `50fce2e22086e940a7d16221072d87187c4abefd`, `2889fc84df324048d31ef6fef80352a9d63efc6c`, and `8beb080f0016214e8ed0c871697fd3d4a0a52376`. Successor `c3cb38914cd6bf788281005589c4c1a74ec648c7` addresses the three third-review findings: administrative completion consumes state-specific evidence-bearing lease records, bounded exceptions are exactly bound to the requested allocation with strict boolean predicates, and the credential guard covers bare/common cloud secret names plus `not-configured` placeholders.
-- Remaining: fresh independent exact-candidate review of successor `c3cb38914cd6bf788281005589c4c1a74ec648c7`; address any accepted findings; prepare the PR only after PASS.
-- Blockers: none for the authorized stages. Merge, release, installed-skill replacement, downstream adoption, and live cleanup remain separately gated.
+- Completed: independent reviews returned AMEND on implementation candidates `50fce2e22086e940a7d16221072d87187c4abefd`, `2889fc84df324048d31ef6fef80352a9d63efc6c`, and `8beb080f0016214e8ed0c871697fd3d4a0a52376`. Successor `c3cb38914cd6bf788281005589c4c1a74ec648c7` closed all accepted findings and received independent PASS against TASK revision 7 at checkpoint `4cbc76ca3dceee4a26a90503737d0cb63c26dc0f`. PR #2 is prepared without merge.
+- Remaining: protocol-owner review and a separately authorized merge decision for PR #2.
+- Blockers: no source/package blocker remains. Merge, accepted-main publication, release, installed-skill replacement, downstream adoption, and live cleanup remain separately gated and NOT_RUN.
 
 # Evidence
 
@@ -93,6 +93,7 @@ The distribution repository is not converted into an adopted product team by thi
 - Rejected successor candidate: 2889fc84df324048d31ef6fef80352a9d63efc6c / tree 167f91c1fd0ea57d957a7d300bcb5952c9751562 / independent verdict AMEND
 - Rejected second successor candidate: 8beb080f0016214e8ed0c871697fd3d4a0a52376 / tree 668fe890f11098c686c24dd4a80534ad67692832 / independent verdict AMEND
 - Current successor implementation candidate: c3cb38914cd6bf788281005589c4c1a74ec648c7 / tree 96c5c418099a5a29e96ce6f4a6239f748311e9a1
+- Independent review: PASS for the exact candidate against TASK revision 7 / checkpoint 4cbc76ca3dceee4a26a90503737d0cb63c26dc0f
 - Environment: isolated ordinary Git worktree on branch planning/r2team-2.6-workspace-lifecycle
 - Subject: R2Team 2.6 workspace lifecycle distribution package and planning artifacts
 - Structural validator: PASS
@@ -103,6 +104,7 @@ The distribution repository is not converted into an adopted product team by thi
 - Runtime/product verification: NOT_RUN and out of scope
 - Downstream adoption: NOT_RUN and independently gated
 - Tracker: https://github.com/R2Scout/R2Team-Protocol/issues/1
+- Pull request: https://github.com/R2Scout/R2Team-Protocol/pull/2
 
 # Decisions and handoff
 
@@ -117,6 +119,8 @@ Independent review of candidate `50fce2e22086e940a7d16221072d87187c4abefd` retur
 Independent review of successor `2889fc84df324048d31ef6fef80352a9d63efc6c` returned AMEND: blocking lease states incorrectly permitted administrative completion, the default three-workspace exception was unreachable and unstructured, and populated API/client/bearer/generic secrets were not rejected. Its successor `8beb080f0016214e8ed0c871697fd3d4a0a52376` restricted completion to the three true terminal custody state labels, validated every structured exception field including the recovery rule and review date without bypassing hard gates, and added the required hash-consistent credential fixtures and guard.
 
 Independent review of successor `8beb080f0016214e8ed0c871697fd3d4a0a52376` returned AMEND: terminal state strings lacked state-specific evidence validation, structured exceptions were not bound to the current allocation and accepted string truthiness, and bare/common cloud secret names were missed. Current successor `c3cb38914cd6bf788281005589c4c1a74ec648c7` requires full terminal lease records, exact allocation identity and boolean predicate binding, and expanded bare/cloud credential guards with documented placeholder parity.
+
+Fresh independent review of successor `c3cb38914cd6bf788281005589c4c1a74ec648c7`, tree `96c5c418099a5a29e96ce6f4a6239f748311e9a1`, returned PASS against TASK revision 7 at checkpoint `4cbc76ca3dceee4a26a90503737d0cb63c26dc0f`. PR #2 is prepared under the existing owner authorization. This PASS and PR do not authorize merge, release, installed-skill replacement, downstream adoption, live cleanup, process stop, branch deletion, or application-managed archive.
 
 # Authorized next transitions
 
