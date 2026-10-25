@@ -25,7 +25,7 @@ Keep physical paths, sizes, processes, native handles, and observation timestamp
 
 ## 4. Introduce TASK fields prospectively
 
-Existing TASKs remain valid. Add `workspace_policy`, structured `workspace_exceptions`, `workspace_leases`, the derived `workspace_disposition`, and append-only `candidate_dispositions`, `artifact_manifests`, and `close_receipts` at the next material TASK revision or handoff after adoption. Each lease record retains its own state, closure owner, review date, retention class, recovery reference, and receipt reference; later candidates or leases never overwrite earlier history. A revision or handoff does not itself allocate another persistent workspace. A blocking/nonterminal lease preserves the candidate verdict but prevents administrative completion.
+Existing TASKs remain valid. Add `workspace_policy`, structured allocation-bound `workspace_exceptions`, `workspace_leases`, the derived `workspace_disposition`, and append-only `candidate_dispositions`, `artifact_manifests`, and `close_receipts` at the next material TASK revision or handoff after adoption. Each lease record retains its own state, closure owner, review date, retention class, recovery reference, and receipt reference; transfer also retains next-TASK custody. Later candidates or leases never overwrite earlier history. A revision or handoff does not itself allocate another persistent workspace. Bare labels and blocking/nonterminal records preserve the candidate verdict but prevent administrative completion.
 
 Classify every existing physical workspace as `legacy-retained` until a separately authorized reconciliation establishes owner, purpose, candidate, evidence, dependency, custody, and recovery. Unknown or dirty state is protected, not disposable.
 

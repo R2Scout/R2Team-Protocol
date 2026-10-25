@@ -44,7 +44,7 @@ Workspace axis:
                     |             +-> BLOCKED_DIRTY
                     +-> TRANSFERRED_TO_NEXT_TASK
 
-The axes are correlated by references, not collapsed into one status. A QA verdict remains valid if closure is blocked. Administrative TASK completion requires a terminal workspace disposition for every active lease.
+The axes are correlated by references, not collapsed into one status. A QA verdict remains valid if closure is blocked. Administrative TASK completion requires a fully evidenced terminal lease record for every active lease; a state string alone is insufficient.
 
 ## Lease contract
 
@@ -79,7 +79,7 @@ No committed template stores another machine's absolute path, thread ID, process
 2. Prefer reuse of the current compatible lease.
 3. Verify per-executor, per-TASK, and project budgets.
 4. Measure free capacity on the destination filesystem, including expected dependency expansion.
-5. If an exception is required, record exact reason, owner, lease class, review date, and recovery rule in the TASK.
+5. If an exception is required, bind it to the requested TASK, lease, current/prior base, preserved candidate, owner, and purpose; record capacity evidence, review date, recovery rule, and boolean true changed-base/custody/disjoint-lane/candidate-preservation predicates in the TASK.
 6. Allocate through the custody-appropriate mechanism.
 7. Record the logical lease and local physical mapping.
 

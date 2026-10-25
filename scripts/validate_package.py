@@ -88,7 +88,8 @@ def validate(root):
         r"-----BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY-----|"
         r"\bsk-[A-Za-z0-9_-]{8,})")
     credential_assignment_pattern = re.compile(
-        r"(?im)\b[A-Z][A-Z0-9_]*(?:API_KEY|SECRET|TOKEN|PASSWORD|PRIVATE_KEY)\b"
+        r"(?im)\b(?:[A-Z][A-Z0-9_]*_)?"
+        r"(?:SECRET_ACCESS_KEY|API_KEY|SECRET|TOKEN|PASSWORD|PRIVATE_KEY)\b"
         r"\s*[:=]\s*([^\r\n#,]+)")
     bearer_pattern = re.compile(
         r"(?im)\bAuthorization\s*:\s*Bearer\s+([^\s,;]+)")
@@ -106,7 +107,8 @@ def validate(root):
                 lowered = value.lower()
                 placeholder = (
                     not value or
-                    lowered in {"null", "none", "not_configured", "redacted"} or
+                    lowered in {"null", "none", "not_configured",
+                                "not-configured", "redacted"} or
                     (value.startswith("<") and value.endswith(">")) or
                     (value.startswith("${") and value.endswith("}")) or
                     (value.startswith("%") and value.endswith("%"))
@@ -160,10 +162,11 @@ def validate(root):
         for line in text.splitlines():
             marker = re.match(r"^\s*(`{3,}|~{3,})", line)
             if marker:
-                token = marker.group(1)
+                fence_marker = marker.group(1)
                 if fence is None:
-                    fence = token
-                elif token[0] == fence[0] and len(token) >= len(fence):
+                    fence = fence_marker
+                elif (fence_marker[0] == fence[0] and
+                      len(fence_marker) >= len(fence)):
                     fence = None
                 continue
             if fence:

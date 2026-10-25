@@ -261,8 +261,9 @@ $r2team-workspace close
 
     def test_hash_consistent_api_and_client_secret_assignments_are_rejected(self):
         path = self.root / "skills/r2team-workspace/SKILL.md"
-        payload = ("\n" + "OPENAI_" + "API_KEY=" + "sk-" + "dummy-not-secret\n" +
-                   "AZURE_CLIENT_" + "SECRET=" + "dummy-client-secret\n")
+        payload = ("\n" + "OPENAI_" + "API_KEY" + "=" + "sk-" +
+                   "dummy-not-secret\n" + "AZURE_CLIENT_" + "SECRET" +
+                   "=" + "dummy-client-secret\n")
         self.put("skills/r2team-workspace/SKILL.md",
                  path.read_text(encoding="utf-8") + payload)
         self.pin_hashes()
@@ -280,8 +281,31 @@ $r2team-workspace close
 
     def test_hash_consistent_generic_secret_and_token_are_rejected(self):
         path = self.root / "skills/r2team-workspace/SKILL.md"
-        payload = ("\nSERVICE_" + "SECRET=" + "dummy-service-secret\n" +
-                   "DEPLOY_" + "TOKEN=" + "dummy-deploy-token\n")
+        payload = ("\nSERVICE_" + "SECRET" + "=" +
+                   "dummy-service-secret\n" + "DEPLOY_" + "TOKEN" +
+                   "=" + "dummy-deploy-token\n")
+        self.put("skills/r2team-workspace/SKILL.md",
+                 path.read_text(encoding="utf-8") + payload)
+        self.pin_hashes()
+        self.assertTrue(any("Credential-like material" in e
+                            for e in validate(self.root)))
+
+    def test_hash_consistent_bare_credential_names_are_rejected(self):
+        path = self.root / "skills/r2team-workspace/SKILL.md"
+        payload = ("\n" + "TO" + "KEN=" + "dummy-token\n" +
+                   "PASS" + "WORD=" + "dummy-password\n" +
+                   "API_" + "KEY=" + "dummy-api-key\n" +
+                   "PRIVATE_" + "KEY=" + "dummy-private-key\n")
+        self.put("skills/r2team-workspace/SKILL.md",
+                 path.read_text(encoding="utf-8") + payload)
+        self.pin_hashes()
+        self.assertTrue(any("Credential-like material" in e
+                            for e in validate(self.root)))
+
+    def test_hash_consistent_cloud_secret_access_key_is_rejected(self):
+        path = self.root / "skills/r2team-workspace/SKILL.md"
+        payload = ("\nAWS_" + "SECRET_ACCESS_KEY" + "=" +
+                   "dummy-cloud-secret\n")
         self.put("skills/r2team-workspace/SKILL.md",
                  path.read_text(encoding="utf-8") + payload)
         self.pin_hashes()
@@ -290,9 +314,10 @@ $r2team-workspace close
 
     def test_explicit_credential_placeholders_are_allowed(self):
         path = self.root / "skills/r2team-workspace/SKILL.md"
-        payload = ("\n" + "OPENAI_" + "API_KEY=<set-locally>\n" +
-                   "AZURE_CLIENT_" + "SECRET=${AZURE_CLIENT_SECRET}\n" +
-                   "SERVICE_" + "TOKEN=null\n")
+        payload = ("\n" + "OPENAI_" + "API_KEY" + "=<set-locally>\n" +
+                   "AZURE_CLIENT_" + "SECRET" + "=${AZURE_CLIENT_SECRET}\n" +
+                   "SERVICE_" + "TOKEN" + "=null\n" +
+                   "DEPLOY_" + "TOKEN" + "=not-configured\n")
         self.put("skills/r2team-workspace/SKILL.md",
                  path.read_text(encoding="utf-8") + payload)
         self.pin_hashes()

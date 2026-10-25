@@ -10,24 +10,34 @@ TERMINAL_CUSTODY = {
 }
 
 
-def _valid_exception(exception, today):
+def _valid_exception(exception, today, expected):
     if not isinstance(exception, dict):
         return False
-    required = (
-        "task_id",
+    required_text = (
         "reason",
-        "lease_id",
-        "owner",
-        "purpose",
         "capacity_evidence",
         "review_date",
-        "changed_base",
-        "custody_known",
-        "disjoint_lane",
-        "candidate_preserved",
         "recovery_rule",
     )
-    if any(not exception.get(field) for field in required):
+    if any(not isinstance(exception.get(field), str) or
+           not exception[field].strip() for field in required_text):
+        return False
+    identity_fields = (
+        "task_id", "lease_id", "base_sha", "prior_base_sha",
+        "candidate_sha", "owner", "purpose",
+    )
+    if any(not expected.get(field) or
+           exception.get(field) != expected[field]
+           for field in identity_fields):
+        return False
+    if exception["base_sha"] == exception["prior_base_sha"]:
+        return False
+    if any(not re.fullmatch(r"[0-9a-f]{40}", exception[field])
+           for field in ("base_sha", "prior_base_sha", "candidate_sha")):
+        return False
+    if any(exception.get(field) is not True for field in (
+            "changed_base", "custody_known", "disjoint_lane",
+            "candidate_preserved")):
         return False
     try:
         review_date = date.fromisoformat(exception["review_date"])
@@ -40,13 +50,23 @@ def _valid_exception(exception, today):
 def allocation_decision(*, active_task, project_active, free_gib,
                         compatible_lease=False, recovery=False,
                         exception=None, today=None,
-                        active_mutable_for_purpose=0):
+                        active_mutable_for_purpose=0, task_id=None,
+                        lease_id=None, base_sha=None, prior_base_sha=None,
+                        candidate_sha=None, owner=None, purpose=None):
     if compatible_lease:
         return "REUSE_EXISTING"
     if (project_active >= 150 or free_gib < 15 or
             active_mutable_for_purpose >= 1):
         return "ALLOCATION_BLOCKED"
-    exception_valid = _valid_exception(exception, today)
+    exception_valid = _valid_exception(exception, today, {
+        "task_id": task_id,
+        "lease_id": lease_id,
+        "base_sha": base_sha,
+        "prior_base_sha": prior_base_sha,
+        "candidate_sha": candidate_sha,
+        "owner": owner,
+        "purpose": purpose,
+    })
     if free_gib < 30:
         if recovery and exception_valid:
             return "ALLOW_RECOVERY"
@@ -94,8 +114,35 @@ def transfer_decision(head, tree, next_owner, *, active_writers):
     }
 
 
-def completion_decision(lease_states):
-    if all(state in TERMINAL_CUSTODY for state in lease_states):
+def _valid_terminal_lease(lease):
+    if not isinstance(lease, dict):
+        return False
+    state = lease.get("state")
+    if state not in TERMINAL_CUSTODY:
+        return False
+    required = (
+        "closure_owner_executor_id", "retention_class", "recovery_ref",
+        "review_date", "close_receipt_ref",
+    )
+    if any(not isinstance(lease.get(field), str) or
+           not lease[field].strip() for field in required):
+        return False
+    try:
+        date.fromisoformat(lease["review_date"])
+    except (TypeError, ValueError):
+        return False
+    if state == "TRANSFERRED_TO_NEXT_TASK":
+        transfer_required = (
+            "next_task_id", "next_owner_executor_id", "transfer_custody_ref",
+        )
+        if any(not isinstance(lease.get(field), str) or
+               not lease[field].strip() for field in transfer_required):
+            return False
+    return True
+
+
+def completion_decision(lease_records):
+    if all(_valid_terminal_lease(lease) for lease in lease_records):
         return "ADMIN_COMPLETION_ALLOWED"
     return "ADMIN_COMPLETION_BLOCKED"
 

@@ -31,7 +31,7 @@ Resolve three independent identities:
 2. Candidate: exact commit SHA/tree or immutable artifact identity.
 3. Workspace lease: `lease_id`, TASK, purpose, class, owner executor, exact base/candidate, mutability, custody, state, and recovery reference.
 
-Lease states are `REQUESTED`, `ACTIVE`, `CLOSE_PENDING`, `CLOSED`, `RETAINED_PROTECTED`, `TRANSFERRED_TO_NEXT_TASK`, `BLOCKED_DIRTY`, `BLOCKED_DEPENDENCY`, `BLOCKED_AUTHORITY`, or `UNKNOWN`. `CLOSED`, `RETAINED_PROTECTED`, and `TRANSFERRED_TO_NEXT_TASK` are terminal only with their required receipt, owner, recovery, and retention evidence. Every other state prevents administrative completion without rewriting the candidate verdict.
+Lease states are `REQUESTED`, `ACTIVE`, `CLOSE_PENDING`, `CLOSED`, `RETAINED_PROTECTED`, `TRANSFERRED_TO_NEXT_TASK`, `BLOCKED_DIRTY`, `BLOCKED_DEPENDENCY`, `BLOCKED_AUTHORITY`, or `UNKNOWN`. A terminal lease record in `CLOSED`, `RETAINED_PROTECTED`, or `TRANSFERRED_TO_NEXT_TASK` requires closure owner, retention, recovery, review-date, and close-receipt evidence; transfer also requires next-TASK/owner/custody evidence. A bare label and every other state prevent administrative completion without rewriting the candidate verdict.
 
 ## Status and doctor
 
@@ -50,7 +50,7 @@ Never claim a complete inventory when reads fail or when a local registry is abs
 Run allocation preflight before mutation:
 
 1. verify the accepted TASK, current owner/purpose, exact base/candidate, permissions, and no compatible existing lease;
-2. enforce one author lease, one reusable integration lease, one ephemeral QA/Design lease, maximum three active leases per TASK, one mutable lease per executor/TASK/purpose, project target 50, and hard cap 150; a bounded default-budget exception must record exact TASK, reason, lease ID, owner, purpose, capacity evidence, review date, changed exact base, known custody, disjoint lane, preserved candidate, and recovery rule, and cannot bypass hard-cap/disk/single-writer/ownership/containment/evidence gates;
+2. enforce one author lease, one reusable integration lease, one ephemeral QA/Design lease, maximum three active leases per TASK, one mutable lease per executor/TASK/purpose, project target 50, and hard cap 150; a bounded default-budget exception must match the requested TASK, lease, current/prior base, preserved candidate, owner, and purpose exactly, include capacity evidence/review date/recovery rule, use boolean true changed-base/custody/disjoint-lane/candidate-preservation predicates, and cannot bypass hard-cap/disk/single-writer/ownership/containment/evidence gates;
 3. measure the destination filesystem, including expected dependency/package expansion: above 50 GiB normal, 30–50 GiB reuse-only, 15–30 GiB owner-approved recovery allocation only, below 15 GiB no new persistent placement;
 4. select ordinary-canonical, codex-managed, external-authorized, or legacy-retained custody and record the logical lease before relying on it;
 5. create only the authorized bounded materialization, then read back path containment, branch/HEAD/tree, mutability, and actual state.

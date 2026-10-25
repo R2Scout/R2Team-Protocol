@@ -4,11 +4,11 @@
 
 - Separate TASK, immutable candidate, and physical workspace lease identities; a revision or handoff no longer implies a new persistent worktree.
 - Add default per-TASK/project budgets and destination-filesystem allocation gates that never grant cleanup authority.
-- Keep candidate verdict and workspace disposition independent; require terminal or explicitly blocking disposition for each completed-stage lease.
+- Keep candidate verdict and workspace disposition independent; require a fully evidenced terminal lease record for administrative completion while blocking/nonterminal records preserve the verdict and keep completion blocked.
 - Bind accepted-merge evidence into the protected checkpoint or a sanitized hash-bound durable recovery manifest.
 - Add recoverable closure preflight, receipts, retention/transfer/blocking states, branch disposition, and Codex-managed archive custody.
 - Add prospective 2.5-to-2.6 adoption templates, role duties, behavioral validator fixtures, and the separate `r2team-workspace` skill.
-- Add hash-consistent adversarial safety/privacy validation, structured bounded-exception gates, terminal-custody completion rules, and a deterministic allocation/closure policy suite.
+- Add hash-consistent adversarial safety/privacy validation for provider-specific, bare, and cloud secret forms; exact allocation-bound exception gates; evidence-bearing terminal-custody rules; and a deterministic allocation/closure policy suite.
 - Keep team/chat relocation outside 2.6 under a distinct later TASK and checkpoint.
 
 ## 2.5 — candidate

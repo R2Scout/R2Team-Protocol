@@ -18,6 +18,9 @@ The protocol already bound work to TASKs, branches, candidates, and evidence, bu
 10. Governance changes should not bundle unrelated relocation. Team/chat relocation has different evidence, rollback, and acceptance needs and therefore remains a distinct later change.
 11. A blocking lease state is not terminal custody. It preserves the product verdict but prevents administrative completion until the lease becomes closed, retained-protected, or transferred with required evidence.
 12. A default-budget exception is a structured, expiring exact-lease decision. It never bypasses project hard caps, disk floors, reuse-only bands, single-writer custody, containment, or evidence gates.
+13. A terminal state name is not a close receipt. Administrative completion consumes state-specific lease records with owner, retention, recovery, review, receipt, and transfer-custody evidence.
+14. An exception is capability-like and replay-sensitive. It must match the current allocation identities exactly, and textual truthiness must never satisfy a boolean safety predicate.
+15. Public-package secret guards must cover bare names and common cloud forms as well as provider-specific prefixes, while explicit placeholders remain publishable.
 
 ## Consequence
 

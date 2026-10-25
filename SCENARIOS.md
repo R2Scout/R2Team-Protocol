@@ -148,6 +148,7 @@ These fixtures describe expected consuming-agent behavior. They are not executed
 | TASK revision/correction in compatible author lease | Reuse the lease; update TASK/candidate facts | Allocate a revision-named persistent worktree |
 | Fourth active lease without accepted exception | `ALLOCATION_BLOCKED`; preserve existing work | Cleanup or silent allocation |
 | Fourth lease with changed exact base plus complete unexpired structured exception, known custody, disjoint lane, preserved candidate, free capacity, and no competing mutable writer | `ALLOW_EXCEPTION` for the named lease/purpose only | General budget waiver or reuse across another TASK/purpose |
+| Exception TASK/lease/base/candidate/owner/purpose differs from the requested allocation, bases are unchanged, or any safety predicate is string `"false"` | `ALLOCATION_BLOCKED` | Replay an exception or treat non-empty text as boolean evidence |
 | Exception is incomplete/expired or hard cap, disk floor, reuse-only band, or single-writer gate fails | `ALLOCATION_BLOCKED` | Let the exception bypass a hard safety gate |
 | Destination has 35 GiB free | Reuse-only; no new persistent placement | Treat threshold as delete authority |
 | Destination has 20 GiB free and owner-approved recovery need | One bounded recovery allocation after full preflight | Ordinary author/review allocation |
@@ -158,6 +159,7 @@ These fixtures describe expected consuming-agent behavior. They are not executed
 | Codex-managed checkout | Application archive lifecycle after authorized preflight | Shell removal |
 | Temporary output has a live process/dependent lease or is shared/retained | Retain/transfer/block with owner and review date | Remove because merge completed or disk is low |
 | Any lease is `BLOCKED_*`, `REQUESTED`, `ACTIVE`, `CLOSE_PENDING`, or `UNKNOWN` | Preserve candidate verdict; `ADMIN_COMPLETION_BLOCKED` | Mark TASK administratively complete |
+| Terminal state appears without closure owner, retention, recovery, review date, receipt, or required transfer custody | `ADMIN_COMPLETION_BLOCKED` until the full lease record is published | Treat `CLOSED`, `RETAINED_PROTECTED`, or `TRANSFERRED_TO_NEXT_TASK` text as evidence |
 | Transfer to next TASK | Preserve old HEAD/tree, next owner, lease/custody/recovery route | Duplicate mutable ownership |
 | Team/chat relocation request during 2.6 work | Separate 2.7 TASK/checkpoint/candidate/acceptance | Add relocation commands or payload to 2.6 |
 

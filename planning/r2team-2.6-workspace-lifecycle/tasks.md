@@ -18,7 +18,7 @@ These tasks are the accepted implementation route. Merge, release, installed-ski
 - Add budget and disk-allocation gates.
 - Keep acceptance and custody evidence separate.
 - Add the protected merge-evidence gate and merge-triggered closure review.
-- Require `CLOSED`, `RETAINED_PROTECTED`, or `TRANSFERRED_TO_NEXT_TASK` with required evidence for every completed-stage lease; any blocking/nonterminal state prevents administrative completion.
+- Require a fully evidenced `CLOSED`, `RETAINED_PROTECTED`, or `TRANSFERRED_TO_NEXT_TASK` lease record for every completed-stage lease; bare labels and all blocking/nonterminal records prevent administrative completion.
 
 ## 3. Update adoption templates
 
@@ -75,7 +75,7 @@ These tasks are the accepted implementation route. Merge, release, installed-ski
 - Merge checkpoint carries Git evidence or a sanitized hash-bound recovery manifest.
 - Temporary material removal is rejected when ownership, dependency, evidence-export, or removal authority is missing.
 - Administrative completion is rejected while a completed-stage lease remains silently ACTIVE.
-- Hash-consistent adversarial payloads containing automatic force-delete, populated machine paths, actual thread IDs, or credential-like material are rejected.
+- Hash-consistent adversarial payloads containing automatic force-delete, populated machine paths, actual thread IDs, populated prefixed/bare/cloud credential assignments, or bearer material are rejected while documented placeholders remain accepted.
 - A deterministic pure-policy suite covers allocation bands, lease reuse, verdict/disposition separation, evidence durability, closure gates, transfer custody, Codex archive-only custody, and ACTIVE-lease completion rejection.
 
 ## 9. Run independent planning and package review

@@ -18,7 +18,7 @@
 - The default maximum MUST be three active workspaces per TASK: author, integration, and one ephemeral QA or Design materialization.
 - The default project target SHOULD be 50 active physical workspaces and the default hard cap MUST be 150 unless the project accepts stricter values.
 - An executor SHOULD have no more than one mutable workspace for the same TASK and purpose.
-- A bounded exception MUST name the exact TASK, reason, lease ID, owner, purpose, capacity evidence, review date, changed exact base, known custody, disjoint lane, preserved candidate, and recovery rule.
+- A bounded exception MUST name the exact TASK, reason, lease ID, owner, purpose, capacity evidence, review date, current and prior exact base, exact preserved candidate, known custody, disjoint lane, and recovery rule. It MUST bind exactly to the requested allocation's TASK, lease, bases, candidate, owner, and purpose; its changed-base, known-custody, disjoint-lane, and candidate-preserved predicates MUST be boolean true, not merely non-empty text.
 - A bounded exception MUST NOT bypass the project hard cap, below-floor freeze, reuse-only capacity band, single-writer rule, ownership, containment, or evidence gates.
 - A budget breach MUST freeze new placement and MUST NOT authorize deletion, lease revocation, or evidence disposal.
 
@@ -42,7 +42,7 @@
 - Result state and workspace state MUST remain separate.
 - Whole-TASK administrative completion MUST require a terminal disposition for every active lease.
 - `BLOCKED_DIRTY`, `BLOCKED_DEPENDENCY`, `BLOCKED_AUTHORITY`, `REQUESTED`, `ACTIVE`, `CLOSE_PENDING`, and `UNKNOWN` MUST prevent administrative completion while preserving the independent candidate verdict.
-- CLOSED, RETAINED_PROTECTED, and TRANSFERRED_TO_NEXT_TASK MAY be terminal when their required owner, recovery, retention, and receipt evidence exists.
+- `CLOSED`, `RETAINED_PROTECTED`, and `TRANSFERRED_TO_NEXT_TASK` MAY be terminal only as lease records with closure owner, retention class, recovery reference, review date, and close-receipt reference. A transferred lease additionally MUST name the next TASK, next owner, and durable transfer-custody reference. A bare state label is not terminal evidence.
 - A review date MUST NOT imply automatic disposal authority.
 - After provider read-back confirms an accepted merge, every lease owned by the completed stage MUST enter closure review.
 - No lease MAY remain silently ACTIVE after administrative TASK completion.

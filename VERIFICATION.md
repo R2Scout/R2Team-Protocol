@@ -4,11 +4,11 @@ Prepared for the protocol version 2.6 workspace-lifecycle candidate on 2026-10-2
 
 ## Fresh local checks
 
-- PASS: all 40 validator tests passed, including hash-consistent adversarial destructive-instruction, populated-path, actual-thread-ID, GitHub/OpenAI/Azure/bearer/generic-secret credential, placeholder, append-only lifecycle-history, version, manifest, workspace-skill, and relocation-exclusion guards.
-- PASS: all 27 deterministic workspace-policy tests passed, covering every terminal/blocking/nonterminal completion state, structured bounded exceptions and hard-gate non-bypass, lease reuse, capacity bands, verdict/disposition separation, evidence durability, closure gates, Codex archive-only custody, and transfer.
+- PASS: all 42 validator tests passed, including hash-consistent adversarial destructive-instruction, populated-path, actual-thread-ID, GitHub/OpenAI/Azure/bearer/generic/bare/cloud-secret credential, placeholder, append-only lifecycle-history, version, manifest, workspace-skill, and relocation-exclusion guards.
+- PASS: all 32 deterministic workspace-policy tests passed, covering state-specific terminal evidence, every blocking/nonterminal state, exact allocation-bound exceptions, strict boolean predicates, date/base validation and hard-gate non-bypass, lease reuse, capacity bands, verdict/disposition separation, evidence durability, closure gates, Codex archive-only custody, and transfer.
 - PASS: all five distribution skills, including `r2team-workspace`, pass the official skill-creator `quick_validate.py` using PyYAML 6.0.3 in an isolated validation dependency directory.
 - PASS: package structure, required payload hashes, local Markdown links, anchors and fences.
-- PASS: a fresh isolated package copy built only from `package.json` plus `required_files` passed package validation, all 40 validator tests, all 27 workspace-policy tests, and all five skill-format checks.
+- PASS: a fresh isolated package copy built only from `package.json` plus `required_files` passed package validation, all 42 validator tests, all 32 workspace-policy tests, and all five skill-format checks.
 - PASS: public distribution Markdown is English-only.
 - PASS: `templates/COMMANDS.md` and `skills/r2team/references/commands.md` are byte-identical.
 - PASS: specialized CMMI setup is absent from the main package and maintained separately.
