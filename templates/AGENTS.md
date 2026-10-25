@@ -1,4 +1,4 @@
-# Project instructions — R2Team 2.5
+# Project instructions — R2Team 2.6
 
 This is an adoption template, not an actual role assignment. Editing it does not start setup.
 
@@ -6,7 +6,7 @@ This is an adoption template, not an actual role assignment. Editing it does not
 
 Read current [TEAM.md](TEAM.md) from the accepted default branch, relevant [protocol](CODEX_TEAM_PROTOCOL.md) sections and [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md). Resolve your registered executor and permitted function; a chat title is not an assignment. Read the applicable role contract and [SKILLS.md](SKILLS.md).
 
-Use [Setup.md](Setup.md) for lifecycle work and [CODEX_TEAM_SETUP.md](CODEX_TEAM_SETUP.md) for entry prompts. Adopted 1.10 projects retain their MSG rules until an approved [cutover](MIGRATE_TO_2.5.md). No skill/template silently migrates them.
+Use [Setup.md](Setup.md) for lifecycle work and [CODEX_TEAM_SETUP.md](CODEX_TEAM_SETUP.md) for entry prompts. Adopted older projects retain their governing rules until an approved [cutover](MIGRATE_TO_2.6.md). No skill/template silently migrates them.
 
 New roles/functions cross-check duties, scope, inputs, tools and questions under [the role entry procedure](CODEX_TEAM_PROTOCOL.md#role-cross-check). Confirm an assigned TASK or request the first one; do not self-assign independent work.
 
@@ -42,5 +42,10 @@ Follow the applicable skill's actual planning/approval/verification gates. OpenS
 Align changed specs/docs before integration and archive only after the full agreed scope. Keep candidate, verified, merged and deployed versions distinct. Preserve UNKNOWN/NOT_RUN and independence limits.
 
 ## Safety and efficiency
+
+- Keep TASK identity, exact candidate identity, and workspace lease identity separate. Reuse a compatible lease across revisions and handoffs; a new revision does not itself justify another persistent worktree.
+- Use the separate `r2team-workspace` skill for lifecycle status/open/close/doctor behavior. Status/doctor are read-only; `r2team-work` must not hide workspace mutation.
+- Treat result acceptance and workspace disposition as separate evidence axes. After accepted merge read-back, every completed-stage lease reaches a terminal or explicitly blocking disposition; none remains silently ACTIVE.
+- Put Git-suitable evidence in the protected checkpoint. Represent non-Git evidence by sanitized hash-bound durable recovery metadata. Remove temporary material only after every ownership, dependency, evidence, containment, retained-input/shared-cache, and explicit-authority gate passes.
 
 Git stores confirmed project state; the configured tracker is its operational projection. Do not force-push, delete, deploy, alter databases/access or publish without authority. Keep credentials and local thread IDs out of Git. Read exact paths/refs and changes, not all chats or history. Recovery must work from the last published checkpoint without a transcript.

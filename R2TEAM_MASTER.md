@@ -25,7 +25,7 @@ It does not assign work, accept scope, merge, deploy, grant access, spend money 
 - [Communication](templates/OPERATING_COMMUNICATION.md) and [commands](templates/COMMANDS.md): direct/remote routes and command entry points.
 - [Provider guide](templates/TRACKER_GUIDE.md): GitHub and Azure DevOps Server/TFS Git.
 - [Skills](templates/SKILLS.md): OpenSpec, Superpowers and R2Team skills.
-- [Findings](FINDINGS-2.5.md): generalized lessons behind 2.5.
+- [Findings](FINDINGS-2.6.md): generalized lessons behind 2.6.
 
 Read only the exact TASKs, provider items, PRs, refs and local routes needed for the current operation.
 

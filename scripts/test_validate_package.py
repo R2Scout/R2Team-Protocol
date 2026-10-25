@@ -25,14 +25,52 @@ class PackageTests(unittest.TestCase):
         self.addCleanup(shutil.rmtree, self.root, True)
         (self.root / "templates").mkdir()
         (self.root / "skills" / "r2team-coo").mkdir(parents=True)
+        (self.root / "skills" / "r2team-work").mkdir(parents=True)
+        (self.root / "skills" / "r2team-workspace").mkdir(parents=True)
         (self.root / "package.json").write_text(json.dumps({
-            "protocol_version": "2.5",
+            "protocol_version": "2.6",
             "bootstrap": "R2TEAM_MASTER.md",
-            "required_files": ["START.md", "templates/Setup.md", "templates/TEAM.md", "templates/TASK-TEMPLATE.md", "skills/r2team-coo/SKILL.md"],
+            "skills": ["r2team", "r2team-work", "r2team-coo", "r2team-audit", "r2team-workspace"],
+            "required_files": [
+                "START.md",
+                "templates/Setup.md",
+                "templates/CODEX_TEAM_PROTOCOL.md",
+                "templates/COMMANDS.md",
+                "templates/LOCAL_REGISTRY_TEMPLATE.md",
+                "templates/TEAM.md",
+                "templates/TASK-TEMPLATE.md",
+                "skills/r2team-coo/SKILL.md",
+                "skills/r2team-work/SKILL.md",
+                "skills/r2team-workspace/SKILL.md"
+            ],
             "template_root": "templates"
         }), encoding="utf-8")
         self.put("START.md", "[Start](templates/Setup.md#new)\n")
         self.put("templates/Setup.md", '<a id="new"></a>\n# New\n\nReady.\n')
+        self.put("templates/CODEX_TEAM_PROTOCOL.md", """# Protocol
+TASK identity
+candidate identity
+workspace lease identity
+ALLOCATION_BLOCKED
+RETAINED_PROTECTED
+provider read-back
+sanitized manifest
+No lease remains silently ACTIVE
+explicit removal authority
+""")
+        self.put("templates/COMMANDS.md", """# Commands
+$r2team-workspace status
+$r2team-workspace open
+$r2team-workspace close
+$r2team-workspace doctor
+""")
+        self.put("templates/LOCAL_REGISTRY_TEMPLATE.md", """# Local registry
+lease_id
+physical_path
+observed_size_bytes
+native_resources
+last_observed_at
+""")
         self.put("templates/TEAM.md", """# TEAM
 coo:
   mode: internal
@@ -43,6 +81,17 @@ coo:
     session_start: true
     before_idle: true
     heartbeat_enabled: false
+workspace_lifecycle
+max_active_per_task
+max_mutable_per_executor_task_purpose
+project_target_active
+project_hard_cap_active
+free_space_gib
+placement_classes
+root_aliases
+retention_classes
+closure_methods
+reconciliation_owner_executor_id
 """)
         self.put("templates/TASK-TEMPLATE.md", """# TASK
 handoff_seq
@@ -62,6 +111,14 @@ IMMEDIATE_RESERVED
 QUEUED_AFTER_REGISTRATION
 first_task_id
 READY_FOR_ACTIVATION
+workspace_policy
+workspace_leases
+workspace_disposition
+closure_owner_executor_id
+retention_class
+branch_disposition
+artifact_manifest_ref
+close_receipt_ref
 """)
         self.put("skills/r2team-coo/SKILL.md", """# COO
 executor-scoped assignment discovery
@@ -76,6 +133,29 @@ COO_MODE_AMBIGUOUS
 REGISTRATION_READY
 PM_ANSWER_REQUIRED
 REGISTRATION_BLOCKED
+""")
+        self.put("skills/r2team-work/SKILL.md", """---
+name: r2team-work
+description: Run assigned work without hidden workspace mutation.
+---
+# Work
+Workspace lifecycle operations route to `r2team-workspace`.
+""")
+        self.put("skills/r2team-workspace/SKILL.md", """---
+name: r2team-workspace
+description: Inspect and govern R2Team workspace leases with safe preflight and recoverable closure.
+---
+# Workspace
+$r2team-workspace status
+$r2team-workspace open
+$r2team-workspace close
+$r2team-workspace doctor
+status and doctor are read-only
+allocation preflight
+evidence and custody preflight
+explicit removal authority
+RETAINED_PROTECTED
+ALLOCATION_BLOCKED
 """)
 
     def put(self, name, text):
@@ -125,7 +205,47 @@ REGISTRATION_BLOCKED
         config = json.loads((self.root / "package.json").read_text())
         config["protocol_version"] = "2.1"
         self.put("package.json", json.dumps(config))
-        self.assertTrue(any("Expected protocol_version 2.5" in e for e in validate(self.root)))
+        self.assertTrue(any("Expected protocol_version 2.6" in e for e in validate(self.root)))
+
+    def test_workspace_skill_is_required(self):
+        config = json.loads((self.root / "package.json").read_text())
+        config["skills"].remove("r2team-workspace")
+        config["required_files"].remove("skills/r2team-workspace/SKILL.md")
+        self.put("package.json", json.dumps(config))
+        self.assertTrue(any("Missing packaged workspace skill" in e
+                            for e in validate(self.root)))
+
+    def test_workspace_skill_requires_safe_command_boundaries(self):
+        self.put("skills/r2team-workspace/SKILL.md", """---
+name: r2team-workspace
+description: Close workspaces.
+---
+# Workspace
+$r2team-workspace close
+""")
+        errors = validate(self.root)
+        self.assertTrue(any("Missing workspace-skill marker" in e for e in errors))
+
+    def test_r2team_work_cannot_hide_workspace_mutation(self):
+        self.put("skills/r2team-work/SKILL.md", """---
+name: r2team-work
+description: Run assigned work.
+---
+# Work
+This command directly allocates and closes workspaces.
+""")
+        self.assertTrue(any("Missing r2team-work workspace boundary" in e
+                            for e in validate(self.root)))
+
+    def test_lifecycle_templates_require_portable_fields(self):
+        self.put("templates/TASK-TEMPLATE.md", "# TASK\nowner_executor_id\n")
+        errors = validate(self.root)
+        self.assertTrue(any("Missing workspace TASK marker" in e for e in errors))
+
+    def test_team_chat_relocation_payload_is_rejected(self):
+        self.put("templates/COMMANDS.md", "$r2team relocate-chat PM to another thread\n")
+        self.assertTrue(any("Relocation behavior is outside R2Team 2.6" in e
+                            for e in validate(self.root)))
 
     def test_coo_must_discover_new_task_ids_by_executor(self):
         self.put("skills/r2team-coo/SKILL.md", "# COO\nOnly inspect known task IDs.\n")
@@ -153,6 +273,12 @@ REGISTRATION_BLOCKED
     def test_team_requires_one_coo_mode_for_each_participant(self):
         self.put("templates/TEAM.md", "# TEAM\nCOO is optional.\n")
         self.assertTrue(any("Missing mandatory COO configuration marker" in e
+                            for e in validate(self.root)))
+
+    def test_team_requires_workspace_policy(self):
+        text = (self.root / "templates/TEAM.md").read_text(encoding="utf-8")
+        self.put("templates/TEAM.md", text.replace("max_active_per_task\n", ""))
+        self.assertTrue(any("Missing workspace TEAM marker: max_active_per_task" in e
                             for e in validate(self.root)))
 
     def test_task_template_requires_closed_onboarding_route(self):

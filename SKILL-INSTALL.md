@@ -1,6 +1,6 @@
-# Installing R2Team 2.5
+# Installing R2Team 2.6
 
-Four instruction skills are supplied: r2team, r2team-work, r2team-coo and r2team-audit. They are folders with SKILL.md, not shell commands or a service. OpenSpec/Superpowers are separate dependencies described in [SKILLS.md](templates/SKILLS.md).
+Five instruction skills are supplied: r2team, r2team-work, r2team-workspace, r2team-coo and r2team-audit. They are folders with SKILL.md, not shell commands or a service. OpenSpec/Superpowers are separate dependencies described in [SKILLS.md](templates/SKILLS.md).
 
 ## A. From GitHub
 
@@ -11,6 +11,7 @@ $skill-installer Install from R2Scout/R2Team-Protocol
 at ref <verified-full-candidate-commit-SHA>:
 skills/r2team
 skills/r2team-work
+skills/r2team-workspace
 skills/r2team-coo
 skills/r2team-audit
 Do not substitute main/latest.
@@ -18,7 +19,7 @@ If same-name skills exist, show the differences and ask before replacing them.
 Do not migrate projects or enable automations.
 ```
 
-The installer uses its supported repo/ref/path interface. For the candidate, resolve `candidate/r2team-2.5` and pin its full approved commit. No `v2.5` release tag is implied. Never include tokens in invitations.
+The installer uses its supported repo/ref/path interface. Pin the full approved 2.6 candidate commit. No `v2.6` release tag is implied. Never include tokens in invitations.
 
 Default destination: $CODEX_HOME/skills or ~/.codex/skills; typically C:\Users\<user>\.codex\skills on Windows. Each participant has their own installation.
 
@@ -27,9 +28,9 @@ Default destination: $CODEX_HOME/skills or ~/.codex/skills; typically C:\Users\<
 Transfer the complete distribution without .git, runtime data or secrets, or clone the exact commit. Supply a trusted independent SHA-256 for package.json when transferring a bundle.
 
 ```text
-Verify R2Team protocol version 2.5 at <absolute-path>.
+Verify R2Team protocol version 2.6 at <absolute-path>.
 Compare package.json to the supplied trusted hash and run scripts/validate_package.py.
-Install only the four skills/ folders into this machine's Codex skill directory.
+Install only the five skills/ folders into this machine's Codex skill directory.
 Check user/project scope duplicates, show differences and obtain approval before replacement.
 Verify the copied payload hashes.
 Do not register, migrate, enable heartbeat or execute product tasks during installation.
@@ -37,7 +38,7 @@ Do not register, migrate, enable heartbeat or execute product tasks during insta
 
 This option also supports a package distributed through Azure DevOps Server/TFS Git. A GitHub installer is not a TFS installer.
 
-Alternatively, a team can approve the four folders under its project's .agents/skills/. Avoid duplicate names across scopes. Reinstallation for every chat on the same machine is unnecessary.
+Alternatively, a team can approve the five folders under its project's .agents/skills/. Avoid duplicate names across scopes. Reinstallation for every chat on the same machine is unnecessary.
 
 ## Verify discovery
 
@@ -51,7 +52,7 @@ The skill should be discovered and show help without project writes. If unavaila
 
 ## Start a project
 
-The full template package is required, not only four installed SKILL.md files.
+The full template package is required, not only five installed SKILL.md files.
 
 ```text
 $r2team Start a new project using START.md from <verified-package-path>.
@@ -75,10 +76,10 @@ If no TASK is assigned, request the first. Do not start product work during regi
 
 One participant can have multiple functions/chats. Another chat may use $r2team connect QA executor ken-qa. Register includes connect when the executor is unambiguous. Invitation parameters grant no rights: verify current TEAM and provider identity.
 
-Continue with $r2team-work start; read-only updates with $r2team-coo update; see [command help](templates/COMMANDS.md). Heartbeat is off by default.
+Continue with $r2team-work start; use $r2team-workspace for workspace status/open/close/doctor; read-only updates with $r2team-coo update; see [command help](templates/COMMANDS.md). Heartbeat is off by default.
 
 ## Update an older installation
 
 Compare installed skills with the exact new package and approve replacement while preserving local customizations. This applies to older 1.20 and R2Team 2.0 skills.
 
-Updating procedure skills does not switch a project's protocol. Existing rules continue until [explicit migration](templates/MIGRATE_TO_2.5.md). Do not run OpenSpec init/archive merely to install skills.
+Updating procedure skills does not switch a project's protocol. Existing rules continue until [explicit migration](templates/MIGRATE_TO_2.6.md). Do not run OpenSpec init/archive merely to install skills.

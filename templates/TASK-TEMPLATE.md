@@ -1,10 +1,10 @@
-# TASK template — R2Team 2.5
+# TASK template — R2Team 2.6
 
 Use the body below for Tasks/TASK-<id>-<name>.md, removing these explanatory instructions. Choose a collision-free ID. Role handoff alone does not create another TASK; bounded helper requests remain inside the parent TASK.
 
 ```yaml
 ---
-protocol_version: "2.5"
+protocol_version: "2.6"
 id: "<unique-task-id>"
 revision: 1
 handoff_seq: 0
@@ -40,6 +40,15 @@ base_sha: null
 candidate_sha: null
 verified_sha: null
 merged_sha: null
+workspace_policy: inherited_from_team
+workspace_leases: []
+workspace_disposition: NOT_APPLICABLE
+closure_owner_executor_id: null
+workspace_review_date: null
+retention_class: null
+branch_disposition: null
+artifact_manifest_ref: null
+close_receipt_ref: null
 next_action: "<one-specific-action>"
 questions: []
 ---
@@ -95,6 +104,14 @@ Setup checkpoints include mode, last completed step, confirmed answers/refs and 
 - Limits and NOT_RUN:
 - References to retained artifacts and summaries:
 - Provider completed/merged state, merge commit and remote branch read-back:
+
+## Workspace lifecycle
+
+Keep TASK, candidate, and workspace lease identities separate. Reuse a compatible lease across TASK revisions, corrections, handoffs, and review. Record each lease by logical ID, purpose, class, owner, exact base/candidate, mutability, custody, state, and portable recovery reference; put physical paths, sizes, processes, native handles, and host observations only in ignored local state.
+
+At each publication boundary update `workspace_leases`, `workspace_disposition`, closure owner/review date, retention, branch disposition, artifact manifest, and close receipt as applicable. A stage cannot be administratively complete while one of its leases remains silently `ACTIVE`; use a terminal or explicitly blocking disposition. Workspace closure does not change a product or QA verdict.
+
+For accepted integration, bind Git-suitable evidence into the protected checkpoint or record a sanitized hash-bound durable manifest with retention, recovery location, owner, and access boundary. Temporary material may be removed only after evidence-export, exclusive-ownership, dependency, shared-cache/retained-input, containment, and explicit-authority gates all pass. Otherwise retain, transfer, or block with an owner and review date.
 
 Candidate, verified, merged and deployed versions are not interchangeable. A link to an expiring log is not a durable result summary.
 

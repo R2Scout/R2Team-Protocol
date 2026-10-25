@@ -1,5 +1,15 @@
 # R2Team change history
 
+## 2.6 — candidate
+
+- Separate TASK, immutable candidate, and physical workspace lease identities; a revision or handoff no longer implies a new persistent worktree.
+- Add default per-TASK/project budgets and destination-filesystem allocation gates that never grant cleanup authority.
+- Keep candidate verdict and workspace disposition independent; require terminal or explicitly blocking disposition for each completed-stage lease.
+- Bind accepted-merge evidence into the protected checkpoint or a sanitized hash-bound durable recovery manifest.
+- Add recoverable closure preflight, receipts, retention/transfer/blocking states, branch disposition, and Codex-managed archive custody.
+- Add prospective 2.5-to-2.6 adoption templates, role duties, behavioral validator fixtures, and the separate `r2team-workspace` skill.
+- Keep team/chat relocation outside 2.6 under a distinct later TASK and checkpoint.
+
 ## 2.5 — candidate
 
 - Consolidate the 2.4 candidate work: remote executor-queue discovery, closed onboarding, question routes and one COO capability per active participant.

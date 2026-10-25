@@ -1,4 +1,4 @@
-"""Read-only structural checks for the distributable R2Team 2.5 package."""
+"""Read-only structural checks for the distributable R2Team 2.6 package."""
 import argparse
 import hashlib
 import json
@@ -19,12 +19,19 @@ def validate(root):
             raise ValueError("template_root must be a path")
     except (OSError, ValueError, KeyError, TypeError) as exc:
         return [f"Invalid package manifest: {exc}"]
-    if manifest.get("protocol_version") != "2.5":
-        errors.append("Expected protocol_version 2.5")
+    if manifest.get("protocol_version") != "2.6":
+        errors.append("Expected protocol_version 2.6")
     if manifest.get("bootstrap") != "R2TEAM_MASTER.md":
         errors.append("Expected bootstrap R2TEAM_MASTER.md")
     if "package_revision" in manifest:
         errors.append("Remove package_revision: protocol_version is the sole release identifier")
+    skills = manifest.get("skills", [])
+    workspace_skill_path = "skills/r2team-workspace/SKILL.md"
+    if "r2team-workspace" not in skills or workspace_skill_path not in required:
+        errors.append("Missing packaged workspace skill: r2team-workspace")
+    if any(re.search(r"(^|/)(team[_-]?migration|chat[_-]?relocation)(/|\.|$)", name,
+                     flags=re.IGNORECASE) for name in required):
+        errors.append("Relocation behavior is outside R2Team 2.6")
     template_root = (root / template_name).resolve()
     if not template_root.is_relative_to(root):
         return errors + ["Unsafe manifest path: template_root"]
@@ -140,6 +147,21 @@ def validate(root):
         ):
             if marker not in team_text:
                 errors.append(f"Missing mandatory COO configuration marker: {marker}")
+        for marker in (
+            "workspace_lifecycle",
+            "max_active_per_task",
+            "max_mutable_per_executor_task_purpose",
+            "project_target_active",
+            "project_hard_cap_active",
+            "free_space_gib",
+            "placement_classes",
+            "root_aliases",
+            "retention_classes",
+            "closure_methods",
+            "reconciliation_owner_executor_id",
+        ):
+            if marker not in team_text:
+                errors.append(f"Missing workspace TEAM marker: {marker}")
 
     task_template = root / "templates" / "TASK-TEMPLATE.md"
     if task_template.is_file():
@@ -169,6 +191,88 @@ def validate(root):
         ):
             if marker not in task_text:
                 errors.append(f"Missing onboarding-route marker: {marker}")
+        for marker in (
+            "workspace_policy",
+            "workspace_leases",
+            "workspace_disposition",
+            "closure_owner_executor_id",
+            "retention_class",
+            "branch_disposition",
+            "artifact_manifest_ref",
+            "close_receipt_ref",
+        ):
+            if marker not in task_text:
+                errors.append(f"Missing workspace TASK marker: {marker}")
+
+    protocol = root / "templates" / "CODEX_TEAM_PROTOCOL.md"
+    if protocol.is_file():
+        protocol_text = texts.get(protocol.resolve(), "")
+        for marker in (
+            "TASK identity",
+            "candidate identity",
+            "workspace lease identity",
+            "ALLOCATION_BLOCKED",
+            "RETAINED_PROTECTED",
+            "provider read-back",
+            "sanitized manifest",
+            "silently ACTIVE",
+            "explicit removal authority",
+        ):
+            if marker not in protocol_text:
+                errors.append(f"Missing workspace protocol marker: {marker}")
+
+    local_registry = root / "templates" / "LOCAL_REGISTRY_TEMPLATE.md"
+    if local_registry.is_file():
+        registry_text = texts.get(local_registry.resolve(), "")
+        for marker in (
+            "lease_id",
+            "physical_path",
+            "observed_size_bytes",
+            "native_resources",
+            "last_observed_at",
+        ):
+            if marker not in registry_text:
+                errors.append(f"Missing local workspace registry marker: {marker}")
+
+    workspace_skill = root / workspace_skill_path
+    if workspace_skill.is_file():
+        workspace_text = texts.get(workspace_skill.resolve(), "")
+        for marker in (
+            "name: r2team-workspace",
+            "$r2team-workspace status",
+            "$r2team-workspace open",
+            "$r2team-workspace close",
+            "$r2team-workspace doctor",
+            "status and doctor are read-only",
+            "allocation preflight",
+            "evidence and custody preflight",
+            "explicit removal authority",
+            "RETAINED_PROTECTED",
+            "ALLOCATION_BLOCKED",
+        ):
+            if marker not in workspace_text:
+                errors.append(f"Missing workspace-skill marker: {marker}")
+
+    work_skill = root / "skills" / "r2team-work" / "SKILL.md"
+    if work_skill.is_file():
+        work_text = texts.get(work_skill.resolve(), "")
+        if "`r2team-workspace`" not in work_text:
+            errors.append("Missing r2team-work workspace boundary: route lifecycle operations to r2team-workspace")
+
+    commands = root / "templates" / "COMMANDS.md"
+    if commands.is_file():
+        commands_text = texts.get(commands.resolve(), "")
+        for marker in (
+            "$r2team-workspace status",
+            "$r2team-workspace open",
+            "$r2team-workspace close",
+            "$r2team-workspace doctor",
+        ):
+            if marker not in commands_text:
+                errors.append(f"Missing workspace command marker: {marker}")
+        if re.search(r"\$r2team\s+(?:relocate-chat|migrate-team|migrate-chat)\b",
+                     commands_text, flags=re.IGNORECASE):
+            errors.append("Relocation behavior is outside R2Team 2.6")
     return errors
 
 def main():

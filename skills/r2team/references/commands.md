@@ -1,8 +1,8 @@
-# R2Team 2.5 — Command Help
+# R2Team 2.6 — Command Help
 
 Open project `R2TEAM_MASTER.md` in the persistent local `R2Team Master - <project>` task for bootstrap, Project Charter, setup orchestration, provider/Git troubleshooting, team lifecycle changes or protocol consultation. Master routes actual procedures to the skills below and does not replace PM authority.
 
-These are Codex skill prompts, not shell commands. Install the four skills first. Natural-language requests are supported; arguments describe intent and never grant permissions. Help is always shown in English. For task conversations, use the participant's preferred language.
+These are Codex skill prompts, not shell commands. Install the five skills first. Natural-language requests are supported; arguments describe intent and never grant permissions. Help is always shown in English. For task conversations, use the participant's preferred language.
 
 ## Quick reference
 
@@ -20,6 +20,10 @@ These are Codex skill prompts, not shell commands. Install the four skills first
 | `$r2team-coo update` | Inspect exact new events in configured scope | No writes or notifications |
 | `$r2team-coo check` | Inspect updates and perform already-authorized local wake | Designated dispatcher only; no schedule changes |
 | `$r2team-audit` | Check readiness and recoverability | Read-only; fixes require a separate request |
+| `$r2team-workspace status [TASK-ID]` | Inspect leases, budgets, custody, and disposition | Read-only |
+| `$r2team-workspace open TASK-ID purpose <purpose>` | Preflight one bounded workspace allocation | Requires accepted TASK and allocation authority |
+| `$r2team-workspace close TASK-ID lease <lease-id>` | Preflight and perform an authorized recoverable closure | No inferred cleanup or deletion authority |
+| `$r2team-workspace doctor [TASK-ID]` | Diagnose lifecycle inconsistency and blockers | Read-only |
 
 Each skill accepts `help`. Bare lifecycle/work/COO invocations show help rather than taking action; bare audit performs the read-only audit. Unknown commands do nothing and show the relevant syntax. Ask only for missing information that cannot be safely resolved from the configured project.
 
@@ -32,7 +36,7 @@ Confirm the target directory and guide me through setup. This chat will be PM.
 
 This routes to Setup mode `new`. A new project is not expected to have TEAM/TASK yet. The wizard confirms the initial PM and creates the agreed configuration. For an existing MVP or older protocol use Setup mode `migrate`; do not initialize a new project over its files.
 
-The full template package is needed for setup. Installing SKILL.md alone does not copy project templates. Provide a verified package path or repository URL and full commit SHA. The distribution is https://github.com/R2Scout/R2Team-Protocol. Version 2.5 is a candidate until its release is published: use the explicitly approved full candidate commit, not an assumed v2.5 tag or main/latest.
+The full template package is needed for setup. Installing SKILL.md alone does not copy project templates. Provide a verified package path or repository URL and full commit SHA. The distribution is https://github.com/R2Scout/R2Team-Protocol. Version 2.6 is a candidate until its release is published: use the explicitly approved full candidate commit, not an assumed v2.6 tag or main/latest.
 
 ## Add → register → connect
 
@@ -80,6 +84,16 @@ At stage completion, use the TASK's authorized transition table. Increment `hand
 `task TASK-ID` is inspection only. `task TASK-ID discuss ...` identifies the question, participating executors/accounts, criteria and authorized decider. Use the existing Issue/Work Item for requirements or PR thread for code review. Silence is not consent. A comment does not change scope; approval and an updated contract are required before dependent work.
 
 The current publisher preserves material open questions, decisions, evidence and next_action in Git before handoff/pause. Comments alone are not recoverable from a clone. Human setup or visual confirmation gets step-by-step guidance: purpose, safe action, expected result, response verification, next step until result, explicit pause or handoff.
+
+## Workspace lifecycle
+
+`r2team-workspace` is the separate operational entry point. `r2team-work` may route a lifecycle need to it but never silently allocates, relocates, archives, closes, or removes a workspace.
+
+`status` and `doctor` are read-only. `open` verifies the accepted TASK, exact base/candidate, existing compatible leases, project/TASK budgets, destination-filesystem capacity, custody, and authority before mutation. A failed gate returns `ALLOCATION_BLOCKED` and does not start cleanup.
+
+`close` re-reads ownership, containment, branch/HEAD/tree, dirty/untracked/ignored material, processes, native resources, dependent leases, evidence export, recovery, and authority. Accepted integration carries Git-suitable evidence or a sanitized hash-bound durable manifest. Temporary material is removable only when every protocol gate passes and the closer already has explicit removal authority; otherwise use retained, transferred, or blocked disposition with owner and review date. Codex-managed custody uses application archive, never shell removal.
+
+These commands do not relocate teams or chats. That behavior is outside R2Team 2.6 and requires its own accepted protocol change.
 
 Every assignment names Task Issuer, Project PM and Result Recipient with active response routes. Use the existing discuss command or natural language with Question Mode: ASK for issuer clarification, LOOP for disagreement/consensus, ESCALATE_PM for direct PM arbitration. A completed independent stage always uses `result_to_executor_id`, `result_to_route` and `git_checkpoint_then_tracker`, never the sender chat or local PM. Example: `$r2team-work task TASK-042 discuss PM` with `Question Mode: ESCALATE_PM` and the specific conflict. No new command, task or message file is needed. Record OPEN/ANSWERED/ESCALATED/CLOSED and Decision in the existing route; recipients inspect addressed questions regardless of TASK ownership. Answers return to the original requester; only dependent work waits. See the question-routes section of the adopted project's OPERATING_COMMUNICATION.md.
 

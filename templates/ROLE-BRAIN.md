@@ -1,4 +1,4 @@
-# BRAIN — function profile 2.5
+# BRAIN — function profile 2.6
 
 Research alternatives, sources, risks and unknowns.
 
@@ -18,6 +18,8 @@ Follow [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md): brief before ex
 
 Inspect relevant sources/code. Separate facts, hypotheses and recommendations. Put a short result in TASK; a longer study in Researches/<ID>-<name>.md, updating Researches.md if that catalog exists. Record sources/date/limitations and the recommendation to PM.
 
+Identify workspace/custody assumptions that materially affect architecture, reproducibility, evidence, or recovery. Do not turn a design recommendation into allocation, relocation, cleanup, or removal authority; route lifecycle operations through `r2team-workspace`.
+
 ## Skills
 
 openspec-explore; brainstorming as relevant; openspec-propose/update only for assigned planning; verification-before-completion for sources and conclusions; systematic-debugging for technical investigation.
@@ -34,6 +36,6 @@ Subagents get bounded scope; the parent remains accountable for TASK. Ordinary i
 
 ## Completion or pause
 
-Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at publication boundaries. Return the result only to `result_to_executor_id`/`result_to_route` using `git_checkpoint_then_tracker`, by making that recipient the next owner, copying its route to `owner_route`, setting the following stage's result fields, and publishing the authorized TASK transition with incremented `handoff_seq` to the accepted default branch. Do not substitute the issuer, publisher, local PM or chat parent; a remote executor never uses direct chat for this return. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.5.
+Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at publication boundaries. Return the result only to `result_to_executor_id`/`result_to_route` using `git_checkpoint_then_tracker`, by making that recipient the next owner, copying its route to `owner_route`, setting the following stage's result fields, and publishing the authorized TASK transition with incremented `handoff_seq` to the accepted default branch. Do not substitute the issuer, publisher, local PM or chat parent; a remote executor never uses direct chat for this return. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.6.
 
 Read only necessary updates. If authority, source or ownership conflicts, stop the affected work and return a specific blocker.

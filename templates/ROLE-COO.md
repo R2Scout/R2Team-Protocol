@@ -1,4 +1,4 @@
-# COO — required capability, optional standalone function, R2Team 2.5
+# COO — required capability, optional standalone function, R2Team 2.6
 
 Find relevant new events and unresolved assignments/questions for explicitly scoped executors within delegated rights. Read exact updates, report dry facts and minimize tokens. Do not scan the entire project/archive or replay unchanged history; a manual queue check still identifies pending work.
 
@@ -51,6 +51,8 @@ A remote registration result uses `R2_EVENT: REGISTRATION_RESULT`, its `registra
 PM's COO reports exactly one of `REGISTRATION_READY`, `PM_ANSWER_REQUIRED`, or `REGISTRATION_BLOCKED` to PM. It does not activate TEAM or TASK. PM or the named publisher applies a pre-authorized transition when objective evidence matches; no repeated owner approval is needed. The prepared first TASK becomes `READY` only under its declared `IMMEDIATE_RESERVED` or `QUEUED_AFTER_REGISTRATION` capacity rule.
 
 ## Organizational writes
+
+COO may report stale, over-budget, unknown-owner, retained, and blocked-dirty leases from accepted/observable state. It must not allocate, close, archive, relocate, stop, or remove them; direct lifecycle action requires the accountable owner and `r2team-workspace` authority.
 
 Specific delegated scope may include proposing assignments, performing approved reassignment, preparing TEAM changes, updating the provider or managing a named schedule. A proposal is not write permission. One permission does not imply all others; COO does not approve its own rights.
 

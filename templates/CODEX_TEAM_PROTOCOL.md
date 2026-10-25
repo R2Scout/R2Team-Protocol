@@ -1,4 +1,4 @@
-# R2Team 2.5
+# R2Team 2.6
 
 Git-first teamwork for one person, local role chats, remote participants, and hybrids. PM is the only mandatory coordinating function. GitHub and generic Azure DevOps Server/TFS Git are supported; specialized process profiles are separate.
 
@@ -152,7 +152,7 @@ Supported modes: one PM with helpers; one person with local role chats; remote p
 Independent work creates/reuses one TASK, provider item, branch, and PR where applicable. Bounded consultation inside an accepted TASK creates no extra mandatory TASK/Issue/PR/MSG. Reuse the TASK across discovery, design, implementation, QA, integration, and handoff. Separate deployment TASK only for an independent lifecycle/owner/authority.
 
 ~~~yaml
-protocol_version: "2.5"
+protocol_version: "2.6"
 task_id: TASK-042
 task_revision: 3
 status: IN_PROGRESS
@@ -252,6 +252,30 @@ Reassignment keeps TASK/item/branch/PR and preserves failures, candidate, questi
 
 One branch can be checked out in only one worktree. Use coordinated checkout, separate branches, or detached inspection.
 
+### 9.1 Workspace lifecycle
+
+TASK identity, candidate identity, and workspace lease identity are separate:
+
+- TASK identity carries durable scope, ownership, routes, acceptance, and transitions across revisions and handoffs.
+- Candidate identity is an immutable commit SHA/tree or exact artifact identity and does not depend on a directory.
+- Workspace lease identity names one physical materialization by logical `lease_id`, TASK, purpose, class, owner executor, exact base/candidate, mutability, custody, state, and recovery reference. Physical paths and host observations remain in ignored local state.
+
+A TASK revision, correction, handoff, verdict, or evidence checkpoint does not itself require another persistent workspace. Default limits are one author lease, one reusable integration lease, one ephemeral QA/Design lease, maximum three active leases per TASK, one mutable lease per executor/TASK/purpose, project target 50 and hard cap 150. Accepted project policy may be stricter or grant an exact TASK exception with reason, owner, capacity evidence, review date, and recovery rule.
+
+Allocation measures the destination filesystem and expected dependency/package expansion. Above 50 GiB is normal allocation; 30–50 GiB is reuse-only; 15–30 GiB permits only owner-approved recovery allocation; below 15 GiB freezes new persistent placement. A failed gate is `ALLOCATION_BLOCKED`. Thresholds govern allocation only and never authorize cleanup, migration, process termination, QA bypass, relocation, or destruction.
+
+Result state and workspace state are independent evidence axes. Candidate PASS/FAIL/BLOCKED/UNKNOWN/NOT_RUN survives a closure failure. Lease states are `REQUESTED`, `ACTIVE`, `CLOSE_PENDING`, `CLOSED`, `RETAINED_PROTECTED`, `TRANSFERRED_TO_NEXT_TASK`, `BLOCKED_DIRTY`, `BLOCKED_DEPENDENCY`, `BLOCKED_AUTHORITY`, and `UNKNOWN`. A completed stage has a terminal or explicitly blocking disposition for every owned lease; no lease remains silently ACTIVE.
+
+Accepted integration requires provider read-back of the real merge SHA and remote default branch. The same protected checkpoint carries evidence suitable for Git. Evidence that cannot enter Git due to size, sensitivity, licensing, or mutability is represented by a sanitized manifest, content hash, retention class, durable recovery location, owner, and access boundary. Evidence surviving only in chat, an expiring log, or a disposable workspace is insufficient.
+
+Closure re-reads ownership, containment, branch/HEAD/tree, dirty/untracked/ignored content, processes, native resources, dependent leases, evidence, recovery, and authority. A close receipt records lease, TASK, owner, closer, base, branch, HEAD, tree, candidate, material classification, artifact manifest, recovery route, native-resource disposition, branch disposition, retention class, closure method, actual result, and remaining owner or blocker. Candidate branches receive `MERGED_TO_DEFAULT`, `SUPERSEDED_BY_SHA`, `REJECTED`, or `EVIDENCE_ARCHIVED`; a disposition is not deletion authority.
+
+Temporary cache, build output, package expansion, logs, and disposable fixtures may be removed only after verified evidence export when they are exclusively owned by the closing lease, have no live process or dependent lease, are not a shared immutable cache or retained recovery input, are inside the verified target, and the closer already has explicit removal authority. Otherwise use `RETAINED_PROTECTED`, `TRANSFERRED_TO_NEXT_TASK`, or an explicit blocking state with owner and review date. Secrets, user data, mutable databases, profiles, rollback packages, durable evidence, and persistent runtime state must survive independently of disposable workspaces.
+
+Custody classes are ordinary-canonical, codex-managed, external-authorized, and legacy-retained. Codex-managed checkouts use the application archive lifecycle, not shell removal. The ignored local registry maps leases to physical paths, observed size, resources, custody, and observation time. Portable TASK/TEAM policy uses root aliases, never another machine's absolute path.
+
+Operational status, open, close, and doctor behavior belongs to the separate `r2team-workspace` skill. Status and doctor are read-only; open requires allocation preflight; close requires evidence, custody, ownership, dependency, containment, and authority preflight. Existing skills may route to it, but `r2team-work` does not silently allocate, relocate, archive, close, or remove a workspace. Team/chat relocation is outside R2Team 2.6 and requires a distinct change, TASK, checkpoint, validation candidate, and acceptance decision.
+
 Disconnect after publishing affected checkpoints and replacement ownership. Preserve history. Account/access revocation is a separate action.
 
 <a id="providers"></a>
@@ -265,7 +289,7 @@ Disconnect after publishing affected checkpoints and replacement ownership. Pres
 | Discussion | Issue/PR | Work Item/PR |
 | Recovery | Git TASK/spec/code | Git TASK/spec/code |
 
-Tracker is a projection of TASK in R2Team 2.5. Summarize provider-only continuation facts into Git.
+Tracker is a projection of TASK in R2Team 2.6. Summarize provider-only continuation facts into Git.
 
 Verify Git refs/read/push, tracker API, PR/review/policy API, browser UI, CI and environment access independently. Repo/default branch/policies/checks/permissions and merge/deploy effects remain separate facts. For Server also verify version/API, actual Work Item types/states, and tool compatibility; do not assume cloud-only CLI/MCP.
 
@@ -414,11 +438,11 @@ Ready means source/TEAM/rights known, tools verified or blocked, and a safe next
 <a id="migration"></a>
 ## 15. Migration
 
-Use [MIGRATE_TO_2.5.md](MIGRATE_TO_2.5.md). Preserve refs, code, filled specs, active OpenSpec changes/tasks, roles, evidence, dirty/unpublished work, and material requests.
+Use [MIGRATE_TO_2.6.md](MIGRATE_TO_2.6.md). Preserve refs, code, filled specs, active OpenSpec changes/tasks, roles, evidence, dirty/unpublished work, and material requests.
 
 Existing TASKs remain by default. User-approved fresh organizational queue may retire old message/task artifacts while explicitly preserving product/OpenSpec/current work. Never erase OpenSpec tasks.md.
 
-For 1.10, mandatory MSG rules remain until approved per-task/coordinated cutover. Retained chats individually cross-check/adopt 2.5; replacing files alone is not chat migration. Resolve higher-priority instruction conflicts explicitly.
+For 1.10, mandatory MSG rules remain until approved per-task/coordinated cutover. Retained chats individually cross-check/adopt 2.6; replacing files alone is not chat migration. Resolve higher-priority instruction conflicts explicitly.
 
 <a id="feature-example"></a>
 ## 16. Feature example
@@ -496,7 +520,7 @@ Structural validation does not prove provider integration, behavioral skill qual
 First PM:
 
 ~~~text
-Read START.md from verified R2Team 2.5 and run setup new or migrate for <project>.
+Read START.md from verified R2Team 2.6 and run setup new or migrate for <project>.
 Confirm root, provider, instructions, PM, functions, permissions and specs.
 Show proposed diff before writes. Do not enable automation or start product
 work merely by finishing setup.

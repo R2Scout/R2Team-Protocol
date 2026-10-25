@@ -1,4 +1,4 @@
-# GitHub and Azure DevOps Server/TFS Git — R2Team 2.5
+# GitHub and Azure DevOps Server/TFS Git — R2Team 2.6
 
 One project uses one provider. Git stores the contract and confirmed state; the tracker displays the queue; PRs connect diff/review/checks. No universal dispatcher is implemented here: Codex uses available authorized CLI/API tools.
 
