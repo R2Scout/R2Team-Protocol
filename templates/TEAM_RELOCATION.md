@@ -59,6 +59,8 @@ activation_receipt_ref: null
 blocked_from_state: null
 permitted_successors: []
 disposition: PENDING|RESUMED|BLOCKED|CANCELLED|FORWARD_ROLLBACK
+disposition_receipt_ref: null
+disposition_owner_executor_id: null
 owner_executor_id: "<executor-id>"
 review_date: "<yyyy-mm-dd>"
 next_action: "<permitted-transition>"
@@ -74,6 +76,7 @@ Store each receipt at `receipts/<receipt-id>.md`. Do not edit or reuse an ID.
 receipt_id: "<receipt-id>"
 receipt_type: PREPARE|SOURCE_STOP|FREEZE|TARGET_PREFLIGHT|ACTIVATION|PARTIAL_DISPOSITION|COMPLETION|CANCELLATION|FORWARD_ROLLBACK
 migration_id: "<migration-id>"
+repository_or_project_id: "<portable-provider-identity>"
 executor_id: "<executor-id-or-null>"
 prior_epoch: 0
 new_epoch: 1

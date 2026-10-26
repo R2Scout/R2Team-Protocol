@@ -422,6 +422,20 @@ def validate(root):
         if "`r2team-relocate`" not in work_text:
             errors.append("Missing r2team-work relocation boundary: route relocation operations to r2team-relocate")
 
+    protocol = root / "templates" / "CODEX_TEAM_PROTOCOL.md"
+    if protocol.is_file():
+        protocol_text = texts.get(protocol.resolve(), "")
+        required_identity_markers = (
+            "preserves the registered logical executor",
+            "changes only physical execution placement",
+        )
+        if any(marker not in protocol_text for marker in required_identity_markers) or re.search(
+            r"relocation\s+changes\s+which\s+registered\s+executor|without\s+changing\s+physical\s+placement",
+            protocol_text,
+            flags=re.IGNORECASE,
+        ):
+            errors.append("Relocation identity contract invalid")
+
     commands = root / "templates" / "COMMANDS.md"
     if commands.is_file():
         commands_text = texts.get(commands.resolve(), "")

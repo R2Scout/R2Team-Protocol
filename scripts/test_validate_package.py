@@ -61,6 +61,8 @@ provider read-back
 sanitized manifest
 Any blocking or nonterminal lease blocks administrative completion
 explicit removal authority
+Relocation preserves the registered logical executor and accepted functions.
+Relocation changes only physical execution placement.
 """)
         self.put("templates/COMMANDS.md", """# Commands
 $r2team-workspace status
@@ -470,6 +472,15 @@ This command directly allocates and closes workspaces.
         self.put("templates/COMMANDS.md", "$r2team relocate-chat PM to another thread\n")
         self.assertTrue(any("Relocation must use r2team-relocate" in e
                             for e in validate(self.root)))
+
+    def test_protocol_cannot_redefine_relocation_as_executor_transfer(self):
+        self.put(
+            "templates/CODEX_TEAM_PROTOCOL.md",
+            "Relocation changes which registered executor carries functions without changing physical placement.\n",
+        )
+        self.assertTrue(
+            any("Relocation identity contract invalid" in e for e in validate(self.root))
+        )
 
     def test_relocation_commands_are_required(self):
         text = (self.root / "templates/COMMANDS.md").read_text(encoding="utf-8")

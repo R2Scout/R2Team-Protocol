@@ -52,7 +52,7 @@ An executor is retained only when an accepted prepare revision removes it from t
 4. Compare-and-publish the per-executor successor and read it back before product work. Target progresses `INACTIVE -> PREFLIGHTED -> READY -> ACTIVE`.
 5. Re-read the accepted fence before every later product/TASK publication. An offline stale source remains blocked.
 
-Whole-team aggregate state is derived from executor records. `PARTIAL_BLOCKED` preserves already active targets and stopped/blocked peers; it may return to `RESUMING`, reach a terminal accounted disposition, or start forward rollback.
+Whole-team aggregate state is derived from executor records. `PARTIAL_BLOCKED` preserves already active targets and stopped/blocked peers; it may return to `RESUMING`, reach a terminal accounted disposition, or start forward rollback. A terminal-accounted blocked, cancelled, or forward-rollback executor requires disposition owner, review date, next action, and immutable disposition receipt; a bare label never completes the migration.
 
 ## Cancellation and rollback
 

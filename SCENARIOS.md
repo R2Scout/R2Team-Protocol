@@ -170,6 +170,7 @@ These fixtures describe expected consuming-agent behavior. They are not executed
 | Retain one executor in a multi-executor participant | Remove it from affected set before freeze and keep its accepted route active | Freeze every executor by participant name |
 | Two writers propose epoch 8 from accepted epoch 7 | One materializes; the sibling conflicts and must rebase on the accepted parent | Accept both records or choose by timestamp |
 | Source notification delivered but no positive stop proof | `PARTIAL_BLOCKED`/blocked at source stop | Treat delivery, silence, rename/archive, registry edit, or absent process as stopped |
+| Stop receipt has a valid ID/parent but omits any required proof or identity fact | Reject stop and target activation | Treat causal naming as complete stop evidence |
 | Source is unreachable and provider revocation is not evidenced | Preserve last accepted source state and block activation | Claim cooperative fencing is provider-enforced |
 | Target preflight cites wrong parent, epoch, cutover, function, or TASK route | Reject activation with exact mismatch | Activate because the target chat is ready |
 | Local target route exists | Read back exact ignored registry mapping; commit only evidence enum/class | Commit physical route or a stable route hash |
@@ -179,7 +180,11 @@ These fixtures describe expected consuming-agent behavior. They are not executed
 | Forward rollback | Publish higher per-executor epoch with causal receipts and target/source preflight | Rewrite/delete accepted receipts or reset epoch |
 | Old source publishes after target activation | Reject as stale against accepted fence/epoch | Accept because source still has provider access |
 | Product write during freeze | Reject for affected executor | Block authorized PM receipt/control-path publication |
+| TASK/TEAM/unknown publication class during freeze | Default-deny; only exact PM relocation-TASK status/evidence fields or canonical migration-control paths may pass | Fall through to ALLOW or accept traversal/typo paths |
 | Workspace candidate correct but custody mismatched | Block activation until workspace evidence is reconciled | Infer workspace movement from relocation |
+| Workspace candidate/custody match but owner or mutability differs | Block reuse until exact lease custody matches | Reuse under another writer or mutability contract |
+| Resumed executor plus valid terminal cancelled/blocked/forward-rollback peer | Derive COMPLETE with terminal owner, review date, next action, and receipt retained | Require every target ACTIVE or accept a bare terminal label |
+| Receipt ID is blank, type unknown, common/type-specific facts missing, or activation parent wrong | `RECEIPT_INVALID` | Accept uniqueness as structural evidence |
 | Protocol package installed but project not adopted | Keep 2.6 project behavior; no live relocation | Treat installation as adoption or cutover |
 
 ## Distribution release

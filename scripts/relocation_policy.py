@@ -7,6 +7,29 @@ chat, registry, process, workspace, or filesystem mutation.
 from dataclasses import dataclass
 
 
+RECEIPT_TYPES = {
+    "PREPARE",
+    "SOURCE_STOP",
+    "FREEZE",
+    "TARGET_PREFLIGHT",
+    "ACTIVATION",
+    "PARTIAL_DISPOSITION",
+    "COMPLETION",
+    "CANCELLATION",
+    "FORWARD_ROLLBACK",
+}
+
+
+def _nonblank(value) -> bool:
+    return isinstance(value, str) and bool(value.strip())
+
+
+def _canonical_portable_path(path: str) -> bool:
+    if not _nonblank(path) or "\\" in path or path.startswith("/") or "//" in path:
+        return False
+    return all(part not in {"", ".", ".."} for part in path.split("/"))
+
+
 @dataclass(frozen=True)
 class Decision:
     code: str
@@ -75,11 +98,15 @@ def materialize_successor(
 
 
 def validate_stop_receipt(receipt: dict) -> Decision:
+    if not isinstance(receipt, dict):
+        return Decision("STOP_PROOF_INVALID", "stop receipt is not a record")
     if receipt.get("publishers_in_flight") or receipt.get("helpers_in_flight"):
         return Decision("BLOCKED_IN_FLIGHT", "publisher or helper remains active")
     required = {
         "receipt_id",
+        "receipt_type",
         "migration_id",
+        "repository_or_project_id",
         "executor_id",
         "expected_epoch",
         "final_checkpoint",
@@ -95,6 +122,8 @@ def validate_stop_receipt(receipt: dict) -> Decision:
     }
     if any(key not in receipt or receipt[key] in (None, "") for key in required):
         return Decision("STOP_PROOF_INVALID", "required stop fact is missing")
+    if receipt["receipt_type"] != "SOURCE_STOP":
+        return Decision("STOP_PROOF_INVALID", "receipt is not SOURCE_STOP")
     if receipt["stop_mechanism"] not in {
         "COOPERATIVE_ACK",
         "ADMINISTRATIVE_REVOCATION",
@@ -117,10 +146,23 @@ def activation_allowed(
             "BLOCKED_SOURCE_UNREACHABLE",
             "source is unreachable and no enforceable fence is proven",
         )
+    stop_validation = validate_stop_receipt(stop_receipt)
+    if stop_validation.code != "ALLOW":
+        return stop_validation
+    if not isinstance(activation_receipt, dict):
+        return Decision("ACTIVATION_RECEIPT_INVALID")
+    if activation_receipt.get("target_preflight") != "PASS":
+        return Decision("TARGET_PREFLIGHT_REQUIRED")
+    if activation_receipt.get("causal_stop_receipt") != stop_receipt.get("receipt_id"):
+        return Decision(
+            "ACTIVATION_CAUSAL_MISMATCH",
+            "activation does not reference the accepted stop receipt",
+        )
+    activation_validation = validate_receipt(activation_receipt)
+    if activation_validation.code != "ALLOW" or activation_receipt.get("receipt_type") != "ACTIVATION":
+        return Decision("ACTIVATION_RECEIPT_INVALID")
     if (
-        stop_receipt is None
-        or activation_receipt is None
-        or activation_receipt.get("causal_stop_receipt")
+        activation_receipt.get("causal_stop_receipt")
         != stop_receipt.get("receipt_id")
         or stop_receipt.get("cutover_parent") != accepted.record_ref
         or activation_receipt.get("cutover_parent") != accepted.record_ref
@@ -129,8 +171,18 @@ def activation_allowed(
             "ACTIVATION_CAUSAL_MISMATCH",
             "activation does not reference the accepted stop receipt",
         )
-    if activation_receipt.get("target_preflight") != "PASS":
-        return Decision("TARGET_PREFLIGHT_REQUIRED")
+    identity_pairs = (
+        (stop_receipt.get("repository_or_project_id"), accepted.project_id),
+        (activation_receipt.get("repository_or_project_id"), accepted.project_id),
+        (stop_receipt.get("migration_id"), activation_receipt.get("migration_id")),
+        (stop_receipt.get("executor_id"), accepted.executor_id),
+        (activation_receipt.get("executor_id"), accepted.executor_id),
+        (stop_receipt.get("final_checkpoint"), activation_receipt.get("task_checkpoint")),
+        (stop_receipt.get("candidate_tree"), activation_receipt.get("candidate_tree")),
+        (stop_receipt.get("workspace_custody"), activation_receipt.get("workspace_custody")),
+    )
+    if any(actual != expected for actual, expected in identity_pairs):
+        return Decision("ACTIVATION_IDENTITY_MISMATCH")
     if (
         stop_receipt.get("expected_epoch") != accepted.epoch
         or activation_receipt.get("prior_epoch") != accepted.epoch
@@ -146,15 +198,45 @@ def derive_team_state(records: list[dict]) -> TeamState:
         for record in records
         if record.get("target_state") == "ACTIVE"
     )
+    terminal_dispositions = {"BLOCKED", "CANCELLED", "FORWARD_ROLLBACK"}
+    terminal_fields = {
+        "disposition_owner_executor_id",
+        "review_date",
+        "next_action",
+        "disposition_receipt_ref",
+    }
+
+    def valid_terminal(record: dict) -> bool:
+        return record.get("disposition") in terminal_dispositions and all(
+            _nonblank(record.get(field)) for field in terminal_fields
+        )
+
+    invalid_terminal = tuple(
+        record["executor_id"]
+        for record in records
+        if record.get("disposition") in terminal_dispositions
+        and not valid_terminal(record)
+    )
     blocked = tuple(
         record["executor_id"]
         for record in records
         if record.get("disposition") == "BLOCKED"
     )
-    if records and len(active) == len(records):
+    if records and all(
+        (
+            record.get("target_state") == "ACTIVE"
+            and record.get("disposition") == "RESUMED"
+        )
+        or valid_terminal(record)
+        for record in records
+    ):
         return TeamState("COMPLETE", active, blocked)
-    if active and blocked:
-        return TeamState("PARTIAL_BLOCKED", active, blocked)
+    if invalid_terminal or (active and blocked):
+        return TeamState(
+            "PARTIAL_BLOCKED",
+            active,
+            tuple(dict.fromkeys((*blocked, *invalid_terminal))),
+        )
     if records and all(
         record.get("source_state") == "STOPPED"
         and record.get("target_state") == "READY"
@@ -190,11 +272,11 @@ def cancellation_allowed(
     proposed_epoch: int,
 ) -> Decision:
     if target_state == "ACTIVE":
-        if proposed_epoch == current_epoch + 1:
-            return Decision("ALLOW_FORWARD_ROLLBACK")
         return Decision("FORWARD_ROLLBACK_REQUIRED")
-    if source_state == "STOPPED" and proposed_epoch <= current_epoch:
+    if source_state == "STOPPED":
         return Decision("REACTIVATION_REQUIRED")
+    if proposed_epoch != current_epoch:
+        return Decision("CAUSAL_SUCCESSOR_REQUIRED")
     return Decision("ALLOW_RETAIN_SOURCE")
 
 
@@ -211,6 +293,9 @@ def publication_allowed(
     migration_pm_executor_id: str,
     path: str,
     migration_id: str,
+    governing_task_path: str | None = None,
+    governing_task_fields: tuple[str, ...] = (),
+    claimed_fields: tuple[str, ...] = (),
 ) -> Decision:
     if (
         claim_project_id != accepted.project_id
@@ -219,19 +304,35 @@ def publication_allowed(
         or claim_record_ref != accepted.record_ref
     ):
         return Decision("WRITER_CONFLICT", "writer claim is stale or misaddressed")
-    if frozen and publication_class == "PRODUCT":
+    allowed_classes = {"PRODUCT", "TASK", "TEAM", "MIGRATION_CONTROL"}
+    if publication_class not in allowed_classes:
+        return Decision("PUBLICATION_CLASS_INVALID")
+    if not _canonical_portable_path(path):
+        return Decision("PUBLICATION_PATH_INVALID")
+    if not frozen:
+        return Decision("ALLOW")
+    if publication_class == "PRODUCT":
         return Decision("FROZEN_PRODUCT_WRITE_BLOCKED")
     control_prefix = f"Team/Migrations/{migration_id}/"
     if (
-        frozen
-        and publication_class == "MIGRATION_CONTROL"
+        publication_class == "MIGRATION_CONTROL"
         and actor_executor_id == migration_pm_executor_id
         and path.startswith(control_prefix)
     ):
         return Decision("ALLOW")
-    if frozen and publication_class == "MIGRATION_CONTROL":
+    if publication_class == "MIGRATION_CONTROL":
         return Decision("FROZEN_CONTROL_FORBIDDEN")
-    return Decision("ALLOW")
+    if (
+        publication_class == "TASK"
+        and actor_executor_id == migration_pm_executor_id
+        and governing_task_path is not None
+        and _canonical_portable_path(governing_task_path)
+        and path == governing_task_path
+        and bool(claimed_fields)
+        and set(claimed_fields).issubset(governing_task_fields)
+    ):
+        return Decision("ALLOW")
+    return Decision("FROZEN_PUBLICATION_BLOCKED")
 
 
 def registry_mapping_allowed(
@@ -263,6 +364,8 @@ def workspace_reuse_allowed(expected: dict, observed: dict) -> Decision:
         "native_resources",
         "dependencies",
         "contained",
+        "owner_executor_id",
+        "mutability",
     }
     if any(key not in expected or observed.get(key) != expected[key] for key in required):
         return Decision("WORKSPACE_REUSE_BLOCKED", "workspace custody facts differ")
@@ -292,7 +395,87 @@ def affected_set_allowed(
 
 
 def receipt_set_allowed(receipts: tuple[dict, ...]) -> Decision:
+    for receipt in receipts:
+        if validate_receipt(receipt).code != "ALLOW":
+            return Decision("RECEIPT_INVALID")
     receipt_ids = [receipt.get("receipt_id") for receipt in receipts]
-    if None in receipt_ids or len(receipt_ids) != len(set(receipt_ids)):
+    if len(receipt_ids) != len(set(receipt_ids)):
         return Decision("DUPLICATE_RECEIPT_ID")
+    return Decision("ALLOW")
+
+
+def validate_receipt(receipt: dict | None) -> Decision:
+    if not isinstance(receipt, dict):
+        return Decision("RECEIPT_INVALID")
+    common_nonblank = {
+        "receipt_id",
+        "receipt_type",
+        "migration_id",
+        "repository_or_project_id",
+        "causal_parent_ref",
+        "accepted_commit_sha",
+        "actor_executor_id",
+        "actor_provider_class",
+        "observed_outcome",
+        "registry_evidence",
+        "timestamp",
+        "review_date",
+    }
+    if any(not _nonblank(receipt.get(field)) for field in common_nonblank):
+        return Decision("RECEIPT_INVALID", "common receipt fact is missing")
+    if receipt.get("receipt_type") not in RECEIPT_TYPES:
+        return Decision("RECEIPT_INVALID", "receipt type is unknown")
+    receipt_type = receipt["receipt_type"]
+    global_types = {"PREPARE", "FREEZE", "COMPLETION"}
+    if receipt_type not in global_types and not _nonblank(receipt.get("executor_id")):
+        return Decision("RECEIPT_INVALID", "executor identity is missing")
+    if receipt_type in global_types and receipt.get("executor_id") is not None and not _nonblank(receipt.get("executor_id")):
+        return Decision("RECEIPT_INVALID", "executor identity is malformed")
+    if not isinstance(receipt.get("prior_epoch"), int) or not isinstance(receipt.get("new_epoch"), int):
+        return Decision("RECEIPT_INVALID", "receipt epoch is invalid")
+    for field in ("task_checkpoint_refs", "candidate_refs", "workspace_disposition_refs"):
+        value = receipt.get(field)
+        if not isinstance(value, list) or (field != "workspace_disposition_refs" and not value):
+            return Decision("RECEIPT_INVALID", f"{field} is invalid")
+    if receipt.get("registry_evidence") not in {
+        "NOT_APPLICABLE",
+        "MAPPING_PRESENT_READ_BACK",
+        "MAPPING_ABSENT",
+        "MAPPING_CONFLICT",
+    }:
+        return Decision("RECEIPT_INVALID", "registry evidence is invalid")
+
+    type_fields = {
+        "PREPARE": {"affected_executor_ids"},
+        "SOURCE_STOP": set(),
+        "FREEZE": {"affected_executor_ids", "stopped_executor_ids"},
+        "TARGET_PREFLIGHT": {"target_preflight", "target_placement_class"},
+        "ACTIVATION": {
+            "causal_stop_receipt",
+            "cutover_parent",
+            "target_preflight",
+            "task_checkpoint",
+            "candidate_tree",
+            "workspace_custody",
+            "mapping_result",
+        },
+        "PARTIAL_DISPOSITION": {"blocked_from_state", "permitted_successors"},
+        "COMPLETION": {"accounted_executor_ids"},
+        "CANCELLATION": {"terminal_disposition"},
+        "FORWARD_ROLLBACK": {"rollback_target_epoch"},
+    }
+    if any(
+        field not in receipt or receipt[field] in (None, "", [])
+        for field in type_fields[receipt_type]
+    ):
+        return Decision("RECEIPT_INVALID", "type-specific receipt fact is missing")
+    if receipt_type == "SOURCE_STOP":
+        stop = validate_stop_receipt(receipt)
+        if stop.code != "ALLOW":
+            return Decision("RECEIPT_INVALID", stop.reason)
+    if (
+        receipt_type == "ACTIVATION"
+        and receipt.get("causal_parent_ref") != receipt.get("causal_stop_receipt")
+    ):
+        return Decision("RECEIPT_INVALID", "activation causal parent is invalid")
     return Decision("ALLOW")

@@ -41,8 +41,22 @@ class RelocationPolicyTests(unittest.TestCase):
     def stop_receipt():
         return {
             "receipt_id": "stop-1",
+            "receipt_type": "SOURCE_STOP",
             "migration_id": "migration-1",
+            "repository_or_project_id": "project-a",
             "executor_id": "dev-a",
+            "prior_epoch": 3,
+            "new_epoch": 4,
+            "causal_parent_ref": "fence-4",
+            "accepted_commit_sha": "commit-4",
+            "task_checkpoint_refs": ["commit-4"],
+            "candidate_refs": ["tree-4"],
+            "workspace_disposition_refs": ["workspace-1"],
+            "actor_executor_id": "dev-a",
+            "actor_provider_class": "local-standalone",
+            "observed_outcome": "SOURCE_STOPPED",
+            "registry_evidence": "NOT_APPLICABLE",
+            "review_date": "2026-01-02",
             "expected_epoch": 4,
             "final_checkpoint": "commit-4",
             "candidate_tree": "tree-4",
@@ -60,10 +74,21 @@ class RelocationPolicyTests(unittest.TestCase):
     def activation_receipt():
         return {
             "receipt_id": "activation-1",
+            "receipt_type": "ACTIVATION",
             "migration_id": "migration-1",
+            "repository_or_project_id": "project-a",
             "executor_id": "dev-a",
             "prior_epoch": 4,
             "new_epoch": 5,
+            "causal_parent_ref": "stop-1",
+            "accepted_commit_sha": "commit-5",
+            "task_checkpoint_refs": ["commit-4"],
+            "candidate_refs": ["tree-4"],
+            "workspace_disposition_refs": ["workspace-1"],
+            "actor_executor_id": "dev-a-target",
+            "actor_provider_class": "local-standalone",
+            "registry_evidence": "MAPPING_PRESENT_READ_BACK",
+            "review_date": "2026-01-02",
             "causal_stop_receipt": "stop-1",
             "cutover_parent": "fence-4",
             "accepted_cutover": "commit-5",
@@ -141,9 +166,27 @@ class RelocationPolicyTests(unittest.TestCase):
     def test_source_stop_receipt_rejects_missing_fact_or_unknown_mechanism(self):
         validate_stop_receipt = self.require("validate_stop_receipt")
         cases = []
-        missing_tree = self.stop_receipt()
-        del missing_tree["candidate_tree"]
-        cases.append(missing_tree)
+        for field in (
+            "receipt_id",
+            "receipt_type",
+            "migration_id",
+            "repository_or_project_id",
+            "executor_id",
+            "expected_epoch",
+            "final_checkpoint",
+            "candidate_tree",
+            "publishers_in_flight",
+            "helpers_in_flight",
+            "workspace_custody",
+            "native_resource_custody",
+            "actor_class",
+            "stop_mechanism",
+            "cutover_parent",
+            "timestamp",
+        ):
+            missing = self.stop_receipt()
+            del missing[field]
+            cases.append(missing)
         unknown_mechanism = self.stop_receipt()
         unknown_mechanism["stop_mechanism"] = "NO_PROCESS_OBSERVED"
         cases.append(unknown_mechanism)
@@ -192,6 +235,47 @@ class RelocationPolicyTests(unittest.TestCase):
         )
 
         self.assertEqual("ALLOW", decision.code)
+
+    def test_activation_rejects_structurally_invalid_stop_receipt(self):
+        activation_allowed = self.require("activation_allowed")
+        invalid = {
+            "receipt_id": "stop-1",
+            "expected_epoch": 4,
+            "cutover_parent": "fence-4",
+        }
+
+        decision = activation_allowed(
+            self.accepted_fence(),
+            stop_receipt=invalid,
+            activation_receipt=self.activation_receipt(),
+            source_reachable=True,
+            enforceable_revocation=False,
+        )
+
+        self.assertEqual("STOP_PROOF_INVALID", decision.code)
+
+    def test_activation_rejects_mismatched_stop_identity_and_custody(self):
+        activation_allowed = self.require("activation_allowed")
+        mutations = {
+            "migration_id": "migration-other",
+            "repository_or_project_id": "project-other",
+            "executor_id": "qa-a",
+            "final_checkpoint": "commit-other",
+            "candidate_tree": "tree-other",
+            "workspace_custody": "UNKNOWN",
+        }
+        for field, value in mutations.items():
+            with self.subTest(field=field):
+                stop = self.stop_receipt()
+                stop[field] = value
+                decision = activation_allowed(
+                    self.accepted_fence(),
+                    stop_receipt=stop,
+                    activation_receipt=self.activation_receipt(),
+                    source_reachable=True,
+                    enforceable_revocation=False,
+                )
+                self.assertEqual("ACTIVATION_IDENTITY_MISMATCH", decision.code)
 
     def test_activation_rejects_mismatched_cutover_parent(self):
         activation_allowed = self.require("activation_allowed")
@@ -278,7 +362,19 @@ class RelocationPolicyTests(unittest.TestCase):
         )
 
         self.assertEqual("FORWARD_ROLLBACK_REQUIRED", stale.code)
-        self.assertEqual("ALLOW_FORWARD_ROLLBACK", forward.code)
+        self.assertEqual("FORWARD_ROLLBACK_REQUIRED", forward.code)
+
+    def test_post_stop_epoch_increment_does_not_reactivate_source(self):
+        cancellation_allowed = self.require("cancellation_allowed")
+
+        decision = cancellation_allowed(
+            source_state="STOPPED",
+            target_state="READY",
+            current_epoch=4,
+            proposed_epoch=5,
+        )
+
+        self.assertEqual("REACTIVATION_REQUIRED", decision.code)
 
     def test_offline_stale_source_cannot_publish_after_target_activation(self):
         publication_allowed = self.require("publication_allowed")
@@ -353,9 +449,80 @@ class RelocationPolicyTests(unittest.TestCase):
             path="Team/Migrations/other/MIGRATION.md",
             **base,
         )
+        wrong_migration = publication_allowed(
+            self.accepted_fence(),
+            actor_executor_id="pm-a",
+            path="Team/Migrations/migration-1/MIGRATION.md",
+            **{**base, "migration_id": "migration-other"},
+        )
 
         self.assertEqual("FROZEN_CONTROL_FORBIDDEN", wrong_actor.code)
         self.assertEqual("FROZEN_CONTROL_FORBIDDEN", wrong_path.code)
+        self.assertEqual("FROZEN_CONTROL_FORBIDDEN", wrong_migration.code)
+
+    def test_frozen_publication_default_denies_task_team_and_unknown_classes(self):
+        publication_allowed = self.require("publication_allowed")
+        base = {
+            "claim_project_id": "project-a",
+            "claim_executor_id": "dev-a",
+            "claim_epoch": 4,
+            "claim_record_ref": "fence-4",
+            "frozen": True,
+            "actor_executor_id": "dev-a",
+            "migration_pm_executor_id": "pm-a",
+            "migration_id": "migration-1",
+        }
+        for publication_class, path in (
+            ("TASK", "Tasks/TASK-001.md"),
+            ("TEAM", "Team/TEAM.md"),
+            ("TSAK", "Tasks/TASK-001.md"),
+        ):
+            with self.subTest(publication_class=publication_class):
+                decision = publication_allowed(
+                    self.accepted_fence(),
+                    publication_class=publication_class,
+                    path=path,
+                    **base,
+                )
+                self.assertNotEqual("ALLOW", decision.code)
+
+    def test_frozen_pm_task_exception_is_exact_field_and_canonical_path_only(self):
+        publication_allowed = self.require("publication_allowed")
+        base = {
+            "claim_project_id": "project-a",
+            "claim_executor_id": "dev-a",
+            "claim_epoch": 4,
+            "claim_record_ref": "fence-4",
+            "publication_class": "TASK",
+            "frozen": True,
+            "actor_executor_id": "pm-a",
+            "migration_pm_executor_id": "pm-a",
+            "migration_id": "migration-1",
+            "governing_task_path": "Tasks/TASK-RELOCATION.md",
+            "governing_task_fields": ("status", "evidence"),
+        }
+        allowed = publication_allowed(
+            self.accepted_fence(),
+            path="Tasks/TASK-RELOCATION.md",
+            claimed_fields=("status",),
+            **base,
+        )
+        wrong_field = publication_allowed(
+            self.accepted_fence(),
+            path="Tasks/TASK-RELOCATION.md",
+            claimed_fields=("owner_executor_id",),
+            **base,
+        )
+        traversal = publication_allowed(
+            self.accepted_fence(),
+            path="Tasks/../Tasks/TASK-RELOCATION.md",
+            claimed_fields=("status",),
+            **base,
+        )
+
+        self.assertEqual("ALLOW", allowed.code)
+        self.assertNotEqual("ALLOW", wrong_field.code)
+        self.assertNotEqual("ALLOW", traversal.code)
 
     def test_registry_remap_rejects_collision_or_wrong_executor(self):
         registry_mapping_allowed = self.require("registry_mapping_allowed")
@@ -431,6 +598,8 @@ class RelocationPolicyTests(unittest.TestCase):
             "native_resources": "NONE",
             "dependencies": "PINNED",
             "contained": True,
+            "owner_executor_id": "dev-a",
+            "mutability": "mutable",
         }
         observed = dict(expected)
         observed["custody"] = "ACTIVE_SOURCE"
@@ -448,9 +617,41 @@ class RelocationPolicyTests(unittest.TestCase):
             "native_resources": "NONE",
             "dependencies": "PINNED",
             "contained": True,
+            "owner_executor_id": "dev-a",
+            "mutability": "mutable",
         }
 
         self.assertEqual("ALLOW", workspace_reuse_allowed(facts, dict(facts)).code)
+
+    def test_workspace_reuse_rejects_wrong_or_missing_owner_and_mutability(self):
+        workspace_reuse_allowed = self.require("workspace_reuse_allowed")
+        expected = {
+            "candidate": "commit-4",
+            "custody": "TRANSFERRED_TO_NEXT_TASK",
+            "host_class": "target-host",
+            "native_resources": "NONE",
+            "dependencies": "PINNED",
+            "contained": True,
+            "owner_executor_id": "dev-a",
+            "mutability": "mutable",
+        }
+        cases = []
+        wrong_owner = dict(expected)
+        wrong_owner["owner_executor_id"] = "qa-a"
+        cases.append(wrong_owner)
+        wrong_mutability = dict(expected)
+        wrong_mutability["mutability"] = "immutable"
+        cases.append(wrong_mutability)
+        missing_mutability = dict(expected)
+        del missing_mutability["mutability"]
+        cases.append(missing_mutability)
+
+        for observed in cases:
+            with self.subTest(observed=observed):
+                self.assertEqual(
+                    "WORKSPACE_REUSE_BLOCKED",
+                    workspace_reuse_allowed(expected, observed).code,
+                )
 
     def test_retained_executor_cannot_remain_in_frozen_affected_set(self):
         affected_set_allowed = self.require("affected_set_allowed")
@@ -493,6 +694,47 @@ class RelocationPolicyTests(unittest.TestCase):
             with self.subTest(expected=expected):
                 self.assertEqual(expected, derive_team_state(records).state)
 
+    def test_terminal_accounted_executor_can_complete_mixed_team(self):
+        derive_team_state = self.require("derive_team_state")
+        for disposition in ("BLOCKED", "CANCELLED", "FORWARD_ROLLBACK"):
+            with self.subTest(disposition=disposition):
+                records = [
+                    {"executor_id": "dev-a", "source_state": "STOPPED", "target_state": "ACTIVE", "disposition": "RESUMED"},
+                    {
+                        "executor_id": "qa-a",
+                        "source_state": "STOPPED",
+                        "target_state": "INACTIVE",
+                        "disposition": disposition,
+                        "disposition_owner_executor_id": "pm-a",
+                        "review_date": "2026-01-02",
+                        "next_action": "Retain terminal custody",
+                        "disposition_receipt_ref": "receipt-terminal-1",
+                    },
+                ]
+                self.assertEqual("COMPLETE", derive_team_state(records).state)
+
+    def test_incomplete_terminal_disposition_remains_partial(self):
+        derive_team_state = self.require("derive_team_state")
+        base = {
+            "executor_id": "qa-a",
+            "source_state": "STOPPED",
+            "target_state": "INACTIVE",
+            "disposition": "CANCELLED",
+            "disposition_owner_executor_id": "pm-a",
+            "review_date": "2026-01-02",
+            "next_action": "Retain terminal custody",
+            "disposition_receipt_ref": "receipt-terminal-1",
+        }
+        for field in ("disposition_owner_executor_id", "review_date", "next_action", "disposition_receipt_ref"):
+            with self.subTest(field=field):
+                incomplete = dict(base)
+                del incomplete[field]
+                records = [
+                    {"executor_id": "dev-a", "source_state": "STOPPED", "target_state": "ACTIVE", "disposition": "RESUMED"},
+                    incomplete,
+                ]
+                self.assertEqual("PARTIAL_BLOCKED", derive_team_state(records).state)
+
     def test_activation_rejects_missing_preflight_or_epoch_mismatch(self):
         activation_allowed = self.require("activation_allowed")
         cases = []
@@ -523,6 +765,62 @@ class RelocationPolicyTests(unittest.TestCase):
         decision = receipt_set_allowed((first, duplicate))
 
         self.assertEqual("DUPLICATE_RECEIPT_ID", decision.code)
+
+    def test_receipt_set_rejects_blank_unknown_or_incomplete_receipts(self):
+        receipt_set_allowed = self.require("receipt_set_allowed")
+        cases = []
+        blank = self.stop_receipt()
+        blank["receipt_id"] = "  "
+        cases.append(blank)
+        unknown = self.stop_receipt()
+        unknown["receipt_type"] = "MAGIC"
+        cases.append(unknown)
+        missing_common = self.stop_receipt()
+        del missing_common["accepted_commit_sha"]
+        cases.append(missing_common)
+        wrong_parent = self.activation_receipt()
+        wrong_parent["causal_parent_ref"] = "different-stop"
+        cases.append(wrong_parent)
+
+        for receipt in cases:
+            with self.subTest(receipt=receipt):
+                self.assertEqual(
+                    "RECEIPT_INVALID",
+                    receipt_set_allowed((receipt,)).code,
+                )
+
+    def test_receipt_set_rejects_missing_type_specific_field(self):
+        receipt_set_allowed = self.require("receipt_set_allowed")
+        prepare = {
+            "receipt_id": "prepare-1",
+            "receipt_type": "PREPARE",
+            "migration_id": "migration-1",
+            "repository_or_project_id": "project-a",
+            "executor_id": "dev-a",
+            "prior_epoch": 3,
+            "new_epoch": 4,
+            "causal_parent_ref": "fence-3",
+            "accepted_commit_sha": "commit-4",
+            "task_checkpoint_refs": ["commit-4"],
+            "candidate_refs": ["tree-4"],
+            "workspace_disposition_refs": [],
+            "actor_executor_id": "pm-a",
+            "actor_provider_class": "local-standalone",
+            "observed_outcome": "PREPARED",
+            "registry_evidence": "NOT_APPLICABLE",
+            "timestamp": "2026-01-01T00:00:00Z",
+            "review_date": "2026-01-02",
+        }
+
+        self.assertEqual("RECEIPT_INVALID", receipt_set_allowed((prepare,)).code)
+
+    def test_receipt_set_accepts_complete_typed_causal_receipts(self):
+        receipt_set_allowed = self.require("receipt_set_allowed")
+
+        self.assertEqual(
+            "ALLOW",
+            receipt_set_allowed((self.stop_receipt(), self.activation_receipt())).code,
+        )
 
     def test_same_next_epoch_branches_are_serialized_by_accepted_parent(self):
         materialize_successor = self.require("materialize_successor")

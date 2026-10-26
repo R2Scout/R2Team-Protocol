@@ -16,6 +16,8 @@ R2Team can require every compliant writer entry point to reject stale state. Tha
 
 A single global writer triple loses custody during partial cutover. Each executor needs source/target substates, epoch, causal receipts, and disposition. `PARTIAL_BLOCKED` can then preserve active targets and stopped/blocked peers without inventing a fallback writer.
 
+A migration may complete with a mixture of resumed executors and terminal-accounted blocked, cancelled, or forward-rollback dispositions. Each terminal record needs an owner, review date, next action, and receipt; an incomplete terminal label remains partial/blocked.
+
 ## 5. Stop is positive evidence
 
 Silence, notification, registry absence, chat title/archive, or no observed process is not stop proof. A valid stop receipt binds the final accepted checkpoint/tree, outstanding publishers/helpers, workspace/native resources, mechanism, actor class, and cutover parent. An unreachable source without enforceable revocation remains blocked.
@@ -31,3 +33,11 @@ Before stop, an accepted cancellation may retain the current source. After stop/
 ## 8. Relocation does not own workspaces
 
 Candidate equality alone is insufficient for workspace reuse. Custody, host, containment, dependency, native-resource, owner, mutability, and recovery facts must match. Movement, cleanup, archive, branch deletion, process stop, and data relocation remain separate authorities.
+
+## 9. Freeze must be exhaustive
+
+A freeze cannot block only product code while allowing TASK, TEAM, or misspelled publication classes. Every class is enumerated and default-denied. Only the named PM may write canonical declared migration-control paths and the exact governing relocation-TASK status/evidence fields.
+
+## 10. Receipt names are not receipt evidence
+
+Uniqueness alone does not make a receipt typed or causal. Every receipt needs a nonblank ID, known type, migration/project/executor and epoch facts, causal parent, accepted commit, TASK/candidate/workspace references, actor/provider class, outcome, registry evidence, timestamp, and its type-specific facts.
