@@ -1,7 +1,7 @@
 ---
 protocol_version: "2.6"
 id: "TASK-R2TEAM-2.7-TEAM-CHAT-RELOCATION-001"
-revision: 4
+revision: 5
 handoff_seq: 0
 status: REVIEW_READY
 stage: QA
@@ -26,7 +26,7 @@ branch: "planning/r2team-2.7-team-chat-relocation"
 pr: null
 openspec_change: null
 base_sha: "7e7a35eaf89726b0850da78aaa176d142d7fc1ce"
-candidate_sha: "3971e5e863d3a1c19573f9fa99f9d73644758599"
+candidate_sha: "88d920f48690bd5b76a13138b08dd7bc40b2d2a1"
 verified_sha: null
 merged_sha: null
 workspace_policy: inherited_from_protocol_2.6
@@ -39,7 +39,7 @@ workspace_leases:
     owner_executor_id: "r2team-protocol-pm"
     closure_owner_executor_id: "r2team-protocol-pm"
     base_sha: "7e7a35eaf89726b0850da78aaa176d142d7fc1ce"
-    candidate_sha: "3971e5e863d3a1c19573f9fa99f9d73644758599"
+    candidate_sha: "88d920f48690bd5b76a13138b08dd7bc40b2d2a1"
     mutability: mutable
     custody: ordinary-canonical
     state: ACTIVE
@@ -52,7 +52,7 @@ workspace_disposition: ACTIVE
 candidate_dispositions: []
 artifact_manifests: []
 close_receipts: []
-next_action: "Obtain fresh independent review of candidate 3971e5e863d3a1c19573f9fa99f9d73644758599 / tree db9ecec114b26af6f404b308c6695acefa02ec50; prepare a PR without merging only if PASS."
+next_action: "Obtain fresh independent re-review of successor 88d920f48690bd5b76a13138b08dd7bc40b2d2a1 / tree fbc85e46308be6484c43359cc71e4bf97a6f6359; prepare a PR without merging only if PASS."
 questions:
   - id: Q-2.7-SKILL-BOUNDARY
     mode: LOOP
@@ -111,8 +111,8 @@ Excluded:
 
 # Current checkpoint
 
-- Completed: planning revision 2 received System Architect `PASS`; implementation candidate `3971e5e863d3a1c19573f9fa99f9d73644758599` / tree `db9ecec114b26af6f404b308c6695acefa02ec50` implements the accepted contract and passed local plus fresh manifest-only validation.
-- Remaining: obtain fresh independent review of the exact implementation candidate and, only if PASS, prepare a PR without merging.
+- Completed: planning revision 2 received System Architect `PASS`; implementation candidate `3971e5e863d3a1c19573f9fa99f9d73644758599` received independent `AMEND`; successor `88d920f48690bd5b76a13138b08dd7bc40b2d2a1` closes F1-F7 with red-first fixtures and passed local plus fresh manifest-only validation.
+- Remaining: obtain fresh independent re-review of the exact successor and, only if PASS, prepare a PR without merging.
 - Blockers: none for independent review. Merge, release, installation, downstream adoption, provider-enforced fencing claims, and live relocation remain separate gates.
 
 # Evidence
@@ -125,9 +125,12 @@ Excluded:
 - System Architect rev1 verdict: `AMEND`; accepted separate skill/identity/registry/workspace/forward-rollback boundaries, required per-executor causal fencing, recoverable partial states, exact evidence, typed receipts, candidate wording, and missing fixtures.
 - Planning rev2: `a5c9447dc0603cf895cc7d6105768091ab02d431`, tree `ee67f59e74bbe28306eddb5aa84e575e27c20e40`.
 - System Architect rev2 verdict: `PASS`; remote SHA/tree, parent, exact six-file delta, A1-A6 reconciliation, and zero private IDs/paths independently verified. Implementation-candidate PASS remains NOT_RUN and non-transferable.
-- Implementation candidate: `3971e5e863d3a1c19573f9fa99f9d73644758599`, tree `db9ecec114b26af6f404b308c6695acefa02ec50`, parent `6245cb8ff1612d858af6ddcbaa1ddde85c5c3abc`.
-- Structural validator: PASS; validator suite: 52/52; workspace policy: 32/32; relocation policy: 27/27; official skill validation: 6/6; command copies byte-identical; `git diff --check`: PASS.
-- Fresh manifest-only package: PASS for 59 required files, all three suites, all six skill checks, byte-identical help, English-only public Markdown; temporary package removed after verification.
+- Rejected implementation candidate: `3971e5e863d3a1c19573f9fa99f9d73644758599`, tree `db9ecec114b26af6f404b308c6695acefa02ec50`; independent verdict `AMEND`, review receipt `MSG-20261026-011841-276718f9`.
+- Accepted corrections F1-F7: authoritative relocation identity; full stop proof and exact activation identity; exhaustive freeze class/path/field denial; receipt-gated cancellation/rollback routing; terminal-accounted completion; workspace owner/mutability; typed causal receipt schemas.
+- Current successor candidate: `88d920f48690bd5b76a13138b08dd7bc40b2d2a1`, tree `fbc85e46308be6484c43359cc71e4bf97a6f6359`, parent `0033fe60b26c8c69315fa287bd26bd69ae9ab570`.
+- Structural validator: PASS; validator suite: 53/53; workspace policy: 32/32; relocation policy: 38/38; official skill validation: 6/6; command copies byte-identical; `git diff --check`: PASS.
+- Independent probes: invalid stop `STOP_PROOF_INVALID`; frozen TASK `FROZEN_PUBLICATION_BLOCKED`; epoch-only recovery `REACTIVATION_REQUIRED`/`FORWARD_ROLLBACK_REQUIRED`; terminal-accounted mixed team `COMPLETE`; wrong workspace owner/mutability `WORKSPACE_REUSE_BLOCKED`; blank receipt `RECEIPT_INVALID`.
+- Fresh manifest-only package: PASS for 59 required files, all 53/32/38 suites, all six skill checks, byte-identical help, English-only public Markdown; temporary package removed after verification.
 - Predecessor relocation material: read-only architectural input, not accepted authority or copied runtime state.
 - Runtime/live relocation: NOT_RUN and out of scope.
 
