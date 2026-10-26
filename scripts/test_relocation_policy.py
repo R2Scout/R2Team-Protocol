@@ -1012,9 +1012,42 @@ class RelocationPolicyTests(unittest.TestCase):
 
         for expected, records in cases:
             with self.subTest(expected=expected):
+                receipts = ()
+                if expected in {"READY_TO_RESUME", "FROZEN"}:
+                    prepare = self.prepare_receipt()
+                    prepare["affected_executor_ids"] = ["dev-a", "qa-a"]
+                    qa_stop = self.stop_receipt()
+                    qa_stop.update(receipt_id="stop-qa", executor_id="qa-a")
+                    freeze = dict(prepare)
+                    freeze.update(
+                        receipt_id="freeze-1",
+                        receipt_type="FREEZE",
+                        causal_parent_ref="prepare-1",
+                        prior_epoch=3,
+                        new_epoch=4,
+                        observed_outcome="FROZEN",
+                        stopped_executor_ids=["dev-a", "qa-a"],
+                        source_stop_receipt_refs=["stop-1", "stop-qa"],
+                        timestamp="2026-01-01T00:00:15Z",
+                    )
+                    receipts = (prepare, self.stop_receipt(), qa_stop, freeze)
+                    if expected == "READY_TO_RESUME":
+                        dev_preflight = self.preflight_receipt()
+                        dev_preflight["freeze_receipt_ref"] = "freeze-1"
+                        qa_preflight = self.preflight_receipt()
+                        qa_preflight.update(
+                            receipt_id="preflight-qa",
+                            executor_id="qa-a",
+                            causal_parent_ref="stop-qa",
+                            actor_executor_id="qa-a-target",
+                            freeze_receipt_ref="freeze-1",
+                        )
+                        receipts = (*receipts, dev_preflight, qa_preflight)
                 actual = derive_team_state(
                     records,
                     affected_executor_ids=("dev-a", "qa-a"),
+                    receipts=receipts,
+                    accepted_root_ref="fence-4",
                     migration_mode="team",
                 ).state
                 self.assertEqual("INVALID" if expected == "COMPLETE" else expected, actual)
@@ -1695,6 +1728,7 @@ class RelocationPolicyTests(unittest.TestCase):
             executor_id="qa-a",
             causal_parent_ref="stop-qa",
             actor_executor_id="qa-a-target",
+            freeze_receipt_ref="freeze-1",
         )
         qa_activation = self.activation_receipt()
         qa_activation.update(
@@ -1718,12 +1752,14 @@ class RelocationPolicyTests(unittest.TestCase):
             stopped_executor_ids=["dev-a", "qa-a"],
             source_stop_receipt_refs=["stop-1", "stop-qa"],
         )
+        dev_preflight = self.preflight_receipt()
+        dev_preflight["freeze_receipt_ref"] = "freeze-1"
         chain = (
             prepare,
             self.stop_receipt(),
             qa_stop,
             freeze,
-            self.preflight_receipt(),
+            dev_preflight,
             qa_preflight,
             self.activation_receipt(),
             qa_activation,
@@ -1873,6 +1909,7 @@ class RelocationPolicyTests(unittest.TestCase):
             executor_id="qa-a",
             causal_parent_ref="stop-qa",
             actor_executor_id="qa-a-target",
+            freeze_receipt_ref="freeze-1",
         )
         qa_activation = dict(activation)
         qa_activation.update(
@@ -1885,13 +1922,15 @@ class RelocationPolicyTests(unittest.TestCase):
         )
         prepare_team = dict(prepare)
         prepare_team["affected_executor_ids"] = ["dev-a", "qa-a"]
+        dev_preflight = dict(preflight)
+        dev_preflight["freeze_receipt_ref"] = "freeze-1"
         completion_team = dict(completion)
         completion_team["accounted_executor_ids"] = ["dev-a", "qa-a"]
         team_without_freeze = (
             prepare_team,
             stop,
             qa_stop,
-            preflight,
+            dev_preflight,
             qa_preflight,
             activation,
             qa_activation,
@@ -2091,6 +2130,7 @@ class RelocationPolicyTests(unittest.TestCase):
             source_stop_receipt_refs=["stop-1", "stop-qa"],
         )
         dev_preflight = self.preflight_receipt()
+        dev_preflight["freeze_receipt_ref"] = "freeze-1"
         dev_activation = self.activation_receipt()
 
         for disposition in ("BLOCKED", "CANCELLED", "FORWARD_ROLLBACK"):
@@ -2102,6 +2142,7 @@ class RelocationPolicyTests(unittest.TestCase):
                     executor_id="qa-a",
                     causal_parent_ref="stop-qa",
                     actor_executor_id="qa-a-target",
+                    freeze_receipt_ref="freeze-1",
                 )
                 qa_receipts.append(qa_preflight)
             if disposition == "BLOCKED":
@@ -2209,6 +2250,187 @@ class RelocationPolicyTests(unittest.TestCase):
                 self.assertEqual("COMPLETE", state.state)
                 self.assertEqual(("dev-a",), state.active_targets)
                 self.assertEqual(("qa-a",) if disposition == "BLOCKED" else (), state.blocked_executors)
+
+    def test_source_stop_outcome_must_be_positive_in_all_authority_paths(self):
+        activation_allowed = self.require("activation_allowed")
+        receipt_set_allowed = self.require("receipt_set_allowed")
+        validate_stop_receipt = self.require("validate_stop_receipt")
+        for outcome in ("SOURCE_STILL_RUNNING", "BLOCKED", "", "   ", None):
+            with self.subTest(outcome=outcome):
+                stop = self.stop_receipt()
+                stop["observed_outcome"] = outcome
+                self.assertNotEqual("ALLOW", validate_stop_receipt(stop).code)
+                self.assertNotEqual(
+                    "ALLOW",
+                    activation_allowed(
+                        self.accepted_fence(),
+                        stop_receipt=stop,
+                        preflight_receipt=self.preflight_receipt(),
+                        activation_receipt=self.activation_receipt(),
+                        source_reachable=True,
+                        enforceable_revocation=False,
+                    ).code,
+                )
+                self.assertEqual(
+                    "RECEIPT_INVALID",
+                    receipt_set_allowed(
+                        (
+                            self.prepare_receipt(),
+                            stop,
+                            self.preflight_receipt(),
+                            self.activation_receipt(),
+                            self.completion_receipt(),
+                        ),
+                        accepted_root_ref="fence-4",
+                        affected_executor_ids=("dev-a",),
+                        migration_mode="role",
+                    ).code,
+                )
+
+    def test_team_freeze_is_an_explicit_causal_and_temporal_barrier(self):
+        receipt_set_allowed = self.require("receipt_set_allowed")
+        prepare = self.prepare_receipt()
+        prepare["affected_executor_ids"] = ["dev-a", "qa-a"]
+        dev_stop = self.stop_receipt()
+        qa_stop = self.stop_receipt()
+        qa_stop.update(receipt_id="stop-qa", executor_id="qa-a")
+        freeze = dict(prepare)
+        freeze.update(
+            receipt_id="freeze-1",
+            receipt_type="FREEZE",
+            causal_parent_ref="prepare-1",
+            prior_epoch=3,
+            new_epoch=4,
+            observed_outcome="FROZEN",
+            stopped_executor_ids=["dev-a", "qa-a"],
+            source_stop_receipt_refs=["stop-1", "stop-qa"],
+            timestamp="2026-01-01T00:00:15Z",
+        )
+        dev_preflight = self.preflight_receipt()
+        dev_preflight["freeze_receipt_ref"] = "freeze-1"
+        qa_preflight = self.preflight_receipt()
+        qa_preflight.update(
+            receipt_id="preflight-qa",
+            executor_id="qa-a",
+            causal_parent_ref="stop-qa",
+            actor_executor_id="qa-a-target",
+            freeze_receipt_ref="freeze-1",
+        )
+        qa_activation = self.activation_receipt()
+        qa_activation.update(
+            receipt_id="activation-qa",
+            executor_id="qa-a",
+            causal_parent_ref="stop-qa",
+            causal_stop_receipt="stop-qa",
+            target_preflight_receipt="preflight-qa",
+            actor_executor_id="qa-a-target",
+        )
+        completion = self.completion_receipt()
+        completion["accounted_executor_ids"] = ["dev-a", "qa-a"]
+        graph = (
+            prepare,
+            dev_stop,
+            qa_stop,
+            freeze,
+            dev_preflight,
+            qa_preflight,
+            self.activation_receipt(),
+            qa_activation,
+            completion,
+        )
+        self.assertEqual(
+            "ALLOW",
+            receipt_set_allowed(
+                graph,
+                accepted_root_ref="fence-4",
+                affected_executor_ids=("dev-a", "qa-a"),
+                migration_mode="team",
+            ).code,
+        )
+        missing_gate = dict(dev_preflight)
+        del missing_gate["freeze_receipt_ref"]
+        late_freeze = dict(freeze)
+        late_freeze["timestamp"] = "2026-01-01T00:10:00Z"
+        for replacement in (missing_gate, late_freeze):
+            with self.subTest(replacement=replacement["receipt_type"]):
+                receipts = tuple(
+                    replacement if item["receipt_id"] == replacement["receipt_id"] else item
+                    for item in graph
+                )
+                self.assertEqual(
+                    "RECEIPT_INVALID",
+                    receipt_set_allowed(
+                        receipts,
+                        accepted_root_ref="fence-4",
+                        affected_executor_ids=("dev-a", "qa-a"),
+                        migration_mode="team",
+                    ).code,
+                )
+
+    def test_noncomplete_team_state_requires_valid_minimum_receipt_context(self):
+        derive_team_state = self.require("derive_team_state")
+        cases = (
+            (
+                "FROZEN",
+                [{"executor_id": "dev-a", "source_state": "STOPPED", "target_state": "INACTIVE", "custody": "SOURCE_STOPPED", "disposition": "PENDING"}],
+            ),
+            (
+                "READY_TO_RESUME",
+                [{"executor_id": "dev-a", "source_state": "STOPPED", "target_state": "READY", "custody": "TARGET_PENDING", "disposition": "PENDING"}],
+            ),
+            (
+                "RESUMING",
+                [{"executor_id": "dev-a", "source_state": "STOPPED", "target_state": "PREFLIGHTED", "custody": "TARGET_PREFLIGHT", "disposition": "PENDING"}],
+            ),
+        )
+        for expected, records in cases:
+            for receipts in ((), ({"malformed": True},)):
+                with self.subTest(expected=expected, receipts=receipts):
+                    self.assertEqual(
+                        "INVALID",
+                        derive_team_state(
+                            records,
+                            affected_executor_ids=("dev-a",),
+                            receipts=receipts,
+                            accepted_root_ref="fence-4",
+                            migration_mode="role",
+                        ).state,
+                    )
+
+        resuming_records = cases[2][1]
+        valid_context = (
+            self.prepare_receipt(),
+            self.stop_receipt(),
+            self.preflight_receipt(),
+        )
+        self.assertEqual(
+            "RESUMING",
+            derive_team_state(
+                resuming_records,
+                affected_executor_ids=("dev-a",),
+                receipts=valid_context,
+                accepted_root_ref="fence-4",
+                migration_mode="role",
+            ).state,
+        )
+        unresolved = self.preflight_receipt()
+        unresolved["causal_parent_ref"] = "missing-stop"
+        extra = self.stop_receipt()
+        extra.update(receipt_id="stop-qa", executor_id="qa-a")
+        for receipt_context in (
+            (self.prepare_receipt(), self.stop_receipt(), unresolved),
+            (*valid_context, extra),
+        ):
+            self.assertEqual(
+                "INVALID",
+                derive_team_state(
+                    resuming_records,
+                    affected_executor_ids=("dev-a",),
+                    receipts=receipt_context,
+                    accepted_root_ref="fence-4",
+                    migration_mode="role",
+                ).state,
+            )
 
     def test_same_next_epoch_branches_are_serialized_by_accepted_parent(self):
         materialize_successor = self.require("materialize_successor")

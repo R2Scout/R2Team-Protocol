@@ -53,3 +53,7 @@ Individually known fence states, custody labels, receipt types, and registry enu
 ## 12. Append-only history and aggregate state share one lineage
 
 An activation API cannot outsource PASS-preflight proof to a different optional graph check. Completion needs one external accepted root, exactly one PREPARE, one migration/project/evidence lineage, and an explicit role/team mode; team completion also needs a full affected-set FREEZE. Receipt types may recur at later causal epochs, while duplicate logical events remain invalid. Aggregate state is accepted only for the exact unique affected records and the latest resolved terminal receipts; arbitrary dictionaries, impossible state/custody tuples, malformed terminal evidence, or older generation receipts return `INVALID`.
+
+## 13. Positive outcomes and barriers are authority facts
+
+A structurally complete SOURCE_STOP with an arbitrary outcome is not stop proof; only the exact typed `SOURCE_STOPPED` outcome can open activation. A team FREEZE must be an explicit referenced ancestor/gate of every target preflight, with consistent identity/epoch and causal time, not a sibling receipt that may appear after activation or completion. Receipt context supplied to aggregate derivation is authoritative for every state, including FROZEN, READY_TO_RESUME, and RESUMING; empty, malformed, unresolved, missing, or extra context returns `INVALID`.

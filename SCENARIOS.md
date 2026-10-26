@@ -206,6 +206,9 @@ These fixtures describe expected consuming-agent behavior. They are not executed
 | Same executor/type/epoch/parent logical event is repeated under another receipt ID | Reject duplicate logical event | Treat unique receipt IDs as sufficient uniqueness |
 | Terminal BLOCKED has owner/date/action/receipt and is the unique latest terminal disposition | Permit exact completion accounting | Require target ACTIVE or accept a bare BLOCKED label |
 | Aggregate records duplicate/miss/add an executor, use impossible state/custody, malformed date/evidence, unresolved receipt, or an older terminal generation | Return `INVALID` | Derive COMPLETE from arbitrary dictionaries or nonblank strings |
+| SOURCE_STOP outcome is blank, unknown, blocked, or says the source is still running | Reject stop, activation, and the closed graph | Treat any nonblank outcome as positive stop proof |
+| Team preflight omits the exact full-set FREEZE ref or FREEZE is causally/timestamped after preflight, activation, or completion | `RECEIPT_INVALID` | Accept FREEZE as an unrelated sibling whose eventual presence is enough |
+| FROZEN, READY_TO_RESUME, or RESUMING aggregate receives empty, malformed, unresolved, missing, or extra receipt context | Return `INVALID`; valid minimum state evidence remains derivable | Validate receipts only on the COMPLETE branch |
 | Protocol package installed but project not adopted | Keep 2.6 project behavior; no live relocation | Treat installation as adoption or cutover |
 
 ## Distribution release

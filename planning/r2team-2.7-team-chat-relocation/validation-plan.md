@@ -51,6 +51,9 @@
 40. Append-only history accepts later stop/preflight/activation generations after forward rollback, rejects the same logical event under another ID, and rejects ambiguous same-epoch latest terminals.
 41. Typed terminal BLOCKED with owner/date/action/receipt may complete; bare or malformed BLOCKED cannot.
 42. Aggregate derivation rejects duplicate/missing/extra/impossible/malformed/wrong-executor/unresolved/stale records and accepts mixed resumed plus BLOCKED/CANCELLED/FORWARD_ROLLBACK graphs.
+43. SOURCE_STOP with blank, unknown, blocked, or still-running outcome is rejected by stop validation, standalone activation and closed receipt graph; exact SOURCE_STOPPED passes.
+44. Every team preflight resolves the exact full-set FREEZE and occurs after it; missing/wrong/late FREEZE rejects preflight, activation and completion without relying on list order.
+45. FROZEN, READY_TO_RESUME and RESUMING reject empty, malformed, missing, extra or unresolved receipt context and accept their declared minimum valid graphs.
 
 The pure model must assert both safety (never two accepted writers for one executor/TASK) and liveness/recoverability (no blocked or frozen state is a dead end without a terminal accounted disposition).
 
