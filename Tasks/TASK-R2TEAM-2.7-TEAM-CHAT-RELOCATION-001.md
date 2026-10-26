@@ -1,10 +1,10 @@
 ---
 protocol_version: "2.6"
 id: "TASK-R2TEAM-2.7-TEAM-CHAT-RELOCATION-001"
-revision: 2
+revision: 3
 handoff_seq: 0
-status: DRAFT
-stage: DISCOVERY
+status: IMPLEMENTING
+stage: IMPLEMENTATION
 owner_executor_id: "r2team-protocol-pm"
 owner_route: "https://github.com/R2Scout/R2Team-Protocol/issues/3"
 previous_owner_executor_id: null
@@ -52,7 +52,7 @@ workspace_disposition: ACTIVE
 candidate_dispositions: []
 artifact_manifests: []
 close_receipts: []
-next_action: "Publish the revision-2 planning checkpoint and obtain document-only System Architect re-review of the reconciled A1-A6 amendments before implementation."
+next_action: "Implement the accepted revision-2 contract with red-first relocation policy and validator fixtures, then publish an exact candidate for fresh independent review."
 questions:
   - id: Q-2.7-SKILL-BOUNDARY
     mode: LOOP
@@ -111,9 +111,9 @@ Excluded:
 
 # Current checkpoint
 
-- Completed: merged R2Team 2.6 base read back; Issue #3 created; the clean 2.6 author worktree was reused as the 2.7 author lease without allocating another physical worktree; predecessor dirty material remains protected and untouched; planning rev1 was reviewed as `AMEND`; A1-A6 were reconciled into rev2.
-- Remaining: publish rev2; obtain document-only System Architect re-review; implement, validate, independently review, and prepare a PR.
-- Blockers: implementation waits for revision-2 planning PASS. Merge, release, installation, downstream adoption, and live relocation remain separate gates.
+- Completed: merged R2Team 2.6 base read back; Issue #3 created; the clean 2.6 author worktree was reused as the 2.7 author lease without allocating another physical worktree; planning rev1 was reviewed as `AMEND`; A1-A6 were reconciled into rev2; exact revision-2 checkpoint received System Architect `PASS`.
+- Remaining: implement the accepted contract, validate an exact candidate, obtain fresh independent candidate review, and prepare a PR.
+- Blockers: none for bounded implementation. Merge, release, installation, downstream adoption, provider-enforced fencing claims, and live relocation remain separate gates.
 
 # Evidence
 
@@ -123,6 +123,8 @@ Excluded:
 - Tracker: https://github.com/R2Scout/R2Team-Protocol/issues/3
 - Planning rev1: `6f0555a2003cd811f7c567b151539e4c90e5da65`, tree `bc679de82a0a85aa9d82a9480c2023388f7f9db0`.
 - System Architect rev1 verdict: `AMEND`; accepted separate skill/identity/registry/workspace/forward-rollback boundaries, required per-executor causal fencing, recoverable partial states, exact evidence, typed receipts, candidate wording, and missing fixtures.
+- Planning rev2: `a5c9447dc0603cf895cc7d6105768091ab02d431`, tree `ee67f59e74bbe28306eddb5aa84e575e27c20e40`.
+- System Architect rev2 verdict: `PASS`; remote SHA/tree, parent, exact six-file delta, A1-A6 reconciliation, and zero private IDs/paths independently verified. Implementation-candidate PASS remains NOT_RUN and non-transferable.
 - Predecessor relocation material: read-only architectural input, not accepted authority or copied runtime state.
 - Runtime/live relocation: NOT_RUN and out of scope.
 
