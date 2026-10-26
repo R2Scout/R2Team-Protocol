@@ -100,3 +100,5 @@ review_date: "<yyyy-mm-dd-or-null>"
 Allowed stop mechanisms are cooperative acknowledgement after final checkpoint, independently verifiable administrative revocation, or another explicitly modeled enforceable fence. Silence, notification delivery, registry state, chat title/archive, or absence of an observed process is not stop proof.
 
 `MAPPING_PRESENT_READ_BACK` is an enum, not a place for the private mapping. Local evidence never grants assignment, permission, identity, epoch, or acceptance.
+
+All epoch values are strict non-boolean integers. IDs, causal/cutover/commit refs, singular checkpoint/tree/custody facts, and every TASK/candidate/workspace list element are nonblank portable strings with no duplicate list entries. `SOURCE_STOP.causal_parent_ref` equals its `cutover_parent` unless an accepted future schema explicitly names an intermediate parent; singular checkpoint/tree facts must appear in their corresponding reference lists.

@@ -27,7 +27,7 @@ The durable route is Git/provider state, never chat history, notification delive
 
 Keep participant, logical executor, TASK, candidate, workspace lease, physical placement, and migration identity separate. Same-executor relocation changes only physical placement.
 
-Each affected executor is keyed by repository/project identity plus `executor_id`. Re-read accepted default-branch fencing state immediately before every relocation-control or product/TASK publication. Compare `expected_prior_epoch` and `prior_accepted_record`; the next epoch must be exactly one greater. A stale, equal-conflicting, same-next-epoch sibling, wrong executor/project, or unrelated causal parent returns `WRITER_CONFLICT`.
+Each affected executor is keyed by repository/project identity plus `executor_id`. Re-read accepted default-branch fencing state immediately before every relocation-control or product/TASK publication. Compare `expected_prior_epoch` and `prior_accepted_record`; every accepted/expected/claimed/current/proposed/receipt epoch is a strict non-boolean integer and the next epoch must be exactly one greater. A stale, coerced, equal-conflicting, same-next-epoch sibling, wrong executor/project, or unrelated causal parent returns `WRITER_CONFLICT` or a stricter typed-input failure.
 
 This is cooperative protocol fencing. It rejects publication through compliant R2Team entry points; it does not prove an unfenced process physically impossible. Claim provider-enforced exclusion only when an independent administrative-revocation receipt proves it. Otherwise provider-enforced exclusion is `NOT_PROVEN`.
 
@@ -60,6 +60,6 @@ Cancellation before source stop may retain the current source epoch through an a
 
 ## Receipts and return
 
-Use immutable unique `PREPARE`, `SOURCE_STOP`, `FREEZE`, `TARGET_PREFLIGHT`, `ACTIVATION`, `PARTIAL_DISPOSITION`, `COMPLETION`, `CANCELLATION`, and `FORWARD_ROLLBACK` receipts. Bind migration/executor, prior/new epoch, causal parent, accepted commit, TASK/candidate refs, workspace/close-receipt refs, actor/provider class, observed outcome, blocker, timestamp, and review date as applicable.
+Use immutable unique `PREPARE`, `SOURCE_STOP`, `FREEZE`, `TARGET_PREFLIGHT`, `ACTIVATION`, `PARTIAL_DISPOSITION`, `COMPLETION`, `CANCELLATION`, and `FORWARD_ROLLBACK` receipts. Bind migration/executor, prior/new epoch, causal parent, accepted commit, TASK/candidate refs, workspace/close-receipt refs, actor/provider class, observed outcome, blocker, timestamp, and review date as applicable. Validate nonblank typed portable reference elements, strict dates/timestamps, singular-to-list checkpoint/tree consistency, and closed activation-to-stop edges; never accept two equally malformed values as evidence.
 
 Return exact accepted SHA/tree, executor state/epoch/custody, receipt refs, remaining blockers, legal next transition, and explicit `NOT_RUN` axes. Never collapse planning PASS, implementation review, merge, release, installation, adoption, provider-enforced fencing, and live relocation into one verdict.

@@ -147,6 +147,93 @@ class RelocationPolicyTests(unittest.TestCase):
                 )
                 self.assertEqual("WRITER_CONFLICT", decision.code)
 
+    def test_authority_epoch_boundaries_reject_boolean_and_coerced_values(self):
+        from relocation_policy import FenceRecord
+
+        propose_successor = self.require("propose_successor")
+        materialize_successor = self.require("materialize_successor")
+        publication_allowed = self.require("publication_allowed")
+        cancellation_allowed = self.require("cancellation_allowed")
+        accepted = FenceRecord("project-a", "dev-a", 1, "fence-1", "STOPPED", "READY", "TARGET_PENDING")
+        invalid_values = (True, False, "1", 1.0, None, -1)
+        for value in invalid_values:
+            with self.subTest(api="propose", value=value):
+                self.assertNotEqual(
+                    "ALLOW",
+                    propose_successor(
+                        accepted,
+                        expected_prior_epoch=value,
+                        expected_prior_ref="fence-1",
+                        new_epoch=2,
+                        new_record_ref="fence-2",
+                    ).code,
+                )
+            with self.subTest(api="materialize", value=value):
+                self.assertNotEqual(
+                    "ALLOW",
+                    materialize_successor(
+                        accepted,
+                        expected_prior_epoch=value,
+                        expected_prior_ref="fence-1",
+                        new_epoch=2,
+                        new_record_ref="fence-2",
+                    )[0].code,
+                )
+            with self.subTest(api="publication", value=value):
+                self.assertNotEqual(
+                    "ALLOW",
+                    publication_allowed(
+                        accepted,
+                        claim_project_id="project-a",
+                        claim_executor_id="dev-a",
+                        claim_epoch=value,
+                        claim_record_ref="fence-1",
+                        publication_class="PRODUCT",
+                        frozen=False,
+                        actor_executor_id="dev-a",
+                        migration_pm_executor_id="pm-a",
+                        path="src/product.py",
+                        migration_id="migration-1",
+                    ).code,
+                )
+            with self.subTest(api="cancellation", value=value):
+                self.assertEqual(
+                    "EPOCH_INVALID",
+                    cancellation_allowed(
+                        source_state="ACTIVE",
+                        target_state="INACTIVE",
+                        current_epoch=value,
+                        proposed_epoch=2,
+                    ).code,
+                )
+
+    def test_accepted_fence_epoch_must_be_strict_integer(self):
+        from relocation_policy import FenceRecord
+
+        propose_successor = self.require("propose_successor")
+        publication_allowed = self.require("publication_allowed")
+        accepted = FenceRecord("project-a", "dev-a", True, "fence-1", "STOPPED", "READY", "TARGET_PENDING")
+        self.assertNotEqual(
+            "ALLOW",
+            propose_successor(accepted, expected_prior_epoch=1, expected_prior_ref="fence-1", new_epoch=2, new_record_ref="fence-2").code,
+        )
+        self.assertNotEqual(
+            "ALLOW",
+            publication_allowed(
+                accepted,
+                claim_project_id="project-a",
+                claim_executor_id="dev-a",
+                claim_epoch=1,
+                claim_record_ref="fence-1",
+                publication_class="PRODUCT",
+                frozen=False,
+                actor_executor_id="dev-a",
+                migration_pm_executor_id="pm-a",
+                path="src/product.py",
+                migration_id="migration-1",
+            ).code,
+        )
+
     def test_source_stop_receipt_rejects_inflight_helper(self):
         validate_stop_receipt = self.require("validate_stop_receipt")
         receipt = self.stop_receipt()
@@ -291,7 +378,12 @@ class RelocationPolicyTests(unittest.TestCase):
                     source_reachable=True,
                     enforceable_revocation=False,
                 )
-                self.assertEqual("ACTIVATION_IDENTITY_MISMATCH", decision.code)
+                expected = (
+                    "STOP_PROOF_INVALID"
+                    if field in {"final_checkpoint", "candidate_tree"}
+                    else "ACTIVATION_IDENTITY_MISMATCH"
+                )
+                self.assertEqual(expected, decision.code)
 
     def test_activation_rejects_mismatched_cutover_parent(self):
         activation_allowed = self.require("activation_allowed")
@@ -307,6 +399,40 @@ class RelocationPolicyTests(unittest.TestCase):
         )
 
         self.assertEqual("ACTIVATION_CAUSAL_MISMATCH", decision.code)
+
+    def test_activation_rejects_stop_common_parent_unrelated_to_cutover(self):
+        activation_allowed = self.require("activation_allowed")
+        stop = self.stop_receipt()
+        stop["causal_parent_ref"] = "unrelated-record"
+
+        decision = activation_allowed(
+            self.accepted_fence(),
+            stop_receipt=stop,
+            activation_receipt=self.activation_receipt(),
+            source_reachable=True,
+            enforceable_revocation=False,
+        )
+
+        self.assertEqual("STOP_PROOF_INVALID", decision.code)
+
+    def test_stop_expected_epoch_rejects_boolean_and_coerced_values(self):
+        activation_allowed = self.require("activation_allowed")
+        validate_stop_receipt = self.require("validate_stop_receipt")
+        for value in (True, False, "4", 4.0, None, -1):
+            with self.subTest(value=value):
+                stop = self.stop_receipt()
+                stop["expected_epoch"] = value
+                self.assertNotEqual("ALLOW", validate_stop_receipt(stop).code)
+                self.assertNotEqual(
+                    "ALLOW",
+                    activation_allowed(
+                        self.accepted_fence(),
+                        stop_receipt=stop,
+                        activation_receipt=self.activation_receipt(),
+                        source_reachable=True,
+                        enforceable_revocation=False,
+                    ).code,
+                )
 
     def test_partial_team_state_preserves_mixed_executor_custody(self):
         derive_team_state = self.require("derive_team_state")
@@ -637,6 +763,30 @@ class RelocationPolicyTests(unittest.TestCase):
         self.assertEqual("REGISTRY_AUTHORITY_REQUIRED", no_authority.code)
         self.assertEqual("REGISTRY_READBACK_REQUIRED", no_readback.code)
 
+    def test_registry_mapping_rejects_untyped_flags_and_identity(self):
+        registry_mapping_allowed = self.require("registry_mapping_allowed")
+        decision = registry_mapping_allowed(
+            expected_executor_id="dev-a",
+            observed_executor_id="dev-a",
+            executor_mode="local_standalone",
+            mapping_present=1,
+            local_authority=True,
+            read_back=True,
+            collision=False,
+        )
+        bad_identity = registry_mapping_allowed(
+            expected_executor_id="   ",
+            observed_executor_id="   ",
+            executor_mode="local_standalone",
+            mapping_present=True,
+            local_authority=True,
+            read_back=True,
+            collision=False,
+        )
+
+        self.assertEqual("REGISTRY_INPUT_INVALID", decision.code)
+        self.assertEqual("REGISTRY_INPUT_INVALID", bad_identity.code)
+
     def test_workspace_reuse_rejects_correct_candidate_with_wrong_custody_facts(self):
         workspace_reuse_allowed = self.require("workspace_reuse_allowed")
         expected = {
@@ -701,6 +851,24 @@ class RelocationPolicyTests(unittest.TestCase):
                     workspace_reuse_allowed(expected, observed).code,
                 )
 
+    def test_workspace_reuse_rejects_untyped_expected_facts(self):
+        workspace_reuse_allowed = self.require("workspace_reuse_allowed")
+        facts = {
+            "candidate": "commit-4",
+            "custody": "TRANSFERRED_TO_NEXT_TASK",
+            "host_class": "target-host",
+            "native_resources": "NONE",
+            "dependencies": "PINNED",
+            "contained": "true",
+            "owner_executor_id": None,
+            "mutability": "mutable",
+        }
+
+        self.assertEqual(
+            "WORKSPACE_REUSE_BLOCKED",
+            workspace_reuse_allowed(facts, dict(facts)).code,
+        )
+
     def test_retained_executor_cannot_remain_in_frozen_affected_set(self):
         affected_set_allowed = self.require("affected_set_allowed")
 
@@ -711,6 +879,24 @@ class RelocationPolicyTests(unittest.TestCase):
         )
 
         self.assertEqual("RETAINED_SET_CONFLICT", decision.code)
+
+    def test_affected_set_rejects_scalars_duplicates_and_untyped_ids(self):
+        affected_set_allowed = self.require("affected_set_allowed")
+        cases = (
+            ("dev-a", ()),
+            (("dev-a", "dev-a"), ()),
+            (("dev-a", 7), ()),
+        )
+        for affected, retained in cases:
+            with self.subTest(affected=affected):
+                self.assertEqual(
+                    "AFFECTED_SET_INVALID",
+                    affected_set_allowed(
+                        affected_executor_ids=affected,
+                        retained_executor_ids=retained,
+                        migration_state="FREEZE_PENDING",
+                    ).code,
+                )
 
     def test_team_state_is_derived_from_every_executor_record(self):
         derive_team_state = self.require("derive_team_state")
@@ -862,6 +1048,21 @@ class RelocationPolicyTests(unittest.TestCase):
 
         self.assertEqual("RECEIPT_INVALID", receipt_set_allowed((prepare,)).code)
 
+    def test_receipt_set_rejects_empty_set_bad_dates_and_mapping_enum(self):
+        receipt_set_allowed = self.require("receipt_set_allowed")
+        validate_receipt = self.require("validate_receipt")
+        self.assertEqual("RECEIPT_INVALID", receipt_set_allowed(()).code)
+
+        bad_timestamp = self.stop_receipt()
+        bad_timestamp["timestamp"] = "not-a-timestamp"
+        bad_review = self.stop_receipt()
+        bad_review["review_date"] = "2026-99-99"
+        bad_mapping = self.activation_receipt()
+        bad_mapping["mapping_result"] = "MAYBE"
+        for receipt in (bad_timestamp, bad_review, bad_mapping):
+            with self.subTest(receipt=receipt):
+                self.assertEqual("RECEIPT_INVALID", validate_receipt(receipt).code)
+
     def test_receipt_set_accepts_complete_typed_causal_receipts(self):
         receipt_set_allowed = self.require("receipt_set_allowed")
 
@@ -900,6 +1101,71 @@ class RelocationPolicyTests(unittest.TestCase):
                     "RECEIPT_INVALID",
                     receipt_set_allowed((stop, self.activation_receipt())).code,
                 )
+
+    def test_receipts_reject_malformed_exact_evidence_and_list_elements(self):
+        activation_allowed = self.require("activation_allowed")
+        receipt_set_allowed = self.require("receipt_set_allowed")
+        malformed = ("   ", 7, True, {"bad": "value"}, None)
+        for value in malformed:
+            for stop_field, activation_field in (
+                ("final_checkpoint", "task_checkpoint"),
+                ("candidate_tree", "candidate_tree"),
+                ("workspace_custody", "workspace_custody"),
+                ("cutover_parent", "cutover_parent"),
+            ):
+                with self.subTest(value=value, field=stop_field):
+                    stop = self.stop_receipt()
+                    activation = self.activation_receipt()
+                    stop[stop_field] = value
+                    activation[activation_field] = value
+                    self.assertNotEqual(
+                        "ALLOW",
+                        activation_allowed(
+                            self.accepted_fence(),
+                            stop_receipt=stop,
+                            activation_receipt=activation,
+                            source_reachable=True,
+                            enforceable_revocation=False,
+                        ).code,
+                    )
+
+            with self.subTest(value=value, field="reference-list-element"):
+                stop = self.stop_receipt()
+                activation = self.activation_receipt()
+                for field in ("task_checkpoint_refs", "candidate_refs", "workspace_disposition_refs"):
+                    stop[field] = [value]
+                    activation[field] = [value]
+                self.assertEqual(
+                    "RECEIPT_INVALID",
+                    receipt_set_allowed((stop, activation)).code,
+                )
+
+    def test_receipts_reject_singular_reference_list_mismatch_and_duplicates(self):
+        activation_allowed = self.require("activation_allowed")
+        validate_receipt = self.require("validate_receipt")
+        receipt_set_allowed = self.require("receipt_set_allowed")
+
+        stop = self.stop_receipt()
+        stop["task_checkpoint_refs"] = ["different-checkpoint"]
+        self.assertNotEqual("ALLOW", validate_receipt(stop).code)
+        self.assertNotEqual(
+            "ALLOW",
+            activation_allowed(
+                self.accepted_fence(),
+                stop_receipt=stop,
+                activation_receipt=self.activation_receipt(),
+                source_reachable=True,
+                enforceable_revocation=False,
+            ).code,
+        )
+
+        activation = self.activation_receipt()
+        activation["candidate_refs"] = ["different-tree"]
+        self.assertNotEqual("ALLOW", validate_receipt(activation).code)
+
+        duplicate_refs = self.stop_receipt()
+        duplicate_refs["candidate_refs"] = ["tree-4", "tree-4"]
+        self.assertEqual("RECEIPT_INVALID", receipt_set_allowed((duplicate_refs,)).code)
 
     def test_receipt_epochs_reject_bool_noninteger_and_invalid_ranges(self):
         validate_receipt = self.require("validate_receipt")

@@ -5,6 +5,7 @@ chat, registry, process, workspace, or filesystem mutation.
 """
 
 from dataclasses import dataclass
+from datetime import date, datetime
 
 
 RECEIPT_TYPES = {
@@ -22,6 +23,46 @@ RECEIPT_TYPES = {
 
 def _nonblank(value) -> bool:
     return isinstance(value, str) and bool(value.strip())
+
+
+def _valid_ref(value) -> bool:
+    return (
+        _nonblank(value)
+        and value == value.strip()
+        and not any(character in value for character in ("\x00", "\r", "\n"))
+    )
+
+
+def _valid_ref_collection(value, *, allow_empty: bool) -> bool:
+    return (
+        isinstance(value, (tuple, list))
+        and (allow_empty or bool(value))
+        and all(_valid_ref(item) for item in value)
+        and len(value) == len(set(value))
+    )
+
+
+def _valid_epoch(value, *, allow_zero: bool = True) -> bool:
+    return type(value) is int and value >= (0 if allow_zero else 1)
+
+
+def _valid_date(value) -> bool:
+    if not _valid_ref(value):
+        return False
+    try:
+        return date.fromisoformat(value).isoformat() == value
+    except ValueError:
+        return False
+
+
+def _valid_timestamp(value) -> bool:
+    if not _valid_ref(value):
+        return False
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    return parsed.tzinfo is not None
 
 
 def _canonical_portable_path(path: str) -> bool:
@@ -67,6 +108,19 @@ class TeamState:
     blocked_executors: tuple[str, ...]
 
 
+def _valid_fence(record: FenceRecord) -> bool:
+    return (
+        isinstance(record, FenceRecord)
+        and _valid_ref(record.project_id)
+        and _valid_ref(record.executor_id)
+        and _valid_epoch(record.epoch)
+        and _valid_ref(record.record_ref)
+        and record.source_state in {"ACTIVE", "STOP_REQUESTED", "STOPPED"}
+        and record.target_state in {"INACTIVE", "PREFLIGHTED", "READY", "ACTIVE"}
+        and _valid_ref(record.custody)
+    )
+
+
 def propose_successor(
     accepted: FenceRecord,
     *,
@@ -75,6 +129,27 @@ def propose_successor(
     new_epoch: int,
     new_record_ref: str,
 ) -> Decision:
+    if not _valid_fence(accepted):
+        return Decision("FENCE_INVALID")
+    if not all(
+        (
+            _valid_epoch(accepted.epoch),
+            _valid_epoch(expected_prior_epoch),
+            _valid_epoch(new_epoch, allow_zero=False),
+        )
+    ):
+        return Decision("EPOCH_INVALID")
+    if not all(
+        _valid_ref(value)
+        for value in (
+            accepted.project_id,
+            accepted.executor_id,
+            accepted.record_ref,
+            expected_prior_ref,
+            new_record_ref,
+        )
+    ):
+        return Decision("WRITER_CONFLICT", "writer identity or record ref is invalid")
     if expected_prior_ref != accepted.record_ref:
         return Decision("WRITER_CONFLICT", "causal predecessor does not match")
     if expected_prior_epoch != accepted.epoch or new_epoch != accepted.epoch + 1:
@@ -110,22 +185,16 @@ def materialize_successor(
     )
 
 
-def validate_stop_receipt(receipt: dict) -> Decision:
+def _validate_stop_specific(receipt: dict) -> Decision:
     if not isinstance(receipt, dict):
         return Decision("STOP_PROOF_INVALID", "stop receipt is not a record")
-    if receipt.get("publishers_in_flight") or receipt.get("helpers_in_flight"):
-        return Decision("BLOCKED_IN_FLIGHT", "publisher or helper remains active")
-    required = {
+    required_refs = {
         "receipt_id",
-        "receipt_type",
         "migration_id",
         "repository_or_project_id",
         "executor_id",
-        "expected_epoch",
         "final_checkpoint",
         "candidate_tree",
-        "publishers_in_flight",
-        "helpers_in_flight",
         "workspace_custody",
         "native_resource_custody",
         "actor_class",
@@ -133,16 +202,40 @@ def validate_stop_receipt(receipt: dict) -> Decision:
         "cutover_parent",
         "timestamp",
     }
-    if any(key not in receipt or receipt[key] in (None, "") for key in required):
+    if any(not _valid_ref(receipt.get(key)) for key in required_refs):
         return Decision("STOP_PROOF_INVALID", "required stop fact is missing")
-    if receipt["receipt_type"] != "SOURCE_STOP":
+    if receipt.get("receipt_type") != "SOURCE_STOP":
         return Decision("STOP_PROOF_INVALID", "receipt is not SOURCE_STOP")
+    if not _valid_epoch(receipt.get("expected_epoch"), allow_zero=False):
+        return Decision("STOP_PROOF_INVALID", "stop expected epoch is invalid")
+    for field in ("publishers_in_flight", "helpers_in_flight"):
+        if not _valid_ref_collection(receipt.get(field), allow_empty=True):
+            return Decision("STOP_PROOF_INVALID", f"{field} is invalid")
+    if receipt.get("publishers_in_flight") or receipt.get("helpers_in_flight"):
+        return Decision("BLOCKED_IN_FLIGHT", "publisher or helper remains active")
     if receipt["stop_mechanism"] not in {
         "COOPERATIVE_ACK",
         "ADMINISTRATIVE_REVOCATION",
         "MODELED_ENFORCEABLE_FENCE",
     }:
         return Decision("STOP_PROOF_INVALID", "stop mechanism is not accepted")
+    if receipt.get("causal_parent_ref") != receipt.get("cutover_parent"):
+        return Decision("STOP_PROOF_INVALID", "stop causal parent differs from cutover")
+    if receipt.get("final_checkpoint") not in receipt.get("task_checkpoint_refs", ()):
+        return Decision("STOP_PROOF_INVALID", "final checkpoint is not in TASK refs")
+    if receipt.get("candidate_tree") not in receipt.get("candidate_refs", ()):
+        return Decision("STOP_PROOF_INVALID", "candidate tree is not in candidate refs")
+    return Decision("ALLOW")
+
+
+def validate_stop_receipt(receipt: dict) -> Decision:
+    if not isinstance(receipt, dict):
+        return Decision("STOP_PROOF_INVALID", "stop receipt is not a record")
+    specific = _validate_stop_specific(receipt)
+    if specific.code == "BLOCKED_IN_FLIGHT":
+        return specific
+    if specific.code != "ALLOW" or validate_receipt(receipt).code != "ALLOW":
+        return Decision("STOP_PROOF_INVALID", specific.reason or "typed stop receipt is invalid")
     return Decision("ALLOW")
 
 
@@ -154,6 +247,10 @@ def activation_allowed(
     source_reachable: bool,
     enforceable_revocation: bool,
 ) -> Decision:
+    if not _valid_fence(accepted):
+        return Decision("FENCE_INVALID")
+    if type(source_reachable) is not bool or type(enforceable_revocation) is not bool:
+        return Decision("ACTIVATION_INPUT_INVALID")
     if not source_reachable and not enforceable_revocation:
         return Decision(
             "BLOCKED_SOURCE_UNREACHABLE",
@@ -162,8 +259,6 @@ def activation_allowed(
     stop_validation = validate_stop_receipt(stop_receipt)
     if stop_validation.code != "ALLOW":
         return stop_validation
-    if validate_receipt(stop_receipt).code != "ALLOW":
-        return Decision("STOP_PROOF_INVALID", "complete typed stop receipt is invalid")
     if not isinstance(activation_receipt, dict):
         return Decision("ACTIVATION_RECEIPT_INVALID")
     if activation_receipt.get("target_preflight") != "PASS":
@@ -286,6 +381,13 @@ def cancellation_allowed(
     current_epoch: int,
     proposed_epoch: int,
 ) -> Decision:
+    if (
+        not _valid_epoch(current_epoch)
+        or not _valid_epoch(proposed_epoch)
+        or source_state not in {"ACTIVE", "STOP_REQUESTED", "STOPPED"}
+        or target_state not in {"INACTIVE", "PREFLIGHTED", "READY", "ACTIVE"}
+    ):
+        return Decision("EPOCH_INVALID")
     if target_state == "ACTIVE":
         return Decision("FORWARD_ROLLBACK_REQUIRED")
     if source_state == "STOPPED":
@@ -312,6 +414,22 @@ def publication_allowed(
     governing_task_fields: tuple[str, ...] = (),
     claimed_fields: tuple[str, ...] = (),
 ) -> Decision:
+    if not _valid_fence(accepted):
+        return Decision("FENCE_INVALID")
+    if not _valid_epoch(claim_epoch):
+        return Decision("EPOCH_INVALID")
+    if not all(
+        _valid_ref(value)
+        for value in (
+            claim_project_id,
+            claim_executor_id,
+            claim_record_ref,
+            actor_executor_id,
+            migration_pm_executor_id,
+            migration_id,
+        )
+    ):
+        return Decision("PUBLICATION_INPUT_INVALID")
     if (
         claim_project_id != accepted.project_id
         or claim_executor_id != accepted.executor_id
@@ -361,6 +479,24 @@ def registry_mapping_allowed(
     read_back: bool,
     collision: bool,
 ) -> Decision:
+    if (
+        not _valid_ref(expected_executor_id)
+        or executor_mode not in {
+            "local_standalone",
+            "same_chat",
+            "persistent_subagent",
+            "remote_manual",
+        }
+        or any(
+            type(value) is not bool
+            for value in (mapping_present, local_authority, read_back, collision)
+        )
+        or (
+            observed_executor_id is not None
+            and not _valid_ref(observed_executor_id)
+        )
+    ):
+        return Decision("REGISTRY_INPUT_INVALID")
     if executor_mode == "remote_manual" and not mapping_present:
         return Decision("ALLOW_REMOTE_MANUAL")
     if collision or observed_executor_id != expected_executor_id:
@@ -383,7 +519,18 @@ def workspace_reuse_allowed(expected: dict, observed: dict) -> Decision:
         "owner_executor_id",
         "mutability",
     }
-    if any(key not in expected or observed.get(key) != expected[key] for key in required):
+    reference_fields = required - {"contained"}
+    if (
+        not isinstance(expected, dict)
+        or not isinstance(observed, dict)
+        or any(key not in expected or observed.get(key) != expected[key] for key in required)
+        or any(
+            not _valid_ref(expected.get(key)) or not _valid_ref(observed.get(key))
+            for key in reference_fields
+        )
+        or type(expected.get("contained")) is not bool
+        or type(observed.get("contained")) is not bool
+    ):
         return Decision("WORKSPACE_REUSE_BLOCKED", "workspace custody facts differ")
     return Decision("ALLOW")
 
@@ -394,6 +541,24 @@ def affected_set_allowed(
     retained_executor_ids: tuple[str, ...],
     migration_state: str,
 ) -> Decision:
+    valid_states = {
+        "REQUESTED",
+        "PREPARING",
+        "PREPARED",
+        "FREEZE_PENDING",
+        "FROZEN",
+        "READY_TO_RESUME",
+        "RESUMING",
+        "PARTIAL_BLOCKED",
+        "COMPLETE",
+        "BLOCKED",
+    }
+    if (
+        not _valid_ref_collection(affected_executor_ids, allow_empty=False)
+        or not _valid_ref_collection(retained_executor_ids, allow_empty=True)
+        or migration_state not in valid_states
+    ):
+        return Decision("AFFECTED_SET_INVALID")
     frozen_or_later = {
         "FREEZE_PENDING",
         "FROZEN",
@@ -411,6 +576,8 @@ def affected_set_allowed(
 
 
 def receipt_set_allowed(receipts: tuple[dict, ...]) -> Decision:
+    if not isinstance(receipts, (tuple, list)) or not receipts:
+        return Decision("RECEIPT_INVALID")
     for receipt in receipts:
         if validate_receipt(receipt).code != "ALLOW":
             return Decision("RECEIPT_INVALID")
@@ -459,32 +626,33 @@ def validate_receipt(receipt: dict | None) -> Decision:
         "actor_provider_class",
         "observed_outcome",
         "registry_evidence",
-        "timestamp",
-        "review_date",
     }
-    if any(not _nonblank(receipt.get(field)) for field in common_nonblank):
+    if any(not _valid_ref(receipt.get(field)) for field in common_nonblank):
         return Decision("RECEIPT_INVALID", "common receipt fact is missing")
+    if not _valid_timestamp(receipt.get("timestamp")) or not _valid_date(receipt.get("review_date")):
+        return Decision("RECEIPT_INVALID", "receipt time or review date is invalid")
     if receipt.get("receipt_type") not in RECEIPT_TYPES:
         return Decision("RECEIPT_INVALID", "receipt type is unknown")
     receipt_type = receipt["receipt_type"]
     global_types = {"PREPARE", "FREEZE", "COMPLETION"}
-    if receipt_type not in global_types and not _nonblank(receipt.get("executor_id")):
+    if receipt_type not in global_types and not _valid_ref(receipt.get("executor_id")):
         return Decision("RECEIPT_INVALID", "executor identity is missing")
-    if receipt_type in global_types and receipt.get("executor_id") is not None and not _nonblank(receipt.get("executor_id")):
+    if receipt_type in global_types and receipt.get("executor_id") is not None and not _valid_ref(receipt.get("executor_id")):
         return Decision("RECEIPT_INVALID", "executor identity is malformed")
     prior_epoch = receipt.get("prior_epoch")
     new_epoch = receipt.get("new_epoch")
     if (
-        type(prior_epoch) is not int
-        or type(new_epoch) is not int
-        or prior_epoch < 0
-        or new_epoch < 1
+        not _valid_epoch(prior_epoch)
+        or not _valid_epoch(new_epoch, allow_zero=False)
         or new_epoch != prior_epoch + 1
     ):
         return Decision("RECEIPT_INVALID", "receipt epoch is invalid")
     for field in ("task_checkpoint_refs", "candidate_refs", "workspace_disposition_refs"):
         value = receipt.get(field)
-        if not isinstance(value, list) or (field != "workspace_disposition_refs" and not value):
+        if not _valid_ref_collection(
+            value,
+            allow_empty=field == "workspace_disposition_refs",
+        ):
             return Decision("RECEIPT_INVALID", f"{field} is invalid")
     if receipt.get("registry_evidence") not in {
         "NOT_APPLICABLE",
@@ -502,10 +670,12 @@ def validate_receipt(receipt: dict | None) -> Decision:
         "ACTIVATION": {
             "causal_stop_receipt",
             "cutover_parent",
+            "accepted_cutover",
             "target_preflight",
             "task_checkpoint",
             "candidate_tree",
             "workspace_custody",
+            "actor_class",
             "mapping_result",
         },
         "PARTIAL_DISPOSITION": {"blocked_from_state", "permitted_successors"},
@@ -513,17 +683,39 @@ def validate_receipt(receipt: dict | None) -> Decision:
         "CANCELLATION": {"terminal_disposition"},
         "FORWARD_ROLLBACK": {"rollback_target_epoch"},
     }
-    if any(
-        field not in receipt or receipt[field] in (None, "", [])
-        for field in type_fields[receipt_type]
-    ):
-        return Decision("RECEIPT_INVALID", "type-specific receipt fact is missing")
+    for field in type_fields[receipt_type]:
+        value = receipt.get(field)
+        if field in {
+            "affected_executor_ids",
+            "stopped_executor_ids",
+            "permitted_successors",
+            "accounted_executor_ids",
+        }:
+            if not _valid_ref_collection(value, allow_empty=False):
+                return Decision("RECEIPT_INVALID", "type-specific collection is invalid")
+        elif field == "rollback_target_epoch":
+            if not _valid_epoch(value):
+                return Decision("RECEIPT_INVALID", "rollback epoch is invalid")
+        elif not _valid_ref(value):
+            return Decision("RECEIPT_INVALID", "type-specific receipt fact is invalid")
     if receipt_type == "SOURCE_STOP":
-        stop = validate_stop_receipt(receipt)
+        stop = _validate_stop_specific(receipt)
         if stop.code != "ALLOW":
             return Decision("RECEIPT_INVALID", stop.reason)
-        if receipt.get("expected_epoch") != new_epoch:
+        if not _valid_epoch(receipt.get("expected_epoch"), allow_zero=False) or receipt.get("expected_epoch") != new_epoch:
             return Decision("RECEIPT_INVALID", "stop expected epoch is invalid")
+    if receipt_type == "ACTIVATION":
+        if receipt.get("task_checkpoint") not in receipt.get("task_checkpoint_refs", ()):
+            return Decision("RECEIPT_INVALID", "activation checkpoint is not in TASK refs")
+        if receipt.get("candidate_tree") not in receipt.get("candidate_refs", ()):
+            return Decision("RECEIPT_INVALID", "activation tree is not in candidate refs")
+        if receipt.get("mapping_result") not in {
+            "NOT_APPLICABLE",
+            "MAPPING_PRESENT_READ_BACK",
+            "MAPPING_ABSENT",
+            "MAPPING_CONFLICT",
+        }:
+            return Decision("RECEIPT_INVALID", "activation mapping result is invalid")
     if (
         receipt_type == "ACTIVATION"
         and receipt.get("causal_parent_ref") != receipt.get("causal_stop_receipt")

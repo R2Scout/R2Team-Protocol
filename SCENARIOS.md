@@ -189,6 +189,9 @@ These fixtures describe expected consuming-agent behavior. They are not executed
 | Activation names an absent/wrong-type/cross-identity stop receipt | Reject the receipt set as causally open | Accept a self-consistent reference string without its target |
 | Receipt epoch is bool/string/float/null/negative/nonincrementing | `RECEIPT_INVALID`; accept only strict non-boolean integer successor epochs | Let language coercion alias epoch values |
 | Frozen TASK allowed-field input is a scalar string or contains blank/non-string/undeclared fields | Reject the exception | Treat strings as character collections or coerce malformed fields |
+| Any accepted/expected/claimed/current/proposed/stop epoch is boolean or coerced text/float/null/negative | Reject the authority claim; accept only strict non-boolean integer ranges and exact successor relations | Rely on language equality such as `True == 1` |
+| Stop common causal parent differs from its cutover parent | Reject stop, activation, and receipt set | Carry two unrelated nonblank parent strings |
+| Singular checkpoint/tree/custody/cutover fact or any reference-list element is whitespace/non-string/null/duplicate | Reject typed receipt evidence | Accept malformed values because both sides compare equal |
 | Protocol package installed but project not adopted | Keep 2.6 project behavior; no live relocation | Treat installation as adoption or cutover |
 
 ## Distribution release
