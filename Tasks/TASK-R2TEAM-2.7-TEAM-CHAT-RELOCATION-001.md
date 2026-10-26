@@ -1,7 +1,7 @@
 ---
 protocol_version: "2.6"
 id: "TASK-R2TEAM-2.7-TEAM-CHAT-RELOCATION-001"
-revision: 13
+revision: 14
 handoff_seq: 0
 status: REVIEW_READY
 stage: QA
@@ -23,11 +23,11 @@ tracker_item: "https://github.com/R2Scout/R2Team-Protocol/issues/3"
 tracker_item_type: github_issue
 requirement_ref: "planning/r2team-2.7-team-chat-relocation/normative-deltas.md"
 branch: "planning/r2team-2.7-team-chat-relocation"
-pr: null
+pr: "https://github.com/R2Scout/R2Team-Protocol/pull/4"
 openspec_change: null
 base_sha: "7e7a35eaf89726b0850da78aaa176d142d7fc1ce"
 candidate_sha: "ef761223685a8e05b2b4ce5cb6f964769a50120b"
-verified_sha: null
+verified_sha: "ef761223685a8e05b2b4ce5cb6f964769a50120b"
 merged_sha: null
 workspace_policy: inherited_from_protocol_2.6
 workspace_exceptions: []
@@ -52,7 +52,7 @@ workspace_disposition: ACTIVE
 candidate_dispositions: []
 artifact_manifests: []
 close_receipts: []
-next_action: "Obtain fresh independent re-review of successor ef761223685a8e05b2b4ce5cb6f964769a50120b / tree ac79c8264845d809c9867c2b9b98777f42cb1ed8; prepare a PR without merging only if PASS."
+next_action: "Obtain protocol-owner review of PR #4; merge, tag, release, installation, adoption, and live relocation require separate explicit authority and evidence."
 questions:
   - id: Q-2.7-SKILL-BOUNDARY
     mode: LOOP
@@ -111,9 +111,9 @@ Excluded:
 
 # Current checkpoint
 
-- Completed: planning revision 2 received System Architect `PASS`; candidates through `d531d3fb4e5b1356afecfaaf26785ede2a2421f2` received independent `AMEND`; successor `ef761223685a8e05b2b4ce5cb6f964769a50120b` closes D1 with exhaustive record-to-stage/disposition/result tuple binding, plus red-first fixtures and fresh manifest-only validation.
-- Remaining: obtain fresh independent re-review of the exact successor and, only if PASS, prepare a PR without merging.
-- Blockers: none for independent review. Merge, release, installation, downstream adoption, provider-enforced fencing claims, and live relocation remain separate gates.
+- Completed: planning revision 2 and exact implementation candidate `ef761223685a8e05b2b4ce5cb6f964769a50120b` received independent System Architect `PASS`; PR #4 is prepared without merge.
+- Remaining: protocol-owner review and an explicit decision for any later merge/release gate.
+- Blockers: none for owner review. Merge, release, installation, downstream adoption, provider-enforced fencing claims, and live relocation remain separate unauthorized gates.
 
 # Evidence
 
@@ -148,9 +148,11 @@ Excluded:
 - Rejected successor: `d531d3fb4e5b1356afecfaaf26785ede2a2421f2`, tree `47a9dbe6af05226ee73d6fae88f9c8a9a475c45f`; independent verdict `AMEND`, review receipt `MSG-20261026-061041-d531d3f`.
 - Accepted correction D1: one exhaustive record-to-latest-stage validator runs before COMPLETE and binds CANCELLATION to its declared source/target plus legal custody, while terminal BLOCKED and FORWARD_ROLLBACK bind the fixed completion result STOPPED/INACTIVE/SOURCE_STOPPED.
 - Current successor candidate: `ef761223685a8e05b2b4ce5cb6f964769a50120b`, tree `ac79c8264845d809c9867c2b9b98777f42cb1ed8`, parent `66ed8e404464cd895d454c870662c79c910877a5`.
+- Independent implementation verdict: `PASS`, review receipt `MSG-20261026-061820-ef76122`, TASK revision-13 checkpoint `eec56b9a7a45fc9cf3453ab7f93a66fdddbeaf2a`, tree `3c873ee3225f6f0fb49815eae738586d3487ec78`.
 - Structural validator: PASS; validator suite: 53/53; workspace policy: 32/32; relocation policy: 73/73; official skill validation: 6/6; command copies byte-identical; `compileall` and `git diff --check`: PASS.
 - Boundary probes: post-stop READY cancellation rejects INACTIVE/ACTIVE record tuples; SOURCE_RETAINED rejects STOPPED; rollback and terminal BLOCKED reject READY/ACTIVE; exact terminal tuples and existing mixed terminal controls remain `COMPLETE`.
 - Fresh manifest-only package: PASS for 59 required files, all 53/32/73 suites, all six skill checks, byte-identical help, English-only public Markdown; temporary package removed after verification.
+- Pull request: `https://github.com/R2Scout/R2Team-Protocol/pull/4`, prepared without merge.
 - Predecessor relocation material: read-only architectural input, not accepted authority or copied runtime state.
 - Runtime/live relocation: NOT_RUN and out of scope.
 
