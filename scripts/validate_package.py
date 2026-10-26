@@ -1,4 +1,4 @@
-"""Read-only structural checks for the distributable R2Team 2.6 package."""
+"""Read-only structural checks for the distributable R2Team 2.7 candidate."""
 import argparse
 import hashlib
 import json
@@ -19,8 +19,8 @@ def validate(root):
             raise ValueError("template_root must be a path")
     except (OSError, ValueError, KeyError, TypeError) as exc:
         return [f"Invalid package manifest: {exc}"]
-    if manifest.get("protocol_version") != "2.6":
-        errors.append("Expected protocol_version 2.6")
+    if manifest.get("protocol_version") != "2.7":
+        errors.append("Expected protocol_version 2.7")
     if manifest.get("bootstrap") != "R2TEAM_MASTER.md":
         errors.append("Expected bootstrap R2TEAM_MASTER.md")
     if "package_revision" in manifest:
@@ -29,9 +29,15 @@ def validate(root):
     workspace_skill_path = "skills/r2team-workspace/SKILL.md"
     if "r2team-workspace" not in skills or workspace_skill_path not in required:
         errors.append("Missing packaged workspace skill: r2team-workspace")
-    if any(re.search(r"(^|/)(team[_-]?migration|chat[_-]?relocation)(/|\.|$)", name,
-                     flags=re.IGNORECASE) for name in required):
-        errors.append("Relocation behavior is outside R2Team 2.6")
+    relocation_skill_path = "skills/r2team-relocate/SKILL.md"
+    if "r2team-relocate" not in skills or relocation_skill_path not in required:
+        errors.append("Missing packaged relocation skill: r2team-relocate")
+    relocation_template_paths = {
+        "templates/TEAM_RELOCATION.md",
+        "templates/MIGRATE_TO_2.7.md",
+    }
+    if not relocation_template_paths.issubset(required):
+        errors.append("Missing packaged relocation template")
     template_root = (root / template_name).resolve()
     if not template_root.is_relative_to(root):
         return errors + ["Unsafe manifest path: template_root"]
@@ -96,6 +102,18 @@ def validate(root):
     thread_pattern = re.compile(
         r"\b01[a-f0-9]{6}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\b",
         re.IGNORECASE)
+    private_thread_hash_pattern = re.compile(
+        r"(?im)\b(?:thread[^\r\n:=]{0,40}(?:sha256|hash)|"
+        r"(?:sha256|hash)[^\r\n:=]{0,40}thread)\b\s*[:=]\s*[0-9a-f]{32,}\b")
+    unsafe_relocation_automation_pattern = re.compile(
+        r"\b(?:automatically|auto)\s+(?:create|connect|move|copy)\w*"
+        r"[^.\n]{0,100}\b(?:chat|thread|transcript)s?\b",
+        re.IGNORECASE)
+    concurrent_writer_pattern = re.compile(
+        r"\b(?:allow|permit|may|can)\w*[^.\n]{0,100}\b(?:source|old)\b"
+        r"[^.\n]{0,80}\b(?:target|replacement)\b[^.\n]{0,100}"
+        r"\b(?:concurrent|simultaneous)\w*\b",
+        re.IGNORECASE)
     windows_path_pattern = re.compile(r"\b[A-Za-z]:\\[^\r\n`\"']+")
     unix_home_pattern = re.compile(r"/(?:home|Users)/[^/\s<>]+/[^^\s`\"']*")
 
@@ -122,6 +140,18 @@ def validate(root):
             errors.append(f"Credential-like material in required file: {name}")
         if thread_pattern.search(text):
             errors.append(f"Actual local thread ID in required file: {name}")
+        if private_thread_hash_pattern.search(text):
+            errors.append(f"Private thread hash in required file: {name}")
+        for pattern, label in (
+            (unsafe_relocation_automation_pattern, "Unsafe relocation automation"),
+            (concurrent_writer_pattern, "Concurrent relocation writers"),
+        ):
+            match = pattern.search(text)
+            if match:
+                line_start = text.rfind("\n", 0, match.start()) + 1
+                prefix = text[line_start:match.start()].lower()
+                if not re.search(r"\b(?:must not|does not|do not|never|no)\b", prefix):
+                    errors.append(f"{label} in required file: {name}")
         private_path = False
         for match in windows_path_pattern.finditer(text):
             value = match.group(0)
@@ -321,6 +351,30 @@ def validate(root):
             if marker not in registry_text:
                 errors.append(f"Missing local workspace registry marker: {marker}")
 
+    relocation_template = root / "templates" / "TEAM_RELOCATION.md"
+    if relocation_template.is_file():
+        relocation_template_text = texts.get(relocation_template.resolve(), "")
+        for marker in (
+            "migration_id",
+            "affected_executor_ids",
+            "global_cutover_generation",
+            "migration_control_paths",
+            "expected_prior_epoch",
+            "prior_accepted_record",
+            "source_state",
+            "target_state",
+            "physical_custody_class",
+            "stop_receipt_ref",
+            "activation_receipt_ref",
+            "blocked_from_state",
+            "permitted_successors",
+            "MAPPING_PRESENT_READ_BACK",
+            "cooperative protocol fencing",
+            "provider-enforced exclusion is NOT_PROVEN",
+        ):
+            if marker not in relocation_template_text:
+                errors.append(f"Missing relocation template marker: {marker}")
+
     workspace_skill = root / workspace_skill_path
     if workspace_skill.is_file():
         workspace_text = texts.get(workspace_skill.resolve(), "")
@@ -340,11 +394,33 @@ def validate(root):
             if marker not in workspace_text:
                 errors.append(f"Missing workspace-skill marker: {marker}")
 
+    relocation_skill = root / relocation_skill_path
+    if relocation_skill.is_file():
+        relocation_text = texts.get(relocation_skill.resolve(), "")
+        for marker in (
+            "name: r2team-relocate",
+            "$r2team-relocate status",
+            "$r2team-relocate prepare role",
+            "$r2team-relocate prepare team",
+            "$r2team-relocate resume role",
+            "$r2team-relocate resume team",
+            "$r2team-relocate doctor",
+            "status and doctor are read-only",
+            "expected_prior_epoch",
+            "prior_accepted_record",
+            "WRITER_CONFLICT",
+            "cooperative protocol fencing",
+        ):
+            if marker not in relocation_text:
+                errors.append(f"Missing relocation-skill marker: {marker}")
+
     work_skill = root / "skills" / "r2team-work" / "SKILL.md"
     if work_skill.is_file():
         work_text = texts.get(work_skill.resolve(), "")
         if "`r2team-workspace`" not in work_text:
             errors.append("Missing r2team-work workspace boundary: route lifecycle operations to r2team-workspace")
+        if "`r2team-relocate`" not in work_text:
+            errors.append("Missing r2team-work relocation boundary: route relocation operations to r2team-relocate")
 
     commands = root / "templates" / "COMMANDS.md"
     if commands.is_file():
@@ -357,9 +433,29 @@ def validate(root):
         ):
             if marker not in commands_text:
                 errors.append(f"Missing workspace command marker: {marker}")
+        for marker in (
+            "$r2team-relocate status",
+            "$r2team-relocate prepare role",
+            "$r2team-relocate prepare team",
+            "$r2team-relocate resume role",
+            "$r2team-relocate resume team",
+            "$r2team-relocate doctor",
+            "$r2team migrate <function> to <participant>",
+            "function transfer, not physical relocation",
+        ):
+            if marker not in commands_text:
+                errors.append(f"Missing relocation command marker: {marker}")
         if re.search(r"\$r2team\s+(?:relocate-chat|migrate-team|migrate-chat)\b",
                      commands_text, flags=re.IGNORECASE):
-            errors.append("Relocation behavior is outside R2Team 2.6")
+            errors.append("Relocation must use r2team-relocate")
+        if re.search(
+            r"\$r2team\s+migrate\s+<function>\s+to\s+<participant>"
+            r"[^\r\n]{0,120}\b(?:physical|chat|thread)\b"
+            r"[^\r\n]{0,80}\brelocat\w*",
+            commands_text,
+            flags=re.IGNORECASE,
+        ):
+            errors.append("Function transfer command redefined as relocation")
     return errors
 
 def main():

@@ -1,4 +1,4 @@
-# R2Team 2.6
+# R2Team 2.7
 
 Git-first teamwork for one person, local role chats, remote participants, and hybrids. PM is the only mandatory coordinating function. GitHub and generic Azure DevOps Server/TFS Git are supported; specialized process profiles are separate.
 
@@ -152,7 +152,7 @@ Supported modes: one PM with helpers; one person with local role chats; remote p
 Independent work creates/reuses one TASK, provider item, branch, and PR where applicable. Bounded consultation inside an accepted TASK creates no extra mandatory TASK/Issue/PR/MSG. Reuse the TASK across discovery, design, implementation, QA, integration, and handoff. Separate deployment TASK only for an independent lifecycle/owner/authority.
 
 ~~~yaml
-protocol_version: "2.6"
+protocol_version: "2.7"
 task_id: TASK-042
 task_revision: 3
 status: IN_PROGRESS
@@ -276,7 +276,21 @@ Temporary cache, build output, package expansion, logs, and disposable fixtures 
 
 Custody classes are ordinary-canonical, codex-managed, external-authorized, and legacy-retained. Codex-managed checkouts use the application archive lifecycle, not shell removal. The ignored local registry maps leases to physical paths, observed size, resources, custody, and observation time. Portable TASK/TEAM policy uses root aliases, never another machine's absolute path.
 
-Operational status, open, close, and doctor behavior belongs to the separate `r2team-workspace` skill. Status and doctor are read-only; open requires allocation preflight; close requires evidence, custody, ownership, dependency, containment, and authority preflight. Existing skills may route to it, but `r2team-work` does not silently allocate, relocate, archive, close, or remove a workspace. Team/chat relocation is outside R2Team 2.6 and requires a distinct change, TASK, checkpoint, validation candidate, and acceptance decision.
+Operational status, open, close, and doctor behavior belongs to the separate `r2team-workspace` skill. Status and doctor are read-only; open requires allocation preflight; close requires evidence, custody, ownership, dependency, containment, and authority preflight. Existing skills may route to it, but `r2team-work` does not silently allocate, relocate, archive, close, or remove a workspace.
+
+### 9.2 Team/chat relocation
+
+Team/chat relocation changes which registered executor carries one or more functions without changing participant identity, function ownership, TASK ownership, candidate identity, workspace custody, or physical placement unless a separate accepted action changes those facts. It is controlled only through `r2team-relocate`; `$r2team migrate <function> to <participant>` remains a function-transfer command and `r2team-work` must not hide relocation mutations.
+
+Relocation is a causally fenced, per-executor state transition. Each affected source executor moves `ACTIVE -> STOP_REQUESTED -> STOPPED`; its target moves `INACTIVE -> PREFLIGHTED -> READY -> ACTIVE`. The accepted fence record is keyed by project/repository plus executor, names the expected prior epoch and accepted prior record, and publishes one next epoch. Read back the accepted record after compare-and-publish. Two sibling proposals for the same next epoch conflict; a later writer must use the materialized accepted parent. Unless provider-side revocation is separately evidenced, this is cooperative fencing and must not be described as cryptographic or provider-enforced exclusion.
+
+Positive stop evidence is mandatory before activation. Silence, notification delivery, registry edits, renaming, archiving, an absent local process, or loss of contact do not prove that a source stopped. Stop proof identifies the source executor, accepted fence/epoch, affected functions and TASK publication routes, last published checkpoint, and the mechanism that prevents later accepted publication. An unreachable source without enforceable provider revocation is blocked, not stopped.
+
+Relocation publishes append-only typed receipts: `PREPARE`, `SOURCE_STOP`, `FREEZE`, `TARGET_PREFLIGHT`, `ACTIVATION`, `PARTIAL_DISPOSITION`, `COMPLETION`, `CANCELLATION`, and `FORWARD_ROLLBACK`. Receipt IDs are unique and causal parent/cutover references must match the accepted records. Durable Git records may store only registry evidence class and enum, never another machine's physical route, a stable hash of that route, a token, or other sensitive local locator. The ignored local registry stores physical executor routes and must be read back locally before use.
+
+Freeze blocks product publication by affected executors, not the authorized PM control path needed to publish receipts and recovery decisions. Remove retained executors from the affected set before freeze. Aggregate states are derived from per-executor records; mixed custody is `PARTIAL_BLOCKED`, not completion. A partial result preserves every executor's last accepted state and explicitly chooses one permitted successor: resume, terminal cancellation where still safe, or forward rollback. Rollback never rewrites an accepted epoch; it advances each affected executor through a higher epoch.
+
+Activation requires matching source stop proof, target preflight, expected accepted parent, next epoch, cutover identity, functions, TASK routes, local registry read-back where applicable, and workspace/candidate custody evidence. Remote/manual targets may legitimately have no local physical mapping. Candidate and workspace evidence remain separate; relocation never infers movement, cleanup, merge, release, installed-skill replacement, adoption, or runtime acceptance. Completion requires all affected executors to reach one causally consistent accepted state and publishes a `COMPLETION` receipt. Live relocation remains a separately authorized operation even when protocol 2.7 is adopted.
 
 Disconnect after publishing affected checkpoints and replacement ownership. Preserve history. Account/access revocation is a separate action.
 
@@ -291,7 +305,7 @@ Disconnect after publishing affected checkpoints and replacement ownership. Pres
 | Discussion | Issue/PR | Work Item/PR |
 | Recovery | Git TASK/spec/code | Git TASK/spec/code |
 
-Tracker is a projection of TASK in R2Team 2.6. Summarize provider-only continuation facts into Git.
+Tracker is a projection of TASK in R2Team 2.7. Summarize provider-only continuation facts into Git.
 
 Verify Git refs/read/push, tracker API, PR/review/policy API, browser UI, CI and environment access independently. Repo/default branch/policies/checks/permissions and merge/deploy effects remain separate facts. For Server also verify version/API, actual Work Item types/states, and tool compatibility; do not assume cloud-only CLI/MCP.
 
@@ -440,11 +454,11 @@ Ready means source/TEAM/rights known, tools verified or blocked, and a safe next
 <a id="migration"></a>
 ## 15. Migration
 
-Use [MIGRATE_TO_2.6.md](MIGRATE_TO_2.6.md). Preserve refs, code, filled specs, active OpenSpec changes/tasks, roles, evidence, dirty/unpublished work, and material requests.
+Use [MIGRATE_TO_2.7.md](MIGRATE_TO_2.7.md). Preserve refs, code, filled specs, active OpenSpec changes/tasks, roles, evidence, dirty/unpublished work, material requests, executor fence history, and unresolved relocation receipts.
 
 Existing TASKs remain by default. User-approved fresh organizational queue may retire old message/task artifacts while explicitly preserving product/OpenSpec/current work. Never erase OpenSpec tasks.md.
 
-For 1.10, mandatory MSG rules remain until approved per-task/coordinated cutover. Retained chats individually cross-check/adopt 2.6; replacing files alone is not chat migration. Resolve higher-priority instruction conflicts explicitly.
+For 1.10, mandatory MSG rules remain until approved per-task/coordinated cutover. Retained chats individually cross-check/adopt 2.7; replacing files alone is not chat migration or executor relocation. Resolve higher-priority instruction conflicts explicitly.
 
 <a id="feature-example"></a>
 ## 16. Feature example
@@ -522,7 +536,7 @@ Structural validation does not prove provider integration, behavioral skill qual
 First PM:
 
 ~~~text
-Read START.md from verified R2Team 2.6 and run setup new or migrate for <project>.
+Read START.md from verified R2Team 2.7 and run setup new or migrate for <project>.
 Confirm root, provider, instructions, PM, functions, permissions and specs.
 Show proposed diff before writes. Do not enable automation or start product
 work merely by finishing setup.

@@ -1,14 +1,15 @@
-# R2Team 2.6 distribution verification
+# R2Team 2.7 distribution verification
 
-Prepared for the protocol version 2.6 workspace-lifecycle candidate on 2026-10-25. This is distribution evidence, not acceptance of a user project, live cleanup authority, or downstream adoption.
+Prepared for the protocol version 2.7 team/chat-relocation candidate on 2026-10-26. This is distribution evidence, not acceptance of a user project, live relocation/cleanup authority, provider-enforced exclusion, or downstream adoption.
 
 ## Fresh local checks
 
-- PASS: all 42 validator tests passed, including hash-consistent adversarial destructive-instruction, populated-path, actual-thread-ID, GitHub/OpenAI/Azure/bearer/generic/bare/cloud-secret credential, placeholder, append-only lifecycle-history, version, manifest, workspace-skill, and relocation-exclusion guards.
+- PASS: all 52 validator tests passed, including hash-consistent adversarial destructive-instruction, populated-path, actual-thread-ID/private-route-hash, automatic chat creation/transcript copy, concurrent writer, function-transfer redefinition, GitHub/OpenAI/Azure/bearer/generic/bare/cloud-secret credential, version, manifest, workspace-skill, relocation-skill/template/command, and hidden-mutation guards.
 - PASS: all 32 deterministic workspace-policy tests passed, covering state-specific terminal evidence, every blocking/nonterminal state, exact allocation-bound exceptions, strict boolean predicates, date/base validation and hard-gate non-bypass, lease reuse, capacity bands, verdict/disposition separation, evidence durability, closure gates, Codex archive-only custody, and transfer.
-- PASS: all five distribution skills, including `r2team-workspace`, pass the official skill-creator `quick_validate.py` using PyYAML 6.0.3 in an isolated validation dependency directory.
+- PASS: all 27 deterministic relocation-policy tests passed, covering causal parents/epochs, same-next-epoch conflicts, positive stop proof, target activation, stale-source rejection, freeze control paths, local/remote registry behavior, workspace custody, retained executors, partial recovery, cancellation, forward rollback, and receipt uniqueness.
+- PASS: all six distribution skills, including `r2team-workspace` and `r2team-relocate`, pass the official skill-creator `quick_validate.py` using PyYAML 6.0.3 in an isolated validation dependency directory.
 - PASS: package structure, required payload hashes, local Markdown links, anchors and fences.
-- PASS: a fresh isolated package copy built only from `package.json` plus `required_files` passed package validation, all 42 validator tests, all 32 workspace-policy tests, and all five skill-format checks.
+- PASS: a fresh isolated package copy built only from `package.json` plus `required_files` passed package validation, all 52 validator tests, all 32 workspace-policy tests, all 27 relocation-policy tests, and all six skill-format checks.
 - PASS: public distribution Markdown is English-only.
 - PASS: `templates/COMMANDS.md` and `skills/r2team/references/commands.md` are byte-identical.
 - PASS: specialized CMMI setup is absent from the main package and maintained separately.
@@ -19,13 +20,13 @@ The exact commands and final outputs are captured during release preparation. Pa
 
 ## Candidate publication gate
 
-Bind the final implementation to an exact commit/tree, push the authorized branch, then repeat validation from a fresh isolated package and obtain independent review of that exact candidate. Main merge, annotated `v2.6` tag, release, installed-skill replacement, downstream adoption, and live cleanup remain `NOT_RUN` until separately authorized. Publication proves repository provenance, not live agent/provider behavior.
+Bind the final implementation to an exact commit/tree, push the authorized branch, then obtain independent review of that exact candidate. Main merge, annotated `v2.7` tag, release, installed-skill replacement, downstream adoption, live relocation, and live cleanup remain `NOT_RUN` until separately authorized. Publication proves repository provenance, not live agent/provider behavior.
 
 ## Document-level scenarios
 
 [SCENARIOS.md](SCENARIOS.md) covers setup, brownfield migration, team combinations, bounded local/remote help, material decisions, ownership transfer, exact-candidate QA, provider uncertainty, human-assisted steps, required COO capability with optional standalone/wake, and recovery without chat transcripts. These are reviewed contracts, not executed multi-agent simulations.
 
-The 2.6 additions cover lease reuse, budget/capacity blocks, ephemeral review, candidate-verdict/closure separation, durable merge evidence, retained/transfer/blocking dispositions, Codex-managed custody, temporary-material removal gates, append-only lease/candidate history, privacy/safety adversarial payloads, and relocation exclusion. These deterministic policy and validator fixtures do not execute live cleanup; consuming-agent execution remains `NOT_RUN`.
+The 2.7 additions cover per-executor causal fences, stop/activation proof, typed receipts, same-epoch conflicts, retained executors, partial custody, cancellation, forward rollback, privacy-safe registry evidence, workspace/candidate separation, command/role boundaries, and prospective adoption. Deterministic policy and validator fixtures do not execute a live relocation, provider revocation, chat creation, workspace movement, or cleanup; consuming-agent execution remains `NOT_RUN`.
 
 ## NOT_RUN by this release
 
@@ -36,8 +37,8 @@ The 2.6 additions cover lease reuse, budget/capacity blocks, ephemeral review, c
 - Real GitHub/TFS item-to-PR lifecycle, provider adapter, or multi-repository rollout.
 - Product implementation, database/infrastructure changes, deployment, or independent QA.
 - Installation/replacement of skills on another machine.
-- Cleanup, removal, relocation, archive, process stop, branch deletion, or disk recovery in a real project.
-- Downstream 2.5-to-2.6 project adoption and legacy-workspace reconciliation.
+- Cleanup, removal, live relocation, archive, process stop, branch deletion, provider revocation, or disk recovery in a real project.
+- Downstream 2.6-to-2.7 project adoption, executor cutover, and legacy-workspace reconciliation.
 - Automatic installation/execution of OpenSpec or Superpowers.
 
-The package is self-contained for its protocol, templates, setup, migration prompt, and five R2Team instruction skills. Git/provider access, Python for validation, Codex, and approved external OpenSpec/Superpowers toolchains remain explicit dependencies.
+The package is self-contained for its protocol, templates, setup, migration prompt, and six R2Team instruction skills. Git/provider access, Python for validation, Codex, and approved external OpenSpec/Superpowers toolchains remain explicit dependencies.

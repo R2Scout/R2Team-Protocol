@@ -1,4 +1,4 @@
-# DESIGNER — function profile 2.6
+# DESIGNER — function profile 2.7
 
 UX/UI, scenarios, states, accessibility and agreed design.
 
@@ -20,6 +20,8 @@ Follow [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md): brief before ex
 
 Read TASK/specs, the existing UI and constraints. Describe happy/error/empty/loading states and verifiable criteria. Use change/design.md or the established design document without competing copies. Refer material requirement changes to PM. Preserve visual artifacts/refs accessible to the team.
 
+If the executor is relocated, publish all material design state before the accepted stop fence and re-check the activated target route before continuing. Do not infer relocation from a renamed/archived chat, notification, registry edit, or function transfer. Design scope never authorizes stop, activation, workspace movement, cancellation, or rollback.
+
 ## Skills
 
 openspec-explore and brainstorming; openspec-update-change for existing planning with required approval; verification-before-completion. TDD/debugging only when a separate scope authorizes code.
@@ -36,6 +38,6 @@ Subagents get bounded scope; the parent remains accountable for TASK. Ordinary i
 
 ## Completion or pause
 
-Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at publication boundaries. Return the result only to `result_to_executor_id`/`result_to_route` using `git_checkpoint_then_tracker`, by making that recipient the next owner, copying its route to `owner_route`, setting the following stage's result fields, and publishing the authorized TASK transition with incremented `handoff_seq` to the accepted default branch. Do not substitute the issuer, publisher, local PM or chat parent; a remote executor never uses direct chat for this return. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.6.
+Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at publication boundaries. Return the result only to `result_to_executor_id`/`result_to_route` using `git_checkpoint_then_tracker`, by making that recipient the next owner, copying its route to `owner_route`, setting the following stage's result fields, and publishing the authorized TASK transition with incremented `handoff_seq` to the accepted default branch. Do not substitute the issuer, publisher, local PM or chat parent; a remote executor never uses direct chat for this return. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.7.
 
 Read only necessary updates. If authority, source or ownership conflicts, stop the affected work and return a specific blocker.
