@@ -1,8 +1,8 @@
-# R2Team 2.6 — Command Help
+# R2Team 2.7 — Command Help
 
 Open project `R2TEAM_MASTER.md` in the persistent local `R2Team Master - <project>` task for bootstrap, Project Charter, setup orchestration, provider/Git troubleshooting, team lifecycle changes or protocol consultation. Master routes actual procedures to the skills below and does not replace PM authority.
 
-These are Codex skill prompts, not shell commands. Install the five skills first. Natural-language requests are supported; arguments describe intent and never grant permissions. Help is always shown in English. For task conversations, use the participant's preferred language.
+These are Codex skill prompts, not shell commands. Install the six skills first. Natural-language requests are supported; arguments describe intent and never grant permissions. Help is always shown in English. For task conversations, use the participant's preferred language.
 
 ## Quick reference
 
@@ -24,6 +24,12 @@ These are Codex skill prompts, not shell commands. Install the five skills first
 | `$r2team-workspace open TASK-ID purpose <purpose>` | Preflight one bounded workspace allocation | Requires accepted TASK and allocation authority |
 | `$r2team-workspace close TASK-ID lease <lease-id>` | Preflight and perform an authorized recoverable closure | No inferred cleanup or deletion authority |
 | `$r2team-workspace doctor [TASK-ID]` | Diagnose lifecycle inconsistency and blockers | Read-only |
+| `$r2team-relocate status [migration-id]` | Inspect receipts, fence epochs, custody, and blockers | Read-only |
+| `$r2team-relocate doctor [migration-id]` | Diagnose consistency and permitted next transition | Read-only |
+| `$r2team-relocate prepare role <executor-id>` | Prepare one executor cutover | Accepted migration TASK; stage-bounded |
+| `$r2team-relocate prepare team` | Prepare the accepted affected set and ordered freeze | Accepted migration TASK; stage-bounded |
+| `$r2team-relocate resume role <migration-id> <executor-id>` | Preflight and activate one causally eligible target | Accepted stop/cutover/target evidence |
+| `$r2team-relocate resume team <migration-id>` | Resume eligible executors in accepted order | Preserve partial custody and blockers |
 
 Each skill accepts `help`. Bare lifecycle/work/COO invocations show help rather than taking action; bare audit performs the read-only audit. Unknown commands do nothing and show the relevant syntax. Ask only for missing information that cannot be safely resolved from the configured project.
 
@@ -36,7 +42,7 @@ Confirm the target directory and guide me through setup. This chat will be PM.
 
 This routes to Setup mode `new`. A new project is not expected to have TEAM/TASK yet. The wizard confirms the initial PM and creates the agreed configuration. For an existing MVP or older protocol use Setup mode `migrate`; do not initialize a new project over its files.
 
-The full template package is needed for setup. Installing SKILL.md alone does not copy project templates. Provide a verified package path or repository URL and full commit SHA. The distribution is https://github.com/R2Scout/R2Team-Protocol. Version 2.6 is a candidate until its release is published: use the explicitly approved full candidate commit, not an assumed v2.6 tag or main/latest.
+The full template package is needed for setup. Installing SKILL.md alone does not copy project templates. Provide a verified package path or repository URL and full commit SHA. The distribution is https://github.com/R2Scout/R2Team-Protocol. Version 2.7 is a candidate until its release is published: use the explicitly approved full candidate commit, not an assumed v2.7 tag or main/latest.
 
 ## Add → register → connect
 
@@ -93,7 +99,15 @@ The current publisher preserves material open questions, decisions, evidence and
 
 `close` re-reads ownership, containment, branch/HEAD/tree, dirty/untracked/ignored material, processes, native resources, dependent leases, evidence export, recovery, and authority. Accepted integration carries Git-suitable evidence or a sanitized hash-bound durable manifest. Temporary material is removable only when every protocol gate passes and the closer already has explicit removal authority; otherwise use retained, transferred, or blocked disposition with owner and review date. Codex-managed custody uses application archive, never shell removal.
 
-These commands do not relocate teams or chats. That behavior is outside R2Team 2.6 and requires its own accepted protocol change.
+## Team/chat relocation
+
+`r2team-relocate` is the sole relocation mutation entry point. `prepare` resolves the accepted project/TASK, affected executor set, expected prior records/epochs, target mappings, retained executors, workspace/candidate custody, and required typed receipts. Preparation alone performs no target activation. `$r2team migrate <function> to <participant>` remains the ownership-transfer command.
+
+This is function transfer, not physical relocation.
+
+Before target activation, each affected source must have positive `SOURCE_STOP` evidence and an accepted causal fence. Silence, notification, registry/title/archive edits, an absent local process, or an unreachable source without enforceable provider revocation are not stop proof. Target activation must match source stop, `TARGET_PREFLIGHT`, accepted parent, next epoch, cutover identity, function/TASK routes, and applicable local registry read-back. Durable records use registry evidence enums/classes only and never commit physical routes or stable hashes of private locators.
+
+`resume` continues only from the accepted per-executor states. Mixed custody is `PARTIAL_BLOCKED`; choose an explicit resume, permitted terminal cancellation, or higher-epoch forward rollback path through a new accepted forward publication. No operation erases accepted receipts, reuses an epoch, or revives a stopped source. `status` derives aggregate state from typed append-only receipts and reports conflicts or missing evidence. Relocation does not imply function transfer, workspace movement/cleanup, merge, release, installation, adoption, or runtime acceptance. Live relocation requires separate explicit authority.
 
 Every assignment names Task Issuer, Project PM and Result Recipient with active response routes. Use the existing discuss command or natural language with Question Mode: ASK for issuer clarification, LOOP for disagreement/consensus, ESCALATE_PM for direct PM arbitration. A completed independent stage always uses `result_to_executor_id`, `result_to_route` and `git_checkpoint_then_tracker`, never the sender chat or local PM. Example: `$r2team-work task TASK-042 discuss PM` with `Question Mode: ESCALATE_PM` and the specific conflict. No new command, task or message file is needed. Record OPEN/ANSWERED/ESCALATED/CLOSED and Decision in the existing route; recipients inspect addressed questions regardless of TASK ownership. Answers return to the original requester; only dependent work waits. See the question-routes section of the adopted project's OPERATING_COMMUNICATION.md.
 
@@ -134,6 +148,7 @@ For configured multi-repository work, qualify TASK IDs with repo URLs, pin exter
 - Git holds authoritative project state; installation does not create TEAM or migrate older projects.
 - Project/global instructions and real permissions remain binding. Commit/push, tracker writes, merge, deploy, costs and schedules are separate capabilities.
 - Retain one publisher per TASK branch. Do not overwrite another role's changes or take over an active assignment implicitly.
+- Keep one accepted fence publisher per project/executor epoch. Same-next-epoch sibling proposals conflict; advance only from the materialized accepted parent.
 - Use GitHub or Azure DevOps Server/TFS Git as configured; verify server-specific APIs, item types and state mappings rather than assuming GitHub behavior.
 - Never put secrets, personal machine paths or actual thread IDs in committed templates or invitations.
 - Report what was actually done, exact references, limitations and next action. Notification success is not acceptance.

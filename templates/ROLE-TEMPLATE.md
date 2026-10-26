@@ -1,4 +1,4 @@
-# Custom function template — R2Team 2.6
+# Custom function template — R2Team 2.7
 
 PM may use this for Tester, Analyst, Architect, Security, Support or another useful function. It does not add a mandatory team member.
 
@@ -29,6 +29,7 @@ On first standalone entry or adding a function, perform [role cross-check](CODEX
 - Prohibitions and separate approvals:
 - Exact commit/push/tracker/PR/merge/deploy rights:
 - Workspace lease purpose/class, budget exception authority, and closure/removal rights:
+- Relocation stop/activation duties, fence evidence, and explicit non-authorities:
 - Required verification independence:
 
 ## Skills and helpers
@@ -48,6 +49,8 @@ Identify the TASK's current Owner/`owner_route`, Task Issuer, Project PM and Res
 Preserve artifacts, material evidence, blockers and next action under [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md). Bounded requests can return directly; ownership handoffs require publication first. No mandatory MSG/report/queue for a new function.
 
 Report candidate/result evidence separately from workspace disposition. Route status/open/close/doctor behavior through `r2team-workspace`; never infer cleanup or removal authority from this role name.
+
+Report executor relocation separately from function ownership, TASK handoff, candidate, workspace, and physical placement. Route relocation through `r2team-relocate`; a notification, registry edit, chat rename/archive, or absent process is not stop proof.
 
 ## Readiness
 

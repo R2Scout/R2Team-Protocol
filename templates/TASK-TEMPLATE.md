@@ -1,10 +1,10 @@
-# TASK template — R2Team 2.6
+# TASK template — R2Team 2.7
 
 Use the body below for Tasks/TASK-<id>-<name>.md, removing these explanatory instructions. Choose a collision-free ID. Role handoff alone does not create another TASK; bounded helper requests remain inside the parent TASK.
 
 ```yaml
 ---
-protocol_version: "2.6"
+protocol_version: "2.7"
 id: "<unique-task-id>"
 revision: 1
 handoff_seq: 0
@@ -47,6 +47,11 @@ workspace_disposition: NOT_APPLICABLE
 candidate_dispositions: []
 artifact_manifests: []
 close_receipts: []
+migration_id: null
+executor_fence_ref: null
+writer_epoch: null
+writer_record_ref: null
+relocation_disposition: NOT_APPLICABLE
 next_action: "<one-specific-action>"
 questions: []
 ---
@@ -114,6 +119,12 @@ Each `workspace_leases[]` item records `lease_id`, purpose, class, `owner_execut
 Each `candidate_dispositions[]` item binds candidate SHA/tree and branch ref to exactly one disposition (`MERGED_TO_DEFAULT`, `SUPERSEDED_BY_SHA`, `REJECTED`, or `EVIDENCE_ARCHIVED`), evidence/reference, owner, and recorded time. Each `artifact_manifests[]` item records manifest ref, content hash, retention class, durable recovery location, owner, and access boundary. Each `close_receipts[]` item binds its receipt ref to one lease ID and actual closure result. Append new records; do not overwrite earlier candidate or lease history.
 
 At each publication boundary update `workspace_exceptions`, `workspace_leases`, `candidate_dispositions`, `artifact_manifests`, `close_receipts`, and the derived `workspace_disposition` as applicable. Administrative completion requires every terminal lease record to include `closure_owner_executor_id`, `retention_class`, `recovery_ref`, `review_date`, and `close_receipt_ref`; a transferred lease also names the next TASK/owner and transfer-custody reference. Bare labels and any blocking/nonterminal lease prevent administrative completion. Workspace closure does not change a product or QA verdict.
+
+## Relocation fencing
+
+When this TASK's executor is in an accepted relocation, set `migration_id`, `executor_fence_ref`, `writer_epoch`, `writer_record_ref`, and `relocation_disposition` from the accepted bundle. These fields reference custody; they do not rewrite TASK ownership, candidate identity, provider routes, or evidence. Before every writer-capable TASK/product publication, re-read the accepted fence and require the exact executor/project key, epoch and causal parent. Stale/equal-conflicting/unrelated state is `WRITER_CONFLICT`.
+
+Source stop and target activation require immutable causal receipts. Notification, registry presence, chat title/archive or process absence is not stop proof. After freeze, only the accepted migration PM may write declared migration-control paths and this governing relocation TASK's status/evidence fields. Provider-enforced exclusion remains `NOT_PROVEN` unless separately evidenced.
 
 For accepted integration, bind Git-suitable evidence into the protected checkpoint or record a sanitized hash-bound durable manifest with retention, recovery location, owner, and access boundary. Temporary material may be removed only after evidence-export, exclusive-ownership, dependency, shared-cache/retained-input, containment, and explicit-authority gates all pass. Otherwise retain, transfer, or block with an owner and review date.
 

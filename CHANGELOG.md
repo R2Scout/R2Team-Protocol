@@ -1,5 +1,14 @@
 # R2Team change history
 
+## 2.7 — candidate
+
+- Add `r2team-relocate` as the sole team/chat relocation mutation entry point while preserving `$r2team migrate <function> to <participant>` as function transfer.
+- Add causally fenced per-executor epochs, accepted-parent compare-and-publish/read-back, and conflict handling for same-next-epoch sibling proposals.
+- Require positive source-stop proof and matching target preflight/activation; notification, silence, registry/title/archive changes, or an absent process are insufficient.
+- Add append-only typed relocation receipts, privacy-safe durable registry evidence, derived aggregate states, recoverable `PARTIAL_BLOCKED`, safe cancellation, and higher-epoch forward rollback.
+- Keep candidate, TASK, workspace, physical placement, participant/function ownership, protocol adoption, and live relocation as separate identities and gates.
+- Add the 2.6-to-2.7 migration guide, role/command contracts, adversarial validation, and deterministic relocation-policy fixtures.
+
 ## 2.6 — candidate
 
 - Separate TASK, immutable candidate, and physical workspace lease identities; a revision or handoff no longer implies a new persistent worktree.

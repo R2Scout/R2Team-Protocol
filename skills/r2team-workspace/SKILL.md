@@ -1,6 +1,6 @@
 ---
 name: r2team-workspace
-description: "Inspect and govern R2Team workspace leases: report status, preflight bounded allocation, prepare recoverable closure, or diagnose lifecycle blockers. Use only in an adopted R2Team 2.6 project; it does not grant cleanup, process-stop, merge, relocation, or deletion authority."
+description: "Inspect and govern R2Team workspace leases: report status, preflight bounded allocation, prepare recoverable closure, or diagnose lifecycle blockers. Use only in an adopted R2Team 2.7 project; it does not grant cleanup, process-stop, merge, relocation, or deletion authority."
 ---
 # R2Team — workspace lifecycle
 
@@ -17,7 +17,7 @@ Help, unknown commands, status and doctor are read-only. No command infers mutat
 
 ## Sources and boundaries
 
-Read applicable `AGENTS.md`, accepted `TEAM.md`, the selected TASK/current checkpoint, relevant role instructions, and the workspace-lifecycle section of `CODEX_TEAM_PROTOCOL.md`. Confirm project adoption of 2.6. A 2.5 or older project is not silently upgraded.
+Read applicable `AGENTS.md`, accepted `TEAM.md`, the selected TASK/current checkpoint, relevant role instructions, and the workspace-lifecycle section of `CODEX_TEAM_PROTOCOL.md`. Confirm project adoption of 2.7. An older project is not silently upgraded.
 
 This skill does not administer participants, run product work, relocate teams or chats, replace `r2team-work`, stop processes, delete branches, merge, release, deploy, or modify installed skills. Existing skills may route lifecycle requests here. `r2team-work` remains the TASK execution entry point and must not hide workspace allocation or closure.
 

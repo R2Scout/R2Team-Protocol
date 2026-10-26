@@ -1,4 +1,4 @@
-# R2Team 2.6 scenarios
+# R2Team 2.7 scenarios
 
 These are acceptance scenarios for setup, team lifecycle, communication, recovery, and distribution behavior. Document review is not evidence that access, roles, integrations, or skills work on every machine.
 
@@ -10,11 +10,11 @@ These are acceptance scenarios for setup, team lifecycle, communication, recover
 | GitHub, one PM with helpers | One participant/executor, needed functions/helpers, first real TASK | Create six mandatory chats/issues |
 | Brownfield MVP without OpenSpec | Preserve code/docs, assess coverage/gaps, baseline changed area incrementally | Rewrite whole project or claim complete specs |
 | Existing OpenSpec | Preserve config/specs/active changes/tasks; use version-compatible CLI | Reinitialize/reset/archive to fit protocol |
-| 1.10 with active MSG/PR | Preserve history; choose per-task/coordinated cutover; roles adopt 2.6 | Stop old transport before cutover |
+| 1.10 with active MSG/PR | Preserve history; choose per-task/coordinated cutover; roles adopt 2.7 | Stop old transport before cutover |
 | 1.10 with retained chats and fresh queue authorized | Re-run setup around current specs; cross-check each chat; explicitly retire only approved old org artifacts | Recreate chats or erase OpenSpec tasks |
 | One retained chat rejects/does not understand | Mark its adoption BLOCKED/PENDING; other roles continue only in their scope | Declare universal migration |
 | Organizational docs outside Git | Agree canonical Git root/placement and publish | Treat local folder as remotely recoverable |
-| Trusted target package unavailable | SOURCE_BLOCKED with exact missing source | Reconstruct 2.6 from memory/latest |
+| Trusted target package unavailable | SOURCE_BLOCKED with exact missing source | Reconstruct 2.7 from memory/latest |
 | Proposal accepted but apply not authorized | Stop at installed workflow gate | Begin product implementation during setup |
 | Existing custom skills | Inventory, backup, diff, ask before replacement | Overwrite through init/update |
 | Audit requested | Read-only scoped evidence report | Repair files, enable heartbeat, or migrate |
@@ -115,7 +115,7 @@ These fixtures describe expected consuming-agent behavior. They are not executed
 | Remote read fails or a status mapping is unknown | QUEUE_CHECK_INCOMPLETE with exact gap | Successful no-work result or cursor advancement |
 | A held TASK plus READY B; accepted executor-wide suspension/capacity block | Discover B and report the explicit wider gate | Start B by treating every restriction as task-local |
 | Two eligible assignments without priority | Show both and ask through the issuer/PM route | Choose by chat recency or filename |
-| Installed skill 2.6, accepted project 2.5, no cutover | Report incompatible/pending adoption and actual source refs | Claim workspace lifecycle is already active |
+| Installed skill 2.7, accepted project 2.6, no cutover | Report incompatible/pending adoption and actual source refs | Claim relocation policy is already active |
 | Dev owns TASK; question is addressed to issuer who owns no TASK | Issuer check discovers the question/linked event and answers in its recorded route | Require the issuer to take TASK ownership to see the question |
 | Task Issuer and Project PM are one executor | Both routes remain explicit and usable | Omit one route because the person is the same |
 | ASK answered with sufficient in-scope facts | ANSWERED addresses original requester; requester validates, closes and resumes authorized dependent work | Extra generic PM start gate or silence-as-consent |
@@ -161,22 +161,76 @@ These fixtures describe expected consuming-agent behavior. They are not executed
 | Any lease is `BLOCKED_*`, `REQUESTED`, `ACTIVE`, `CLOSE_PENDING`, or `UNKNOWN` | Preserve candidate verdict; `ADMIN_COMPLETION_BLOCKED` | Mark TASK administratively complete |
 | Terminal state appears without closure owner, retention, recovery, review date, receipt, or required transfer custody | `ADMIN_COMPLETION_BLOCKED` until the full lease record is published | Treat `CLOSED`, `RETAINED_PROTECTED`, or `TRANSFERRED_TO_NEXT_TASK` text as evidence |
 | Transfer to next TASK | Preserve old HEAD/tree, next owner, lease/custody/recovery route | Duplicate mutable ownership |
-| Team/chat relocation request during 2.6 work | Separate 2.7 TASK/checkpoint/candidate/acceptance | Add relocation commands or payload to 2.6 |
+
+## Team/chat relocation
+
+| Input | Expected | Forbidden |
+| --- | --- | --- |
+| Prepare relocation with no accepted action authority | Resolve affected set, prior fence records, custody and required receipts; stop before publication | Stop or activate an executor during preparation |
+| Retain one executor in a multi-executor participant | Remove it from affected set before freeze and keep its accepted route active | Freeze every executor by participant name |
+| Two writers propose epoch 8 from accepted epoch 7 | One materializes; the sibling conflicts and must rebase on the accepted parent | Accept both records or choose by timestamp |
+| Source notification delivered but no positive stop proof | `PARTIAL_BLOCKED`/blocked at source stop | Treat delivery, silence, rename/archive, registry edit, or absent process as stopped |
+| Stop receipt has a valid ID/parent but omits any required proof or identity fact | Reject stop and target activation | Treat causal naming as complete stop evidence |
+| Source is unreachable and provider revocation is not evidenced | Preserve last accepted source state and block activation | Claim cooperative fencing is provider-enforced |
+| Target preflight cites wrong parent, epoch, cutover, function, or TASK route | Reject activation with exact mismatch | Activate because the target chat is ready |
+| Local target route exists | Read back exact ignored registry mapping; commit only evidence enum/class | Commit physical route or a stable route hash |
+| Remote/manual target has no local mapping | Accept explicit remote/manual class when other gates pass | Invent a local path or require one universally |
+| One executor active on target while another remains stopped/blocked | Derive `PARTIAL_BLOCKED`; preserve both states and select resume/cancel/forward rollback | Call the team COMPLETE or erase the stopped state |
+| Cancellation requested after source stop | Permit only the declared safe terminal path; keep source stopped unless a higher-epoch activation occurs | Reuse the old epoch or silently reactivate source |
+| Forward rollback | Publish higher per-executor epoch with causal receipts and target/source preflight | Rewrite/delete accepted receipts or reset epoch |
+| Old source publishes after target activation | Reject as stale against accepted fence/epoch | Accept because source still has provider access |
+| Product write during freeze | Reject for affected executor | Block authorized PM receipt/control-path publication |
+| TASK/TEAM/unknown publication class during freeze | Default-deny; only exact PM relocation-TASK status/evidence fields or canonical migration-control paths may pass | Fall through to ALLOW or accept traversal/typo paths |
+| Workspace candidate correct but custody mismatched | Block activation until workspace evidence is reconciled | Infer workspace movement from relocation |
+| Workspace candidate/custody match but owner or mutability differs | Block reuse until exact lease custody matches | Reuse under another writer or mutability contract |
+| Resumed executor plus valid terminal cancelled/blocked/forward-rollback peer | Derive COMPLETE with terminal owner, review date, next action, and receipt retained | Require every target ACTIVE or accept a bare terminal label |
+| Receipt ID is blank, type unknown, common/type-specific facts missing, or activation parent wrong | `RECEIPT_INVALID` | Accept uniqueness as structural evidence |
+| Activation carries a complete-looking ID but its included stop omits any common typed-receipt fact | Reject activation as invalid stop proof | Validate only the stop-specific subset |
+| Activation names an absent/wrong-type/cross-identity stop receipt | Reject the receipt set as causally open | Accept a self-consistent reference string without its target |
+| Receipt epoch is bool/string/float/null/negative/nonincrementing | `RECEIPT_INVALID`; accept only strict non-boolean integer successor epochs | Let language coercion alias epoch values |
+| Frozen TASK allowed-field input is a scalar string or contains blank/non-string/undeclared fields | Reject the exception | Treat strings as character collections or coerce malformed fields |
+| Any accepted/expected/claimed/current/proposed/stop epoch is boolean or coerced text/float/null/negative | Reject the authority claim; accept only strict non-boolean integer ranges and exact successor relations | Rely on language equality such as `True == 1` |
+| Stop common causal parent differs from its cutover parent | Reject stop, activation, and receipt set | Carry two unrelated nonblank parent strings |
+| Singular checkpoint/tree/custody/cutover fact or any reference-list element is whitespace/non-string/null/duplicate | Reject typed receipt evidence | Accept malformed values because both sides compare equal |
+| Freeze state is null, numeric, text, or a collection | Reject the publication input before class/path handling | Interpret falsey or truthy coercion as a freeze decision |
+| Source and target are both ACTIVE, or custody disagrees with their states | `FENCE_INVALID`; accept only an explicit legal single-writer tuple | Validate each label independently and permit simultaneous writers |
+| Activation cutover differs from its accepted commit, mapping result differs from registry evidence, or target-preflight receipt is absent/stale | Reject activation and receipt-set closure | Accept individually valid-looking contradictory strings |
+| Remote/manual mapping is absent but a collision or observed executor is reported | `REGISTRY_CONFLICT` | Return the no-local-mapping shortcut before checking contradictions |
+| PREPARE/FREEZE/PREFLIGHT/disposition/completion/cancellation/rollback receipt has an unresolved or wrong-type parent | `RECEIPT_INVALID`; require accepted root and affected-set context | Validate only ACTIVATION-to-SOURCE_STOP edges |
+| Completion omits, duplicates, or adds an executor, or an executor has no unique terminal receipt | Reject completion accounting | Treat a standalone COMPLETION label as a closed migration |
+| Publication path contains CR/LF/NUL, leading/trailing segment whitespace, traversal, duplicate separators, or backslashes | `PUBLICATION_PATH_INVALID` | Treat a nonblank string as a canonical portable path |
+| Standalone activation has no included same-identity PASS preflight, or the included preflight is BLOCKED/FAIL | Reject activation in both the decision API and receipt graph | Let one public API rely on evidence checked only by another optional call |
+| Completion omits PREPARE, uses an in-set receipt as accepted root, or combines executor branches from another migration/project lineage | `RECEIPT_INVALID` | Join branches merely because the affected IDs and external root text match |
+| Team completion omits FREEZE or freeze accounts only a subset/extra executor/stop | `RECEIPT_INVALID`; role mode may complete without team freeze | Treat freeze as optional metadata for whole-team cutover |
+| Later causal generation repeats SOURCE_STOP/PREFLIGHT/ACTIVATION at higher epochs | Accept append-only history when every new edge advances causally | Reject all repeated executor/type pairs or overwrite prior receipts |
+| Same executor/type/epoch/parent logical event is repeated under another receipt ID | Reject duplicate logical event | Treat unique receipt IDs as sufficient uniqueness |
+| Terminal BLOCKED has owner/date/action/receipt and is the unique latest terminal disposition | Permit exact completion accounting | Require target ACTIVE or accept a bare BLOCKED label |
+| Aggregate records duplicate/miss/add an executor, use impossible state/custody, malformed date/evidence, unresolved receipt, or an older terminal generation | Return `INVALID` | Derive COMPLETE from arbitrary dictionaries or nonblank strings |
+| SOURCE_STOP outcome is blank, unknown, blocked, or says the source is still running | Reject stop, activation, and the closed graph | Treat any nonblank outcome as positive stop proof |
+| Team preflight omits the exact full-set FREEZE ref or FREEZE is causally/timestamped after preflight, activation, or completion | `RECEIPT_INVALID` | Accept FREEZE as an unrelated sibling whose eventual presence is enough |
+| Team FREEZE timestamp is equal to or earlier than a referenced SOURCE_STOP timestamp | `RECEIPT_INVALID`; require `SOURCE_STOP < FREEZE < TARGET_PREFLIGHT < ACTIVATION` | Infer temporal order from array order or allow equal instants with different offsets |
+| FROZEN, READY_TO_RESUME, or RESUMING aggregate receives empty, malformed, unresolved, missing, or extra receipt context | Return `INVALID`; valid minimum state evidence remains derivable | Validate receipts only on the COMPLETE branch |
+| Earlier PASS preflight/activation exists, but a later rollback and new blocked preflight is the current generation | Return `INVALID` for stale READY/ACTIVE aggregate claims | Search history for any matching PASS or activation |
+| Two different stage receipts share the latest executor epoch without the one activation-to-supporting-preflight pair | Return `INVALID` as an ambiguous current generation | Pick whichever receipt appears first or looks most favorable |
+| COMPLETION references an older rollback/activation while a newer stop, preflight, or partial stage exists | `RECEIPT_INVALID`; completion must account the unique latest stage for every executor | Select the latest receipt only from terminal receipt types |
+| Mixed RESUMING records an inactive PENDING peer whose latest stage is BLOCKED/FAIL preflight, cancellation, rollback, or partial disposition | Return `INVALID`; every executor record must match its latest stage/disposition | Validate only READY/ACTIVE records and ignore inactive peers |
+| Terminal receipt ID/type is current but the record tuple differs from its cancellation result or fixed rollback/BLOCKED result | Return `INVALID`; bind exact source/target/custody before COMPLETE | Treat terminal receipt identity as sufficient and report contradictory custody |
+| Protocol package installed but project not adopted | Keep 2.6 project behavior; no live relocation | Treat installation as adoption or cutover |
 
 ## Distribution release
 
 | Check | Expected |
 | --- | --- |
 | Public language | All maintained distribution files, help, commits, release notes in English |
-| Manifest | Protocol 2.6 as the sole release identifier, required paths and matching SHA-256 |
+| Manifest | Protocol 2.7 as the sole release identifier, required paths and matching SHA-256 |
 | Links/anchors | Structural validator PASS |
 | Validator suite | Current complete suite PASS |
-| Skills | Five skill directories, including r2team-workspace, pass official quick_validate |
+| Skills | Six skill directories, including r2team-workspace and r2team-relocate, pass official quick_validate |
 | Help copies | templates/COMMANDS.md and skills/r2team/references/commands.md byte-identical |
 | Specialized CMMI | Absent from main package; maintained in separate TFS repository |
 | Candidate publication | Candidate branch resolves to exact approved commit; no release tag implied |
 | Fresh clone | Exact candidate commit validates independently |
-| Runtime claims | Direct messaging, provider writes, migration, deployment, heartbeat remain NOT_RUN unless separately tested |
+| Runtime claims | Direct messaging, provider writes, live relocation, migration, deployment, heartbeat remain NOT_RUN unless separately tested |
 
 ## Recovery tabletop
 

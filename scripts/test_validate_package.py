@@ -27,21 +27,25 @@ class PackageTests(unittest.TestCase):
         (self.root / "skills" / "r2team-coo").mkdir(parents=True)
         (self.root / "skills" / "r2team-work").mkdir(parents=True)
         (self.root / "skills" / "r2team-workspace").mkdir(parents=True)
+        (self.root / "skills" / "r2team-relocate").mkdir(parents=True)
         (self.root / "package.json").write_text(json.dumps({
-            "protocol_version": "2.6",
+            "protocol_version": "2.7",
             "bootstrap": "R2TEAM_MASTER.md",
-            "skills": ["r2team", "r2team-work", "r2team-coo", "r2team-audit", "r2team-workspace"],
+            "skills": ["r2team", "r2team-work", "r2team-coo", "r2team-audit", "r2team-workspace", "r2team-relocate"],
             "required_files": [
                 "START.md",
                 "templates/Setup.md",
                 "templates/CODEX_TEAM_PROTOCOL.md",
                 "templates/COMMANDS.md",
                 "templates/LOCAL_REGISTRY_TEMPLATE.md",
+                "templates/TEAM_RELOCATION.md",
+                "templates/MIGRATE_TO_2.7.md",
                 "templates/TEAM.md",
                 "templates/TASK-TEMPLATE.md",
                 "skills/r2team-coo/SKILL.md",
                 "skills/r2team-work/SKILL.md",
-                "skills/r2team-workspace/SKILL.md"
+                "skills/r2team-workspace/SKILL.md",
+                "skills/r2team-relocate/SKILL.md"
             ],
             "template_root": "templates"
         }), encoding="utf-8")
@@ -57,12 +61,22 @@ provider read-back
 sanitized manifest
 Any blocking or nonterminal lease blocks administrative completion
 explicit removal authority
+Relocation preserves the registered logical executor and accepted functions.
+Relocation changes only physical execution placement.
 """)
         self.put("templates/COMMANDS.md", """# Commands
 $r2team-workspace status
 $r2team-workspace open
 $r2team-workspace close
 $r2team-workspace doctor
+$r2team-relocate status
+$r2team-relocate prepare role <executor-id>
+$r2team-relocate prepare team
+$r2team-relocate resume role <migration-id> <executor-id>
+$r2team-relocate resume team <migration-id>
+$r2team-relocate doctor
+$r2team migrate <function> to <participant>
+function transfer, not physical relocation
 """)
         self.put("templates/LOCAL_REGISTRY_TEMPLATE.md", """# Local registry
 lease_id
@@ -70,6 +84,31 @@ physical_path
 observed_size_bytes
 native_resources
 last_observed_at
+""")
+        self.put("templates/TEAM_RELOCATION.md", """# Team relocation
+migration_id
+affected_executor_ids
+global_cutover_generation
+migration_control_paths
+expected_prior_epoch
+prior_accepted_record
+source_state
+target_state
+physical_custody_class
+stop_receipt_ref
+activation_receipt_ref
+blocked_from_state
+permitted_successors
+MAPPING_PRESENT_READ_BACK
+cooperative protocol fencing
+provider-enforced exclusion is NOT_PROVEN
+""")
+        self.put("templates/MIGRATE_TO_2.7.md", """# Migrate to R2Team 2.7
+prospective project-local adoption
+accepted-main checkpoint
+R2Team 2.6 remains governing until adoption
+no live relocation
+provider-enforced exclusion remains NOT_PROVEN
 """)
         self.put("templates/TEAM.md", """# TEAM
 coo:
@@ -144,6 +183,7 @@ description: Run assigned work without hidden workspace mutation.
 ---
 # Work
 Workspace lifecycle operations route to `r2team-workspace`.
+Relocation operations route to `r2team-relocate`.
 """)
         self.put("skills/r2team-workspace/SKILL.md", """---
 name: r2team-workspace
@@ -160,6 +200,23 @@ evidence and custody preflight
 explicit removal authority
 RETAINED_PROTECTED
 ALLOCATION_BLOCKED
+""")
+        self.put("skills/r2team-relocate/SKILL.md", """---
+name: r2team-relocate
+description: Prepare and resume bounded R2Team relocation with cooperative protocol fencing.
+---
+# Relocation
+$r2team-relocate status
+$r2team-relocate prepare role
+$r2team-relocate prepare team
+$r2team-relocate resume role
+$r2team-relocate resume team
+$r2team-relocate doctor
+status and doctor are read-only
+expected_prior_epoch
+prior_accepted_record
+WRITER_CONFLICT
+cooperative protocol fencing
 """)
 
     def put(self, name, text):
@@ -209,7 +266,7 @@ ALLOCATION_BLOCKED
         config = json.loads((self.root / "package.json").read_text())
         config["protocol_version"] = "2.1"
         self.put("package.json", json.dumps(config))
-        self.assertTrue(any("Expected protocol_version 2.6" in e for e in validate(self.root)))
+        self.assertTrue(any("Expected protocol_version 2.7" in e for e in validate(self.root)))
 
     def test_workspace_skill_is_required(self):
         config = json.loads((self.root / "package.json").read_text())
@@ -217,6 +274,70 @@ ALLOCATION_BLOCKED
         config["required_files"].remove("skills/r2team-workspace/SKILL.md")
         self.put("package.json", json.dumps(config))
         self.assertTrue(any("Missing packaged workspace skill" in e
+                            for e in validate(self.root)))
+
+    def test_relocation_skill_is_required(self):
+        config = json.loads((self.root / "package.json").read_text())
+        config["skills"].remove("r2team-relocate")
+        config["required_files"].remove("skills/r2team-relocate/SKILL.md")
+        self.put("package.json", json.dumps(config))
+        self.assertTrue(any("Missing packaged relocation skill" in e
+                            for e in validate(self.root)))
+
+    def test_relocation_skill_requires_causal_fencing_markers(self):
+        text = (self.root / "skills/r2team-relocate/SKILL.md").read_text(encoding="utf-8")
+        self.put("skills/r2team-relocate/SKILL.md",
+                 text.replace("expected_prior_epoch\n", ""))
+        self.assertTrue(any("Missing relocation-skill marker: expected_prior_epoch" in e
+                            for e in validate(self.root)))
+
+    def test_relocation_templates_are_required(self):
+        config = json.loads((self.root / "package.json").read_text())
+        config["required_files"].remove("templates/TEAM_RELOCATION.md")
+        self.put("package.json", json.dumps(config))
+        self.assertTrue(any("Missing packaged relocation template" in e
+                            for e in validate(self.root)))
+
+    def test_relocation_template_requires_executor_fence_schema(self):
+        text = (self.root / "templates/TEAM_RELOCATION.md").read_text(encoding="utf-8")
+        self.put("templates/TEAM_RELOCATION.md",
+                 text.replace("expected_prior_epoch\n", ""))
+        self.assertTrue(any("Missing relocation template marker: expected_prior_epoch" in e
+                            for e in validate(self.root)))
+
+    def test_hash_consistent_private_thread_hash_is_rejected(self):
+        path = self.root / "templates/TEAM_RELOCATION.md"
+        self.put("templates/TEAM_RELOCATION.md",
+                 path.read_text(encoding="utf-8") +
+                 "\nthread_id_sha256: " + "a" * 64 + "\n")
+        self.pin_hashes()
+        self.assertTrue(any("Private thread hash" in e for e in validate(self.root)))
+
+    def test_hash_consistent_automatic_chat_creation_is_rejected(self):
+        path = self.root / "skills/r2team-relocate/SKILL.md"
+        self.put("skills/r2team-relocate/SKILL.md",
+                 path.read_text(encoding="utf-8") +
+                 "\nAutomatically create replacement chats and copy chat transcripts.\n")
+        self.pin_hashes()
+        self.assertTrue(any("Unsafe relocation automation" in e
+                            for e in validate(self.root)))
+
+    def test_hash_consistent_concurrent_writers_are_rejected(self):
+        path = self.root / "skills/r2team-relocate/SKILL.md"
+        self.put("skills/r2team-relocate/SKILL.md",
+                 path.read_text(encoding="utf-8") +
+                 "\nAllow source and target writers to publish concurrently.\n")
+        self.pin_hashes()
+        self.assertTrue(any("Concurrent relocation writers" in e
+                            for e in validate(self.root)))
+
+    def test_function_transfer_command_cannot_be_redefined_as_relocation(self):
+        path = self.root / "templates/COMMANDS.md"
+        self.put("templates/COMMANDS.md",
+                 path.read_text(encoding="utf-8") +
+                 "\n$r2team migrate <function> to <participant> performs physical chat relocation.\n")
+        self.pin_hashes()
+        self.assertTrue(any("Function transfer command redefined" in e
                             for e in validate(self.root)))
 
     def test_workspace_skill_requires_safe_command_boundaries(self):
@@ -347,9 +468,32 @@ This command directly allocates and closes workspaces.
         self.assertTrue(any("Missing workspace TASK marker: candidate_dispositions" in e
                             for e in validate(self.root)))
 
-    def test_team_chat_relocation_payload_is_rejected(self):
+    def test_legacy_hidden_relocation_alias_is_rejected(self):
         self.put("templates/COMMANDS.md", "$r2team relocate-chat PM to another thread\n")
-        self.assertTrue(any("Relocation behavior is outside R2Team 2.6" in e
+        self.assertTrue(any("Relocation must use r2team-relocate" in e
+                            for e in validate(self.root)))
+
+    def test_protocol_cannot_redefine_relocation_as_executor_transfer(self):
+        self.put(
+            "templates/CODEX_TEAM_PROTOCOL.md",
+            "Relocation changes which registered executor carries functions without changing physical placement.\n",
+        )
+        self.assertTrue(
+            any("Relocation identity contract invalid" in e for e in validate(self.root))
+        )
+
+    def test_relocation_commands_are_required(self):
+        text = (self.root / "templates/COMMANDS.md").read_text(encoding="utf-8")
+        self.put("templates/COMMANDS.md",
+                 text.replace("$r2team-relocate prepare role <executor-id>\n", ""))
+        self.assertTrue(any("Missing relocation command marker" in e
+                            for e in validate(self.root)))
+
+    def test_r2team_work_cannot_hide_relocation_mutation(self):
+        text = (self.root / "skills/r2team-work/SKILL.md").read_text(encoding="utf-8")
+        self.put("skills/r2team-work/SKILL.md",
+                 text.replace("Relocation operations route to `r2team-relocate`.\n", ""))
+        self.assertTrue(any("Missing r2team-work relocation boundary" in e
                             for e in validate(self.root)))
 
     def test_coo_must_discover_new_task_ids_by_executor(self):

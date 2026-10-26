@@ -1,4 +1,4 @@
-# OpenSpec and Superpowers — R2Team 2.6 integration
+# OpenSpec and Superpowers — R2Team 2.7 integration
 
 This is required routing by work, not a declaration that all skills are installed. Do not invoke every workflow for a minor task. Read the complete selected SKILL.md before acting. Missing required skills need an agreed installation or explicit equivalent.
 
@@ -6,7 +6,7 @@ This is required routing by work, not a declaration that all skills are installe
 
 ### R2Team procedure skills
 
-The package supplies r2team (lifecycle), r2team-work (start/task/discussion), r2team-coo (update/check) and r2team-audit (read-only). See [COMMANDS.md](COMMANDS.md) and the trusted package's root SKILL-INSTALL.md.
+The package supplies r2team (lifecycle), r2team-work (start/task/discussion), r2team-workspace (workspace lifecycle), r2team-relocate (causally fenced team/chat relocation), r2team-coo (update/check) and r2team-audit (read-only). See [COMMANDS.md](COMMANDS.md) and the trusted package's root SKILL-INSTALL.md.
 
 Verify source, installation and discovery on each machine. Skills do not replace OpenSpec/Superpowers, store TEAM or enable heartbeat. Confirm compatibility before using them in a project with a different protocol. Installation is not migration.
 
