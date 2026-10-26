@@ -1,10 +1,10 @@
 ---
 protocol_version: "2.6"
 id: "TASK-R2TEAM-2.7-TEAM-CHAT-RELOCATION-001"
-revision: 3
+revision: 4
 handoff_seq: 0
-status: IMPLEMENTING
-stage: IMPLEMENTATION
+status: REVIEW_READY
+stage: QA
 owner_executor_id: "r2team-protocol-pm"
 owner_route: "https://github.com/R2Scout/R2Team-Protocol/issues/3"
 previous_owner_executor_id: null
@@ -26,7 +26,7 @@ branch: "planning/r2team-2.7-team-chat-relocation"
 pr: null
 openspec_change: null
 base_sha: "7e7a35eaf89726b0850da78aaa176d142d7fc1ce"
-candidate_sha: null
+candidate_sha: "3971e5e863d3a1c19573f9fa99f9d73644758599"
 verified_sha: null
 merged_sha: null
 workspace_policy: inherited_from_protocol_2.6
@@ -39,7 +39,7 @@ workspace_leases:
     owner_executor_id: "r2team-protocol-pm"
     closure_owner_executor_id: "r2team-protocol-pm"
     base_sha: "7e7a35eaf89726b0850da78aaa176d142d7fc1ce"
-    candidate_sha: null
+    candidate_sha: "3971e5e863d3a1c19573f9fa99f9d73644758599"
     mutability: mutable
     custody: ordinary-canonical
     state: ACTIVE
@@ -52,7 +52,7 @@ workspace_disposition: ACTIVE
 candidate_dispositions: []
 artifact_manifests: []
 close_receipts: []
-next_action: "Implement the accepted revision-2 contract with red-first relocation policy and validator fixtures, then publish an exact candidate for fresh independent review."
+next_action: "Obtain fresh independent review of candidate 3971e5e863d3a1c19573f9fa99f9d73644758599 / tree db9ecec114b26af6f404b308c6695acefa02ec50; prepare a PR without merging only if PASS."
 questions:
   - id: Q-2.7-SKILL-BOUNDARY
     mode: LOOP
@@ -111,9 +111,9 @@ Excluded:
 
 # Current checkpoint
 
-- Completed: merged R2Team 2.6 base read back; Issue #3 created; the clean 2.6 author worktree was reused as the 2.7 author lease without allocating another physical worktree; planning rev1 was reviewed as `AMEND`; A1-A6 were reconciled into rev2; exact revision-2 checkpoint received System Architect `PASS`.
-- Remaining: implement the accepted contract, validate an exact candidate, obtain fresh independent candidate review, and prepare a PR.
-- Blockers: none for bounded implementation. Merge, release, installation, downstream adoption, provider-enforced fencing claims, and live relocation remain separate gates.
+- Completed: planning revision 2 received System Architect `PASS`; implementation candidate `3971e5e863d3a1c19573f9fa99f9d73644758599` / tree `db9ecec114b26af6f404b308c6695acefa02ec50` implements the accepted contract and passed local plus fresh manifest-only validation.
+- Remaining: obtain fresh independent review of the exact implementation candidate and, only if PASS, prepare a PR without merging.
+- Blockers: none for independent review. Merge, release, installation, downstream adoption, provider-enforced fencing claims, and live relocation remain separate gates.
 
 # Evidence
 
@@ -125,6 +125,9 @@ Excluded:
 - System Architect rev1 verdict: `AMEND`; accepted separate skill/identity/registry/workspace/forward-rollback boundaries, required per-executor causal fencing, recoverable partial states, exact evidence, typed receipts, candidate wording, and missing fixtures.
 - Planning rev2: `a5c9447dc0603cf895cc7d6105768091ab02d431`, tree `ee67f59e74bbe28306eddb5aa84e575e27c20e40`.
 - System Architect rev2 verdict: `PASS`; remote SHA/tree, parent, exact six-file delta, A1-A6 reconciliation, and zero private IDs/paths independently verified. Implementation-candidate PASS remains NOT_RUN and non-transferable.
+- Implementation candidate: `3971e5e863d3a1c19573f9fa99f9d73644758599`, tree `db9ecec114b26af6f404b308c6695acefa02ec50`, parent `6245cb8ff1612d858af6ddcbaa1ddde85c5c3abc`.
+- Structural validator: PASS; validator suite: 52/52; workspace policy: 32/32; relocation policy: 27/27; official skill validation: 6/6; command copies byte-identical; `git diff --check`: PASS.
+- Fresh manifest-only package: PASS for 59 required files, all three suites, all six skill checks, byte-identical help, English-only public Markdown; temporary package removed after verification.
 - Predecessor relocation material: read-only architectural input, not accepted authority or copied runtime state.
 - Runtime/live relocation: NOT_RUN and out of scope.
 
@@ -132,8 +135,8 @@ Excluded:
 
 | Outcome | Next TASK status | Next owner executor | Next owner route | Next active role | Following result recipient | Following result route | Authorized publisher |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Planning PASS | IMPLEMENTING | r2team-protocol-pm | https://github.com/R2Scout/R2Team-Protocol/issues/3 | PM | r2team-protocol-owner | https://github.com/R2Scout/R2Team-Protocol/issues/3 | r2team-protocol-pm |
-| AMEND | DRAFT | r2team-protocol-pm | https://github.com/R2Scout/R2Team-Protocol/issues/3 | PM | r2team-protocol-owner | https://github.com/R2Scout/R2Team-Protocol/issues/3 | r2team-protocol-pm |
+| Implementation PASS | REVIEW_READY | r2team-protocol-pm | https://github.com/R2Scout/R2Team-Protocol/issues/3 | PM | r2team-protocol-owner | https://github.com/R2Scout/R2Team-Protocol/issues/3 | r2team-protocol-pm |
+| AMEND | IMPLEMENTING | r2team-protocol-pm | https://github.com/R2Scout/R2Team-Protocol/issues/3 | PM | r2team-protocol-owner | https://github.com/R2Scout/R2Team-Protocol/issues/3 | r2team-protocol-pm |
 | BLOCKED | BLOCKED | r2team-protocol-pm | https://github.com/R2Scout/R2Team-Protocol/issues/3 | PM | r2team-protocol-owner | https://github.com/R2Scout/R2Team-Protocol/issues/3 | r2team-protocol-pm |
 
 # Publication gate
