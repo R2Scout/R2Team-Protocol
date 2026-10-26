@@ -41,3 +41,5 @@ A freeze cannot block only product code while allowing TASK, TEAM, or misspelled
 ## 10. Receipt names are not receipt evidence
 
 Uniqueness alone does not make a receipt typed or causal. Every receipt needs a nonblank ID, known type, migration/project/executor and epoch facts, causal parent, accepted commit, TASK/candidate/workspace references, actor/provider class, outcome, registry evidence, timestamp, and its type-specific facts.
+
+The activation API must compose the same complete typed `SOURCE_STOP` validator; a smaller stop-specific subset creates a bypass. Receipt-set validity also requires causal closure: every activation edge resolves to exactly one included `SOURCE_STOP` with matching migration/project/executor/cutover/epoch and custody references. Epochs use strict non-boolean integers, and exact governing-TASK field lists use validated collections rather than generic iterables.

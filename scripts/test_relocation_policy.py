@@ -254,6 +254,22 @@ class RelocationPolicyTests(unittest.TestCase):
 
         self.assertEqual("STOP_PROOF_INVALID", decision.code)
 
+    def test_activation_rejects_every_missing_common_or_stop_fact(self):
+        activation_allowed = self.require("activation_allowed")
+        fields = set(self.stop_receipt())
+        for field in sorted(fields):
+            with self.subTest(field=field):
+                stop = self.stop_receipt()
+                del stop[field]
+                decision = activation_allowed(
+                    self.accepted_fence(),
+                    stop_receipt=stop,
+                    activation_receipt=self.activation_receipt(),
+                    source_reachable=True,
+                    enforceable_revocation=False,
+                )
+                self.assertNotEqual("ALLOW", decision.code)
+
     def test_activation_rejects_mismatched_stop_identity_and_custody(self):
         activation_allowed = self.require("activation_allowed")
         mutations = {
@@ -523,6 +539,38 @@ class RelocationPolicyTests(unittest.TestCase):
         self.assertEqual("ALLOW", allowed.code)
         self.assertNotEqual("ALLOW", wrong_field.code)
         self.assertNotEqual("ALLOW", traversal.code)
+
+    def test_frozen_task_exception_rejects_malformed_field_collections(self):
+        publication_allowed = self.require("publication_allowed")
+        base = {
+            "claim_project_id": "project-a",
+            "claim_executor_id": "dev-a",
+            "claim_epoch": 4,
+            "claim_record_ref": "fence-4",
+            "publication_class": "TASK",
+            "frozen": True,
+            "actor_executor_id": "pm-a",
+            "migration_pm_executor_id": "pm-a",
+            "path": "Tasks/TASK-RELOCATION.md",
+            "migration_id": "migration-1",
+            "governing_task_path": "Tasks/TASK-RELOCATION.md",
+        }
+        cases = (
+            ("status", ("s",)),
+            (("status", ""), ("status",)),
+            (("status", 7), ("status",)),
+            (("status",), "status"),
+            (("status",), ("owner_executor_id",)),
+        )
+        for governing, claimed in cases:
+            with self.subTest(governing=governing, claimed=claimed):
+                decision = publication_allowed(
+                    self.accepted_fence(),
+                    governing_task_fields=governing,
+                    claimed_fields=claimed,
+                    **base,
+                )
+                self.assertNotEqual("ALLOW", decision.code)
 
     def test_registry_remap_rejects_collision_or_wrong_executor(self):
         registry_mapping_allowed = self.require("registry_mapping_allowed")
@@ -821,6 +869,58 @@ class RelocationPolicyTests(unittest.TestCase):
             "ALLOW",
             receipt_set_allowed((self.stop_receipt(), self.activation_receipt())).code,
         )
+
+    def test_receipt_set_rejects_orphan_or_wrong_type_activation_parent(self):
+        receipt_set_allowed = self.require("receipt_set_allowed")
+        orphan = receipt_set_allowed((self.activation_receipt(),))
+
+        wrong_type = self.stop_receipt()
+        wrong_type["receipt_type"] = "TARGET_PREFLIGHT"
+        wrong_type["target_preflight"] = "PASS"
+        wrong_type["target_placement_class"] = "local-standalone"
+        wrong_type_result = receipt_set_allowed((wrong_type, self.activation_receipt()))
+
+        self.assertEqual("RECEIPT_INVALID", orphan.code)
+        self.assertEqual("RECEIPT_INVALID", wrong_type_result.code)
+
+    def test_receipt_set_rejects_cross_identity_epoch_or_cutover_edges(self):
+        receipt_set_allowed = self.require("receipt_set_allowed")
+        mutations = {
+            "migration_id": "migration-other",
+            "repository_or_project_id": "project-other",
+            "executor_id": "qa-a",
+            "cutover_parent": "fence-other",
+            "new_epoch": 3,
+        }
+        for field, value in mutations.items():
+            with self.subTest(field=field):
+                stop = self.stop_receipt()
+                stop[field] = value
+                self.assertEqual(
+                    "RECEIPT_INVALID",
+                    receipt_set_allowed((stop, self.activation_receipt())).code,
+                )
+
+    def test_receipt_epochs_reject_bool_noninteger_and_invalid_ranges(self):
+        validate_receipt = self.require("validate_receipt")
+        cases = []
+        for value in (True, "3", 3.0, None, -1):
+            receipt = self.stop_receipt()
+            receipt["prior_epoch"] = value
+            cases.append(receipt)
+        nonincrementing = self.stop_receipt()
+        nonincrementing["new_epoch"] = nonincrementing["prior_epoch"]
+        cases.append(nonincrementing)
+
+        for receipt in cases:
+            with self.subTest(receipt=receipt):
+                self.assertEqual("RECEIPT_INVALID", validate_receipt(receipt).code)
+
+        boundary = self.stop_receipt()
+        boundary["prior_epoch"] = 0
+        boundary["new_epoch"] = 1
+        boundary["expected_epoch"] = 1
+        self.assertEqual("ALLOW", validate_receipt(boundary).code)
 
     def test_same_next_epoch_branches_are_serialized_by_accepted_parent(self):
         materialize_successor = self.require("materialize_successor")

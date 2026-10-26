@@ -30,6 +30,19 @@ def _canonical_portable_path(path: str) -> bool:
     return all(part not in {"", ".", ".."} for part in path.split("/"))
 
 
+def _valid_field_collection(value, *, allow_empty: bool = False) -> bool:
+    if not isinstance(value, (tuple, list)) or (not value and not allow_empty):
+        return False
+    for field in value:
+        if not _nonblank(field) or field != field.strip():
+            return False
+        if not field[0].isalpha() or any(
+            not (character.isalnum() or character == "_") for character in field
+        ):
+            return False
+    return True
+
+
 @dataclass(frozen=True)
 class Decision:
     code: str
@@ -149,6 +162,8 @@ def activation_allowed(
     stop_validation = validate_stop_receipt(stop_receipt)
     if stop_validation.code != "ALLOW":
         return stop_validation
+    if validate_receipt(stop_receipt).code != "ALLOW":
+        return Decision("STOP_PROOF_INVALID", "complete typed stop receipt is invalid")
     if not isinstance(activation_receipt, dict):
         return Decision("ACTIVATION_RECEIPT_INVALID")
     if activation_receipt.get("target_preflight") != "PASS":
@@ -158,6 +173,12 @@ def activation_allowed(
             "ACTIVATION_CAUSAL_MISMATCH",
             "activation does not reference the accepted stop receipt",
         )
+    if (
+        stop_receipt.get("expected_epoch") != accepted.epoch
+        or activation_receipt.get("prior_epoch") != accepted.epoch
+        or activation_receipt.get("new_epoch") != accepted.epoch + 1
+    ):
+        return Decision("ACTIVATION_CAUSAL_MISMATCH", "activation epoch is invalid")
     activation_validation = validate_receipt(activation_receipt)
     if activation_validation.code != "ALLOW" or activation_receipt.get("receipt_type") != "ACTIVATION":
         return Decision("ACTIVATION_RECEIPT_INVALID")
@@ -183,12 +204,6 @@ def activation_allowed(
     )
     if any(actual != expected for actual, expected in identity_pairs):
         return Decision("ACTIVATION_IDENTITY_MISMATCH")
-    if (
-        stop_receipt.get("expected_epoch") != accepted.epoch
-        or activation_receipt.get("prior_epoch") != accepted.epoch
-        or activation_receipt.get("new_epoch") != accepted.epoch + 1
-    ):
-        return Decision("ACTIVATION_CAUSAL_MISMATCH", "activation epoch is invalid")
     return Decision("ALLOW")
 
 
@@ -328,8 +343,9 @@ def publication_allowed(
         and governing_task_path is not None
         and _canonical_portable_path(governing_task_path)
         and path == governing_task_path
-        and bool(claimed_fields)
-        and set(claimed_fields).issubset(governing_task_fields)
+        and _valid_field_collection(governing_task_fields)
+        and _valid_field_collection(claimed_fields)
+        and set(claimed_fields).issubset(set(governing_task_fields))
     ):
         return Decision("ALLOW")
     return Decision("FROZEN_PUBLICATION_BLOCKED")
@@ -401,6 +417,31 @@ def receipt_set_allowed(receipts: tuple[dict, ...]) -> Decision:
     receipt_ids = [receipt.get("receipt_id") for receipt in receipts]
     if len(receipt_ids) != len(set(receipt_ids)):
         return Decision("DUPLICATE_RECEIPT_ID")
+    by_id = {receipt["receipt_id"]: receipt for receipt in receipts}
+    for receipt in receipts:
+        if receipt["receipt_type"] != "ACTIVATION":
+            continue
+        stop = by_id.get(receipt["causal_stop_receipt"])
+        if stop is None or stop.get("receipt_type") != "SOURCE_STOP":
+            return Decision("RECEIPT_INVALID", "activation stop edge is unresolved")
+        identity_pairs = (
+            (receipt.get("migration_id"), stop.get("migration_id")),
+            (
+                receipt.get("repository_or_project_id"),
+                stop.get("repository_or_project_id"),
+            ),
+            (receipt.get("executor_id"), stop.get("executor_id")),
+            (receipt.get("cutover_parent"), stop.get("cutover_parent")),
+            (receipt.get("prior_epoch"), stop.get("new_epoch")),
+            (receipt.get("task_checkpoint_refs"), stop.get("task_checkpoint_refs")),
+            (receipt.get("candidate_refs"), stop.get("candidate_refs")),
+            (
+                receipt.get("workspace_disposition_refs"),
+                stop.get("workspace_disposition_refs"),
+            ),
+        )
+        if any(actual != expected for actual, expected in identity_pairs):
+            return Decision("RECEIPT_INVALID", "activation stop edge identity differs")
     return Decision("ALLOW")
 
 
@@ -431,7 +472,15 @@ def validate_receipt(receipt: dict | None) -> Decision:
         return Decision("RECEIPT_INVALID", "executor identity is missing")
     if receipt_type in global_types and receipt.get("executor_id") is not None and not _nonblank(receipt.get("executor_id")):
         return Decision("RECEIPT_INVALID", "executor identity is malformed")
-    if not isinstance(receipt.get("prior_epoch"), int) or not isinstance(receipt.get("new_epoch"), int):
+    prior_epoch = receipt.get("prior_epoch")
+    new_epoch = receipt.get("new_epoch")
+    if (
+        type(prior_epoch) is not int
+        or type(new_epoch) is not int
+        or prior_epoch < 0
+        or new_epoch < 1
+        or new_epoch != prior_epoch + 1
+    ):
         return Decision("RECEIPT_INVALID", "receipt epoch is invalid")
     for field in ("task_checkpoint_refs", "candidate_refs", "workspace_disposition_refs"):
         value = receipt.get(field)
@@ -473,6 +522,8 @@ def validate_receipt(receipt: dict | None) -> Decision:
         stop = validate_stop_receipt(receipt)
         if stop.code != "ALLOW":
             return Decision("RECEIPT_INVALID", stop.reason)
+        if receipt.get("expected_epoch") != new_epoch:
+            return Decision("RECEIPT_INVALID", "stop expected epoch is invalid")
     if (
         receipt_type == "ACTIVATION"
         and receipt.get("causal_parent_ref") != receipt.get("causal_stop_receipt")
