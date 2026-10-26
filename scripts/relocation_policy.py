@@ -29,6 +29,15 @@ LEGAL_FENCE_STATES = {
     ("STOPPED", "ACTIVE", "TARGET_ACTIVE"),
 }
 
+STAGE_RECEIPT_TYPES = {
+    "SOURCE_STOP",
+    "TARGET_PREFLIGHT",
+    "ACTIVATION",
+    "PARTIAL_DISPOSITION",
+    "CANCELLATION",
+    "FORWARD_ROLLBACK",
+}
+
 
 def _nonblank(value) -> bool:
     return isinstance(value, str) and bool(value.strip())
@@ -100,6 +109,40 @@ def _valid_field_collection(value, *, allow_empty: bool = False) -> bool:
         ):
             return False
     return True
+
+
+def _latest_executor_stage(receipts, executor_id):
+    candidates = [
+        receipt
+        for receipt in receipts
+        if receipt.get("executor_id") == executor_id
+        and receipt.get("receipt_type") in STAGE_RECEIPT_TYPES
+    ]
+    if not candidates:
+        return None
+    latest_epoch = max(receipt["new_epoch"] for receipt in candidates)
+    latest = [
+        receipt for receipt in candidates if receipt["new_epoch"] == latest_epoch
+    ]
+    if len(latest) == 1:
+        return latest[0]
+    activations = [
+        receipt for receipt in latest if receipt["receipt_type"] == "ACTIVATION"
+    ]
+    preflights = [
+        receipt
+        for receipt in latest
+        if receipt["receipt_type"] == "TARGET_PREFLIGHT"
+    ]
+    if (
+        len(activations) == 1
+        and len(preflights) == len(latest) - 1
+        and len(preflights) == 1
+        and activations[0].get("target_preflight_receipt")
+        == preflights[0].get("receipt_id")
+    ):
+        return activations[0]
+    return None
 
 
 @dataclass(frozen=True)
@@ -437,50 +480,8 @@ def derive_team_state(
     ]
     if len(prepare_receipts) != 1:
         return invalid
-    stage_types = {
-        "SOURCE_STOP",
-        "TARGET_PREFLIGHT",
-        "ACTIVATION",
-        "PARTIAL_DISPOSITION",
-        "CANCELLATION",
-        "FORWARD_ROLLBACK",
-    }
-
-    def latest_stage(executor_id):
-        candidates = [
-            receipt
-            for receipt in receipts
-            if receipt.get("executor_id") == executor_id
-            and receipt.get("receipt_type") in stage_types
-        ]
-        if not candidates:
-            return None
-        latest_epoch = max(receipt["new_epoch"] for receipt in candidates)
-        latest = [
-            receipt for receipt in candidates if receipt["new_epoch"] == latest_epoch
-        ]
-        if len(latest) == 1:
-            return latest[0]
-        activations = [
-            receipt for receipt in latest if receipt["receipt_type"] == "ACTIVATION"
-        ]
-        preflights = [
-            receipt
-            for receipt in latest
-            if receipt["receipt_type"] == "TARGET_PREFLIGHT"
-        ]
-        if (
-            len(activations) == 1
-            and len(preflights) == len(latest) - 1
-            and len(preflights) == 1
-            and activations[0].get("target_preflight_receipt")
-            == preflights[0].get("receipt_id")
-        ):
-            return activations[0]
-        return None
-
     latest_stages = {
-        executor_id: latest_stage(executor_id)
+        executor_id: _latest_executor_stage(receipts, executor_id)
         for executor_id in affected_executor_ids
     }
     if any(receipt is None for receipt in latest_stages.values()):
@@ -522,30 +523,12 @@ def derive_team_state(
         }
         for record in records:
             receipt = by_id.get(record["disposition_receipt_ref"])
-            terminal_receipts = [
-                candidate
-                for candidate in receipts
-                if candidate.get("executor_id") == record["executor_id"]
-                and (
-                    candidate.get("receipt_type")
-                    in {"ACTIVATION", "CANCELLATION", "FORWARD_ROLLBACK"}
-                    or (
-                        candidate.get("receipt_type") == "PARTIAL_DISPOSITION"
-                        and candidate.get("terminal_disposition") == "BLOCKED"
-                    )
-                )
-            ]
-            latest_epoch = max(candidate["new_epoch"] for candidate in terminal_receipts)
-            latest_ids = {
-                candidate["receipt_id"]
-                for candidate in terminal_receipts
-                if candidate["new_epoch"] == latest_epoch
-            }
+            latest = latest_stages[record["executor_id"]]
             if (
                 receipt is None
                 or receipt.get("receipt_type") != expected_types[record["disposition"]]
                 or receipt.get("executor_id") != record["executor_id"]
-                or latest_ids != {receipt.get("receipt_id")}
+                or latest.get("receipt_id") != receipt.get("receipt_id")
                 or (
                     record["disposition"] == "BLOCKED"
                     and receipt.get("terminal_disposition") != "BLOCKED"
@@ -556,6 +539,32 @@ def derive_team_state(
 
     if any(record["disposition"] in terminal_dispositions for record in records):
         return invalid
+    for record in records:
+        latest = latest_stages[record["executor_id"]]
+        if record["disposition"] == "RESUMED":
+            if (
+                record["target_state"] != "ACTIVE"
+                or latest["receipt_type"] != "ACTIVATION"
+                or record.get("disposition_receipt_ref")
+                != latest.get("receipt_id")
+            ):
+                return invalid
+            continue
+        if record["disposition"] != "PENDING":
+            return invalid
+        expected_type = {
+            "INACTIVE": "SOURCE_STOP",
+            "PREFLIGHTED": "TARGET_PREFLIGHT",
+            "READY": "TARGET_PREFLIGHT",
+            "ACTIVE": "ACTIVATION",
+        }[record["target_state"]]
+        if latest["receipt_type"] != expected_type:
+            return invalid
+        if (
+            expected_type == "TARGET_PREFLIGHT"
+            and latest.get("target_preflight") != "PASS"
+        ):
+            return invalid
     if all(
         record["source_state"] == "STOPPED"
         and record["target_state"] == "READY"
@@ -583,23 +592,6 @@ def derive_team_state(
         ) != 1:
             return invalid
         return TeamState("FROZEN", active, blocked)
-    for record in records:
-        if (
-            record["target_state"] in {"PREFLIGHTED", "READY"}
-            and (
-                latest_stages[record["executor_id"]]["receipt_type"]
-                != "TARGET_PREFLIGHT"
-                or latest_stages[record["executor_id"]].get("target_preflight")
-                != "PASS"
-            )
-        ):
-            return invalid
-        if (
-            record["target_state"] == "ACTIVE"
-            and latest_stages[record["executor_id"]]["receipt_type"]
-            != "ACTIVATION"
-        ):
-            return invalid
     return TeamState("RESUMING", active, blocked)
 
 
@@ -1118,28 +1110,19 @@ def receipt_set_allowed(
 
         latest_terminal_ids = set()
         for executor_id in affected_executor_ids:
-            terminal = [
-                receipt
-                for receipt in receipts
-                if receipt.get("executor_id") == executor_id
-                and (
-                    receipt["receipt_type"]
-                    in {"ACTIVATION", "CANCELLATION", "FORWARD_ROLLBACK"}
-                    or (
-                        receipt["receipt_type"] == "PARTIAL_DISPOSITION"
-                        and receipt.get("terminal_disposition") == "BLOCKED"
-                    )
-                )
-            ]
-            if not terminal:
+            latest = _latest_executor_stage(receipts, executor_id)
+            if latest is None:
                 return Decision("RECEIPT_INVALID", "executor terminal state is not unique")
-            latest_epoch = max(receipt["new_epoch"] for receipt in terminal)
-            latest = [
-                receipt for receipt in terminal if receipt["new_epoch"] == latest_epoch
-            ]
-            if len(latest) != 1:
-                return Decision("RECEIPT_INVALID", "executor terminal state is not unique")
-            latest_terminal_ids.add(latest[0]["receipt_id"])
+            if latest["receipt_type"] not in {
+                "ACTIVATION",
+                "CANCELLATION",
+                "FORWARD_ROLLBACK",
+            } and not (
+                latest["receipt_type"] == "PARTIAL_DISPOSITION"
+                and latest.get("terminal_disposition") == "BLOCKED"
+            ):
+                return Decision("RECEIPT_INVALID", "executor latest stage is not terminal")
+            latest_terminal_ids.add(latest["receipt_id"])
         if completion["causal_parent_ref"] not in latest_terminal_ids:
             return Decision("RECEIPT_INVALID", "completion parent is not latest terminal")
     return Decision("ALLOW")

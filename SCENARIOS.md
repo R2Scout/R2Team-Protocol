@@ -212,6 +212,8 @@ These fixtures describe expected consuming-agent behavior. They are not executed
 | FROZEN, READY_TO_RESUME, or RESUMING aggregate receives empty, malformed, unresolved, missing, or extra receipt context | Return `INVALID`; valid minimum state evidence remains derivable | Validate receipts only on the COMPLETE branch |
 | Earlier PASS preflight/activation exists, but a later rollback and new blocked preflight is the current generation | Return `INVALID` for stale READY/ACTIVE aggregate claims | Search history for any matching PASS or activation |
 | Two different stage receipts share the latest executor epoch without the one activation-to-supporting-preflight pair | Return `INVALID` as an ambiguous current generation | Pick whichever receipt appears first or looks most favorable |
+| COMPLETION references an older rollback/activation while a newer stop, preflight, or partial stage exists | `RECEIPT_INVALID`; completion must account the unique latest stage for every executor | Select the latest receipt only from terminal receipt types |
+| Mixed RESUMING records an inactive PENDING peer whose latest stage is BLOCKED/FAIL preflight, cancellation, rollback, or partial disposition | Return `INVALID`; every executor record must match its latest stage/disposition | Validate only READY/ACTIVE records and ignore inactive peers |
 | Protocol package installed but project not adopted | Keep 2.6 project behavior; no live relocation | Treat installation as adoption or cutover |
 
 ## Distribution release

@@ -2558,6 +2558,273 @@ class RelocationPolicyTests(unittest.TestCase):
             ).state,
         )
 
+    def test_completion_rejects_older_terminal_after_newer_causal_stage(self):
+        derive_team_state = self.require("derive_team_state")
+        receipt_set_allowed = self.require("receipt_set_allowed")
+        prepare = self.prepare_receipt()
+        stop1 = self.stop_receipt()
+        preflight1 = self.preflight_receipt()
+        activation1 = self.activation_receipt()
+        rollback = dict(activation1)
+        rollback.update(
+            receipt_id="rollback-1",
+            receipt_type="FORWARD_ROLLBACK",
+            causal_parent_ref="activation-1",
+            prior_epoch=5,
+            new_epoch=6,
+            observed_outcome="FORWARD_ROLLBACK",
+            rollback_target_epoch=6,
+            causal_activation_receipt="activation-1",
+        )
+        stop2 = dict(stop1)
+        stop2.update(
+            receipt_id="stop-2",
+            prior_epoch=6,
+            new_epoch=7,
+            expected_epoch=7,
+            causal_parent_ref="rollback-1",
+            cutover_parent="rollback-1",
+            timestamp="2026-01-01T00:02:00Z",
+        )
+        blocked_preflight = dict(preflight1)
+        blocked_preflight.update(
+            receipt_id="preflight-2",
+            prior_epoch=7,
+            new_epoch=8,
+            causal_parent_ref="stop-2",
+            target_preflight="BLOCKED",
+            observed_outcome="TARGET_PREFLIGHT_BLOCKED",
+            timestamp="2026-01-01T00:03:00Z",
+        )
+        completion = self.completion_receipt()
+        completion.update(
+            prior_epoch=6,
+            new_epoch=7,
+            causal_parent_ref="rollback-1",
+        )
+        history = (
+            prepare,
+            stop1,
+            preflight1,
+            activation1,
+            rollback,
+            stop2,
+            blocked_preflight,
+            completion,
+        )
+        self.assertEqual(
+            "RECEIPT_INVALID",
+            receipt_set_allowed(
+                history,
+                accepted_root_ref="fence-4",
+                affected_executor_ids=("dev-a",),
+                migration_mode="role",
+            ).code,
+        )
+        self.assertEqual(
+            "INVALID",
+            derive_team_state(
+                [{
+                    "executor_id": "dev-a",
+                    "source_state": "STOPPED",
+                    "target_state": "INACTIVE",
+                    "custody": "SOURCE_STOPPED",
+                    "disposition": "FORWARD_ROLLBACK",
+                    "disposition_owner_executor_id": "pm-a",
+                    "review_date": "2026-01-02",
+                    "next_action": "Retain protected custody",
+                    "disposition_receipt_ref": "rollback-1",
+                }],
+                affected_executor_ids=("dev-a",),
+                receipts=history,
+                accepted_root_ref="fence-4",
+                migration_mode="role",
+            ).state,
+        )
+
+    def test_mixed_resuming_validates_inactive_peer_latest_stage(self):
+        derive_team_state = self.require("derive_team_state")
+        receipt_set_allowed = self.require("receipt_set_allowed")
+
+        for latest_kind in (
+            "BLOCKED_PREFLIGHT",
+            "FAIL_PREFLIGHT",
+            "CANCELLATION",
+            "FORWARD_ROLLBACK",
+            "PARTIAL_DISPOSITION",
+        ):
+            with self.subTest(latest_kind=latest_kind):
+                prepare = self.prepare_receipt()
+                prepare["affected_executor_ids"] = ["dev-a", "qa-a"]
+                dev_stop = self.stop_receipt()
+                qa_stop = self.stop_receipt()
+                qa_stop.update(receipt_id="stop-qa", executor_id="qa-a")
+                freeze = dict(prepare)
+                freeze.update(
+                    receipt_id="freeze-1",
+                    receipt_type="FREEZE",
+                    causal_parent_ref="prepare-1",
+                    prior_epoch=3,
+                    new_epoch=4,
+                    observed_outcome="FROZEN",
+                    stopped_executor_ids=["dev-a", "qa-a"],
+                    source_stop_receipt_refs=["stop-1", "stop-qa"],
+                    timestamp="2026-01-01T00:00:15Z",
+                )
+                dev_preflight = self.preflight_receipt()
+                dev_preflight["freeze_receipt_ref"] = "freeze-1"
+                dev_activation = self.activation_receipt()
+                qa_preflight = self.preflight_receipt()
+                qa_preflight.update(
+                    receipt_id="preflight-qa",
+                    executor_id="qa-a",
+                    causal_parent_ref="stop-qa",
+                    actor_executor_id="qa-a-target",
+                    freeze_receipt_ref="freeze-1",
+                )
+                qa_receipts = []
+                if latest_kind in {"BLOCKED_PREFLIGHT", "FAIL_PREFLIGHT"}:
+                    outcome = latest_kind.removesuffix("_PREFLIGHT")
+                    qa_preflight.update(
+                        target_preflight=outcome,
+                        observed_outcome=f"TARGET_PREFLIGHT_{outcome}",
+                    )
+                    qa_receipts.append(qa_preflight)
+                elif latest_kind == "CANCELLATION":
+                    cancellation = dict(qa_stop)
+                    cancellation.update(
+                        receipt_id="cancel-qa",
+                        receipt_type="CANCELLATION",
+                        causal_parent_ref="stop-qa",
+                        prior_epoch=4,
+                        new_epoch=5,
+                        observed_outcome="REACTIVATION_REQUIRED",
+                        terminal_disposition="REACTIVATION_REQUIRED",
+                        source_state="STOPPED",
+                        target_state="INACTIVE",
+                        causal_stop_receipt="stop-qa",
+                        timestamp="2026-01-01T00:00:45Z",
+                    )
+                    qa_receipts.append(cancellation)
+                else:
+                    qa_receipts.append(qa_preflight)
+                    if latest_kind == "FORWARD_ROLLBACK":
+                        qa_activation = self.activation_receipt()
+                        qa_activation.update(
+                            receipt_id="activation-qa",
+                            executor_id="qa-a",
+                            causal_parent_ref="stop-qa",
+                            causal_stop_receipt="stop-qa",
+                            target_preflight_receipt="preflight-qa",
+                            actor_executor_id="qa-a-target",
+                        )
+                        rollback = dict(qa_activation)
+                        rollback.update(
+                            receipt_id="rollback-qa",
+                            receipt_type="FORWARD_ROLLBACK",
+                            causal_parent_ref="activation-qa",
+                            prior_epoch=5,
+                            new_epoch=6,
+                            observed_outcome="FORWARD_ROLLBACK",
+                            rollback_target_epoch=6,
+                            causal_activation_receipt="activation-qa",
+                        )
+                        qa_receipts.extend((qa_activation, rollback))
+                    else:
+                        partial = dict(qa_preflight)
+                        partial.update(
+                            receipt_id="partial-qa",
+                            receipt_type="PARTIAL_DISPOSITION",
+                            causal_parent_ref="preflight-qa",
+                            prior_epoch=5,
+                            new_epoch=6,
+                            observed_outcome="PARTIAL_BLOCKED",
+                            blocked_from_state="RESUMING",
+                            permitted_successors=[
+                                "RESUMING",
+                                "CANCELLATION",
+                                "FORWARD_ROLLBACK",
+                            ],
+                        )
+                        qa_receipts.append(partial)
+                graph = (
+                    prepare,
+                    dev_stop,
+                    qa_stop,
+                    freeze,
+                    dev_preflight,
+                    dev_activation,
+                    *qa_receipts,
+                )
+                self.assertEqual(
+                    "ALLOW",
+                    receipt_set_allowed(
+                        graph,
+                        accepted_root_ref="fence-4",
+                        affected_executor_ids=("dev-a", "qa-a"),
+                        migration_mode="team",
+                    ).code,
+                )
+                self.assertEqual(
+                    "INVALID",
+                    derive_team_state(
+                        [
+                            {
+                                "executor_id": "dev-a",
+                                "source_state": "STOPPED",
+                                "target_state": "ACTIVE",
+                                "custody": "TARGET_ACTIVE",
+                                "disposition": "PENDING",
+                            },
+                            {
+                                "executor_id": "qa-a",
+                                "source_state": "STOPPED",
+                                "target_state": "INACTIVE",
+                                "custody": "SOURCE_STOPPED",
+                                "disposition": "PENDING",
+                            },
+                        ],
+                        affected_executor_ids=("dev-a", "qa-a"),
+                        receipts=graph,
+                        accepted_root_ref="fence-4",
+                        migration_mode="team",
+                    ).state,
+                )
+
+        valid_graph = (
+            prepare,
+            dev_stop,
+            qa_stop,
+            freeze,
+            dev_preflight,
+            dev_activation,
+        )
+        self.assertEqual(
+            "RESUMING",
+            derive_team_state(
+                [
+                    {
+                        "executor_id": "dev-a",
+                        "source_state": "STOPPED",
+                        "target_state": "ACTIVE",
+                        "custody": "TARGET_ACTIVE",
+                        "disposition": "PENDING",
+                    },
+                    {
+                        "executor_id": "qa-a",
+                        "source_state": "STOPPED",
+                        "target_state": "INACTIVE",
+                        "custody": "SOURCE_STOPPED",
+                        "disposition": "PENDING",
+                    },
+                ],
+                affected_executor_ids=("dev-a", "qa-a"),
+                receipts=valid_graph,
+                accepted_root_ref="fence-4",
+                migration_mode="team",
+            ).state,
+        )
+
     def test_same_next_epoch_branches_are_serialized_by_accepted_parent(self):
         materialize_successor = self.require("materialize_successor")
         accepted = self.accepted_fence()
