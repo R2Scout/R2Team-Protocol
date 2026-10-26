@@ -58,6 +58,7 @@
 47. Non-complete aggregate state uses the unique latest causal stage per executor, rejects stale historical PASS/ACTIVATION evidence after rollback, and rejects ambiguous same-epoch branches except an activation with its one supporting preflight.
 48. COMPLETION rejects an older terminal parent when any executor has a newer stop, preflight, activation, partial disposition, cancellation, or rollback stage.
 49. Mixed RESUMING validates every inactive peer: BLOCKED/FAIL preflight, cancellation, rollback, or partial-disposition latest stages cannot be represented as generic PENDING/INACTIVE.
+50. COMPLETE binds each terminal record tuple to its latest receipt: cancellation uses exact declared source/target plus legal custody; terminal BLOCKED and forward rollback require STOPPED/INACTIVE/SOURCE_STOPPED; contradictory ACTIVE/READY/INACTIVE records reject.
 
 The pure model must assert both safety (never two accepted writers for one executor/TASK) and liveness/recoverability (no blocked or frozen state is a dead end without a terminal accounted disposition).
 

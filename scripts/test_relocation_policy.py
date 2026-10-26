@@ -2825,6 +2825,184 @@ class RelocationPolicyTests(unittest.TestCase):
             ).state,
         )
 
+    def test_completion_binds_terminal_receipt_to_record_state_and_custody(self):
+        derive_team_state = self.require("derive_team_state")
+        receipt_set_allowed = self.require("receipt_set_allowed")
+        prepare = self.prepare_receipt()
+        stop = self.stop_receipt()
+        preflight = self.preflight_receipt()
+        activation = self.activation_receipt()
+
+        post_stop_cancel = dict(stop)
+        post_stop_cancel.update(
+            receipt_id="cancel-ready",
+            receipt_type="CANCELLATION",
+            causal_parent_ref="stop-1",
+            prior_epoch=4,
+            new_epoch=5,
+            observed_outcome="REACTIVATION_REQUIRED",
+            terminal_disposition="REACTIVATION_REQUIRED",
+            source_state="STOPPED",
+            target_state="READY",
+            causal_stop_receipt="stop-1",
+        )
+        cancel_completion = self.completion_receipt()
+        cancel_completion["causal_parent_ref"] = "cancel-ready"
+
+        source_retained = dict(prepare)
+        source_retained.update(
+            receipt_id="cancel-retained",
+            receipt_type="CANCELLATION",
+            executor_id="dev-a",
+            causal_parent_ref="prepare-1",
+            prior_epoch=3,
+            new_epoch=4,
+            observed_outcome="SOURCE_RETAINED",
+            terminal_disposition="SOURCE_RETAINED",
+            source_state="ACTIVE",
+            target_state="INACTIVE",
+        )
+        retained_completion = self.completion_receipt()
+        retained_completion.update(
+            prior_epoch=4,
+            new_epoch=5,
+            causal_parent_ref="cancel-retained",
+        )
+
+        rollback = dict(activation)
+        rollback.update(
+            receipt_id="rollback-1",
+            receipt_type="FORWARD_ROLLBACK",
+            causal_parent_ref="activation-1",
+            prior_epoch=5,
+            new_epoch=6,
+            observed_outcome="FORWARD_ROLLBACK",
+            rollback_target_epoch=6,
+            causal_activation_receipt="activation-1",
+        )
+        rollback_completion = self.completion_receipt()
+        rollback_completion.update(
+            prior_epoch=6,
+            new_epoch=7,
+            causal_parent_ref="rollback-1",
+        )
+
+        terminal_blocked = dict(preflight)
+        terminal_blocked.update(
+            receipt_id="blocked-1",
+            receipt_type="PARTIAL_DISPOSITION",
+            causal_parent_ref="preflight-1",
+            prior_epoch=5,
+            new_epoch=6,
+            observed_outcome="TERMINAL_BLOCKED",
+            blocked_from_state="RESUMING",
+            permitted_successors=["RESUMING", "CANCELLATION", "FORWARD_ROLLBACK"],
+            terminal_disposition="BLOCKED",
+            disposition_owner_executor_id="pm-a",
+            next_action="Retain protected custody",
+            disposition_receipt_ref="blocked-1",
+        )
+        blocked_completion = self.completion_receipt()
+        blocked_completion.update(
+            prior_epoch=6,
+            new_epoch=7,
+            causal_parent_ref="blocked-1",
+        )
+
+        cases = (
+            (
+                "post-stop-cancel",
+                (prepare, stop, post_stop_cancel, cancel_completion),
+                "CANCELLED",
+                "cancel-ready",
+                ("STOPPED", "READY", "TARGET_PENDING"),
+                (
+                    ("STOPPED", "INACTIVE", "SOURCE_STOPPED"),
+                    ("STOPPED", "ACTIVE", "TARGET_ACTIVE"),
+                ),
+            ),
+            (
+                "source-retained-cancel",
+                (prepare, source_retained, retained_completion),
+                "CANCELLED",
+                "cancel-retained",
+                ("ACTIVE", "INACTIVE", "SOURCE_ACTIVE"),
+                (("STOPPED", "INACTIVE", "SOURCE_STOPPED"),),
+            ),
+            (
+                "forward-rollback",
+                (prepare, stop, preflight, activation, rollback, rollback_completion),
+                "FORWARD_ROLLBACK",
+                "rollback-1",
+                ("STOPPED", "INACTIVE", "SOURCE_STOPPED"),
+                (
+                    ("STOPPED", "READY", "TARGET_PENDING"),
+                    ("STOPPED", "ACTIVE", "TARGET_ACTIVE"),
+                ),
+            ),
+            (
+                "terminal-blocked",
+                (prepare, stop, preflight, terminal_blocked, blocked_completion),
+                "BLOCKED",
+                "blocked-1",
+                ("STOPPED", "INACTIVE", "SOURCE_STOPPED"),
+                (
+                    ("STOPPED", "READY", "TARGET_PENDING"),
+                    ("STOPPED", "ACTIVE", "TARGET_ACTIVE"),
+                ),
+            ),
+        )
+        for name, receipts, disposition, receipt_ref, valid_tuple, invalid_tuples in cases:
+            with self.subTest(name=name, record="valid"):
+                self.assertEqual(
+                    "ALLOW",
+                    receipt_set_allowed(
+                        receipts,
+                        accepted_root_ref="fence-4",
+                        affected_executor_ids=("dev-a",),
+                        migration_mode="role",
+                    ).code,
+                )
+                valid_record = {
+                    "executor_id": "dev-a",
+                    "source_state": valid_tuple[0],
+                    "target_state": valid_tuple[1],
+                    "custody": valid_tuple[2],
+                    "disposition": disposition,
+                    "disposition_owner_executor_id": "pm-a",
+                    "review_date": "2026-01-02",
+                    "next_action": "Retain terminal custody",
+                    "disposition_receipt_ref": receipt_ref,
+                }
+                self.assertEqual(
+                    "COMPLETE",
+                    derive_team_state(
+                        [valid_record],
+                        affected_executor_ids=("dev-a",),
+                        receipts=receipts,
+                        accepted_root_ref="fence-4",
+                        migration_mode="role",
+                    ).state,
+                )
+            for invalid_tuple in invalid_tuples:
+                with self.subTest(name=name, record=invalid_tuple):
+                    invalid_record = dict(valid_record)
+                    invalid_record.update(
+                        source_state=invalid_tuple[0],
+                        target_state=invalid_tuple[1],
+                        custody=invalid_tuple[2],
+                    )
+                    self.assertEqual(
+                        "INVALID",
+                        derive_team_state(
+                            [invalid_record],
+                            affected_executor_ids=("dev-a",),
+                            receipts=receipts,
+                            accepted_root_ref="fence-4",
+                            migration_mode="role",
+                        ).state,
+                    )
+
     def test_same_next_epoch_branches_are_serialized_by_accepted_parent(self):
         materialize_successor = self.require("materialize_successor")
         accepted = self.accepted_fence()

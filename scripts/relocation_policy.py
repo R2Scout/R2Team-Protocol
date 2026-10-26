@@ -28,6 +28,10 @@ LEGAL_FENCE_STATES = {
     ("STOPPED", "READY", "TARGET_PENDING"),
     ("STOPPED", "ACTIVE", "TARGET_ACTIVE"),
 }
+LEGAL_CUSTODY_BY_STATE = {
+    (source_state, target_state): custody
+    for source_state, target_state, custody in LEGAL_FENCE_STATES
+}
 
 STAGE_RECEIPT_TYPES = {
     "SOURCE_STOP",
@@ -143,6 +147,73 @@ def _latest_executor_stage(receipts, executor_id):
     ):
         return activations[0]
     return None
+
+
+def _record_matches_latest_stage(record, latest) -> bool:
+    record_tuple = (
+        record.get("source_state"),
+        record.get("target_state"),
+        record.get("custody"),
+    )
+    receipt_type = latest.get("receipt_type")
+    disposition = record.get("disposition")
+    receipt_ref = record.get("disposition_receipt_ref")
+
+    if receipt_type == "SOURCE_STOP":
+        return disposition == "PENDING" and record_tuple == (
+            "STOPPED",
+            "INACTIVE",
+            "SOURCE_STOPPED",
+        )
+    if receipt_type == "TARGET_PREFLIGHT":
+        return (
+            disposition == "PENDING"
+            and latest.get("target_preflight") == "PASS"
+            and record_tuple
+            in {
+                ("STOPPED", "PREFLIGHTED", "TARGET_PREFLIGHT"),
+                ("STOPPED", "READY", "TARGET_PENDING"),
+            }
+        )
+    if receipt_type == "ACTIVATION":
+        return (
+            record_tuple == ("STOPPED", "ACTIVE", "TARGET_ACTIVE")
+            and (
+                disposition == "PENDING"
+                or (
+                    disposition == "RESUMED"
+                    and receipt_ref == latest.get("receipt_id")
+                )
+            )
+        )
+    if receipt_type == "CANCELLATION":
+        expected_custody = LEGAL_CUSTODY_BY_STATE.get(
+            (latest.get("source_state"), latest.get("target_state"))
+        )
+        return (
+            disposition == "CANCELLED"
+            and receipt_ref == latest.get("receipt_id")
+            and record_tuple
+            == (
+                latest.get("source_state"),
+                latest.get("target_state"),
+                expected_custody,
+            )
+        )
+    if receipt_type == "FORWARD_ROLLBACK":
+        return (
+            disposition == "FORWARD_ROLLBACK"
+            and receipt_ref == latest.get("receipt_id")
+            and record_tuple == ("STOPPED", "INACTIVE", "SOURCE_STOPPED")
+        )
+    if receipt_type == "PARTIAL_DISPOSITION":
+        return (
+            latest.get("terminal_disposition") == "BLOCKED"
+            and disposition == "BLOCKED"
+            and receipt_ref == latest.get("receipt_id")
+            and record_tuple == ("STOPPED", "INACTIVE", "SOURCE_STOPPED")
+        )
+    return False
 
 
 @dataclass(frozen=True)
@@ -497,12 +568,19 @@ def derive_team_state(
             and _valid_ref(record.get("disposition_receipt_ref"))
         )
 
-    if any(
-        record["disposition"] == "RESUMED"
-        and not _valid_ref(record.get("disposition_receipt_ref"))
-        for record in records
-    ):
-        return invalid
+    for record in records:
+        if (
+            record["disposition"] == "RESUMED"
+            and not _valid_ref(record.get("disposition_receipt_ref"))
+        ) or (
+            record["disposition"] in terminal_dispositions
+            and not terminal_schema_valid(record)
+        ):
+            return invalid
+        if not _record_matches_latest_stage(
+            record, latest_stages[record["executor_id"]]
+        ):
+            return invalid
 
     completion_ready = all(
         (
@@ -539,32 +617,6 @@ def derive_team_state(
 
     if any(record["disposition"] in terminal_dispositions for record in records):
         return invalid
-    for record in records:
-        latest = latest_stages[record["executor_id"]]
-        if record["disposition"] == "RESUMED":
-            if (
-                record["target_state"] != "ACTIVE"
-                or latest["receipt_type"] != "ACTIVATION"
-                or record.get("disposition_receipt_ref")
-                != latest.get("receipt_id")
-            ):
-                return invalid
-            continue
-        if record["disposition"] != "PENDING":
-            return invalid
-        expected_type = {
-            "INACTIVE": "SOURCE_STOP",
-            "PREFLIGHTED": "TARGET_PREFLIGHT",
-            "READY": "TARGET_PREFLIGHT",
-            "ACTIVE": "ACTIVATION",
-        }[record["target_state"]]
-        if latest["receipt_type"] != expected_type:
-            return invalid
-        if (
-            expected_type == "TARGET_PREFLIGHT"
-            and latest.get("target_preflight") != "PASS"
-        ):
-            return invalid
     if all(
         record["source_state"] == "STOPPED"
         and record["target_state"] == "READY"

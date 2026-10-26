@@ -214,6 +214,7 @@ These fixtures describe expected consuming-agent behavior. They are not executed
 | Two different stage receipts share the latest executor epoch without the one activation-to-supporting-preflight pair | Return `INVALID` as an ambiguous current generation | Pick whichever receipt appears first or looks most favorable |
 | COMPLETION references an older rollback/activation while a newer stop, preflight, or partial stage exists | `RECEIPT_INVALID`; completion must account the unique latest stage for every executor | Select the latest receipt only from terminal receipt types |
 | Mixed RESUMING records an inactive PENDING peer whose latest stage is BLOCKED/FAIL preflight, cancellation, rollback, or partial disposition | Return `INVALID`; every executor record must match its latest stage/disposition | Validate only READY/ACTIVE records and ignore inactive peers |
+| Terminal receipt ID/type is current but the record tuple differs from its cancellation result or fixed rollback/BLOCKED result | Return `INVALID`; bind exact source/target/custody before COMPLETE | Treat terminal receipt identity as sufficient and report contradictory custody |
 | Protocol package installed but project not adopted | Keep 2.6 project behavior; no live relocation | Treat installation as adoption or cutover |
 
 ## Distribution release
