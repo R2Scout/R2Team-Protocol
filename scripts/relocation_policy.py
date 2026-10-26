@@ -437,22 +437,54 @@ def derive_team_state(
     ]
     if len(prepare_receipts) != 1:
         return invalid
-    stop_executors = {
-        receipt.get("executor_id")
-        for receipt in receipts
-        if receipt.get("receipt_type") == "SOURCE_STOP"
+    stage_types = {
+        "SOURCE_STOP",
+        "TARGET_PREFLIGHT",
+        "ACTIVATION",
+        "PARTIAL_DISPOSITION",
+        "CANCELLATION",
+        "FORWARD_ROLLBACK",
     }
-    pass_preflight_executors = {
-        receipt.get("executor_id")
-        for receipt in receipts
-        if receipt.get("receipt_type") == "TARGET_PREFLIGHT"
-        and receipt.get("target_preflight") == "PASS"
+
+    def latest_stage(executor_id):
+        candidates = [
+            receipt
+            for receipt in receipts
+            if receipt.get("executor_id") == executor_id
+            and receipt.get("receipt_type") in stage_types
+        ]
+        if not candidates:
+            return None
+        latest_epoch = max(receipt["new_epoch"] for receipt in candidates)
+        latest = [
+            receipt for receipt in candidates if receipt["new_epoch"] == latest_epoch
+        ]
+        if len(latest) == 1:
+            return latest[0]
+        activations = [
+            receipt for receipt in latest if receipt["receipt_type"] == "ACTIVATION"
+        ]
+        preflights = [
+            receipt
+            for receipt in latest
+            if receipt["receipt_type"] == "TARGET_PREFLIGHT"
+        ]
+        if (
+            len(activations) == 1
+            and len(preflights) == len(latest) - 1
+            and len(preflights) == 1
+            and activations[0].get("target_preflight_receipt")
+            == preflights[0].get("receipt_id")
+        ):
+            return activations[0]
+        return None
+
+    latest_stages = {
+        executor_id: latest_stage(executor_id)
+        for executor_id in affected_executor_ids
     }
-    activation_executors = {
-        receipt.get("executor_id")
-        for receipt in receipts
-        if receipt.get("receipt_type") == "ACTIVATION"
-    }
+    if any(receipt is None for receipt in latest_stages.values()):
+        return invalid
     terminal_dispositions = {"BLOCKED", "CANCELLED", "FORWARD_ROLLBACK"}
 
     def terminal_schema_valid(record: dict) -> bool:
@@ -529,9 +561,10 @@ def derive_team_state(
         and record["target_state"] == "READY"
         for record in records
     ):
-        if (
-            stop_executors != set(affected_executor_ids)
-            or pass_preflight_executors != set(affected_executor_ids)
+        if any(
+            receipt["receipt_type"] != "TARGET_PREFLIGHT"
+            or receipt.get("target_preflight") != "PASS"
+            for receipt in latest_stages.values()
         ):
             return invalid
         return TeamState("READY_TO_RESUME", active, blocked)
@@ -540,7 +573,10 @@ def derive_team_state(
         and record["target_state"] == "INACTIVE"
         for record in records
     ):
-        if stop_executors != set(affected_executor_ids):
+        if any(
+            receipt["receipt_type"] != "SOURCE_STOP"
+            for receipt in latest_stages.values()
+        ):
             return invalid
         if migration_mode == "team" and len(
             [receipt for receipt in receipts if receipt.get("receipt_type") == "FREEZE"]
@@ -550,12 +586,18 @@ def derive_team_state(
     for record in records:
         if (
             record["target_state"] in {"PREFLIGHTED", "READY"}
-            and record["executor_id"] not in pass_preflight_executors
+            and (
+                latest_stages[record["executor_id"]]["receipt_type"]
+                != "TARGET_PREFLIGHT"
+                or latest_stages[record["executor_id"]].get("target_preflight")
+                != "PASS"
+            )
         ):
             return invalid
         if (
             record["target_state"] == "ACTIVE"
-            and record["executor_id"] not in activation_executors
+            and latest_stages[record["executor_id"]]["receipt_type"]
+            != "ACTIVATION"
         ):
             return invalid
     return TeamState("RESUMING", active, blocked)
@@ -1024,6 +1066,10 @@ def receipt_set_allowed(
                 )
                 if any(actual != expected for actual, expected in freeze_stop_pairs):
                     return Decision("RECEIPT_INVALID", "freeze stop evidence differs")
+                if _parse_timestamp(stop.get("timestamp")) >= _parse_timestamp(
+                    receipt.get("timestamp")
+                ):
+                    return Decision("RECEIPT_INVALID", "freeze is not after source stop")
 
         if receipt_type == "CANCELLATION" and receipt["source_state"] == "STOPPED":
             stop = by_id.get(receipt["causal_stop_receipt"])

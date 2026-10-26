@@ -1652,6 +1652,7 @@ class RelocationPolicyTests(unittest.TestCase):
             affected_executor_ids=["dev-a"],
             stopped_executor_ids=["dev-a"],
             source_stop_receipt_refs=["stop-1"],
+            timestamp="2026-01-01T00:00:15Z",
         )
         partial = dict(preflight)
         partial.update(
@@ -1751,6 +1752,7 @@ class RelocationPolicyTests(unittest.TestCase):
             observed_outcome="FROZEN",
             stopped_executor_ids=["dev-a", "qa-a"],
             source_stop_receipt_refs=["stop-1", "stop-qa"],
+            timestamp="2026-01-01T00:00:15Z",
         )
         dev_preflight = self.preflight_receipt()
         dev_preflight["freeze_receipt_ref"] = "freeze-1"
@@ -1955,6 +1957,7 @@ class RelocationPolicyTests(unittest.TestCase):
             observed_outcome="FROZEN",
             stopped_executor_ids=["dev-a", "qa-a"],
             source_stop_receipt_refs=["stop-1", "stop-qa"],
+            timestamp="2026-01-01T00:00:15Z",
         )
         self.assertEqual(
             "ALLOW",
@@ -2128,6 +2131,7 @@ class RelocationPolicyTests(unittest.TestCase):
             observed_outcome="FROZEN",
             stopped_executor_ids=["dev-a", "qa-a"],
             source_stop_receipt_refs=["stop-1", "stop-qa"],
+            timestamp="2026-01-01T00:00:15Z",
         )
         dev_preflight = self.preflight_receipt()
         dev_preflight["freeze_receipt_ref"] = "freeze-1"
@@ -2367,6 +2371,28 @@ class RelocationPolicyTests(unittest.TestCase):
                     ).code,
                 )
 
+        for timestamp in (
+            "2026-01-01T00:00:15Z",
+            "2026-01-01T00:20:00Z",
+            "2026-01-01T03:00:15+03:00",
+        ):
+            with self.subTest(stop_timestamp=timestamp):
+                late_stop = dict(dev_stop)
+                late_stop["timestamp"] = timestamp
+                receipts = tuple(
+                    late_stop if item["receipt_id"] == "stop-1" else item
+                    for item in graph
+                )
+                self.assertEqual(
+                    "RECEIPT_INVALID",
+                    receipt_set_allowed(
+                        receipts,
+                        accepted_root_ref="fence-4",
+                        affected_executor_ids=("dev-a", "qa-a"),
+                        migration_mode="team",
+                    ).code,
+                )
+
     def test_noncomplete_team_state_requires_valid_minimum_receipt_context(self):
         derive_team_state = self.require("derive_team_state")
         cases = (
@@ -2431,6 +2457,106 @@ class RelocationPolicyTests(unittest.TestCase):
                     migration_mode="role",
                 ).state,
             )
+
+    def test_noncomplete_state_uses_latest_causal_generation_not_history(self):
+        derive_team_state = self.require("derive_team_state")
+        prepare = self.prepare_receipt()
+        stop1 = self.stop_receipt()
+        preflight1 = self.preflight_receipt()
+        activation1 = self.activation_receipt()
+        rollback = dict(activation1)
+        rollback.update(
+            receipt_id="rollback-1",
+            receipt_type="FORWARD_ROLLBACK",
+            causal_parent_ref="activation-1",
+            prior_epoch=5,
+            new_epoch=6,
+            observed_outcome="FORWARD_ROLLBACK",
+            rollback_target_epoch=6,
+            causal_activation_receipt="activation-1",
+        )
+        stop2 = dict(stop1)
+        stop2.update(
+            receipt_id="stop-2",
+            prior_epoch=6,
+            new_epoch=7,
+            expected_epoch=7,
+            causal_parent_ref="rollback-1",
+            cutover_parent="rollback-1",
+            timestamp="2026-01-01T00:02:00Z",
+        )
+        blocked_preflight = dict(preflight1)
+        blocked_preflight.update(
+            receipt_id="preflight-2",
+            prior_epoch=7,
+            new_epoch=8,
+            causal_parent_ref="stop-2",
+            target_preflight="BLOCKED",
+            observed_outcome="TARGET_PREFLIGHT_BLOCKED",
+            timestamp="2026-01-01T00:03:00Z",
+        )
+        history = (
+            prepare,
+            stop1,
+            preflight1,
+            activation1,
+            rollback,
+            stop2,
+            blocked_preflight,
+        )
+        for target_state, custody in (
+            ("READY", "TARGET_PENDING"),
+            ("ACTIVE", "TARGET_ACTIVE"),
+        ):
+            with self.subTest(target_state=target_state):
+                records = [{
+                    "executor_id": "dev-a",
+                    "source_state": "STOPPED",
+                    "target_state": target_state,
+                    "custody": custody,
+                    "disposition": "PENDING",
+                }]
+                self.assertEqual(
+                    "INVALID",
+                    derive_team_state(
+                        records,
+                        affected_executor_ids=("dev-a",),
+                        receipts=history,
+                        accepted_root_ref="fence-4",
+                        migration_mode="role",
+                    ).state,
+                )
+
+        cancellation = dict(stop1)
+        cancellation.update(
+            receipt_id="cancel-1",
+            receipt_type="CANCELLATION",
+            causal_parent_ref="stop-1",
+            prior_epoch=4,
+            new_epoch=5,
+            observed_outcome="REACTIVATION_REQUIRED",
+            terminal_disposition="REACTIVATION_REQUIRED",
+            source_state="STOPPED",
+            target_state="READY",
+            causal_stop_receipt="stop-1",
+        )
+        ambiguous = (prepare, stop1, preflight1, cancellation)
+        self.assertEqual(
+            "INVALID",
+            derive_team_state(
+                [{
+                    "executor_id": "dev-a",
+                    "source_state": "STOPPED",
+                    "target_state": "READY",
+                    "custody": "TARGET_PENDING",
+                    "disposition": "PENDING",
+                }],
+                affected_executor_ids=("dev-a",),
+                receipts=ambiguous,
+                accepted_root_ref="fence-4",
+                migration_mode="role",
+            ).state,
+        )
 
     def test_same_next_epoch_branches_are_serialized_by_accepted_parent(self):
         materialize_successor = self.require("materialize_successor")

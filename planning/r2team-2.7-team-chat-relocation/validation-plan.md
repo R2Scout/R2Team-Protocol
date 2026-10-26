@@ -54,6 +54,8 @@
 43. SOURCE_STOP with blank, unknown, blocked, or still-running outcome is rejected by stop validation, standalone activation and closed receipt graph; exact SOURCE_STOPPED passes.
 44. Every team preflight resolves the exact full-set FREEZE and occurs after it; missing/wrong/late FREEZE rejects preflight, activation and completion without relying on list order.
 45. FROZEN, READY_TO_RESUME and RESUMING reject empty, malformed, missing, extra or unresolved receipt context and accept their declared minimum valid graphs.
+46. Every referenced SOURCE_STOP occurs strictly before FREEZE, including offset-equivalent timestamps; equal or later stops reject the graph.
+47. Non-complete aggregate state uses the unique latest causal stage per executor, rejects stale historical PASS/ACTIVATION evidence after rollback, and rejects ambiguous same-epoch branches except an activation with its one supporting preflight.
 
 The pure model must assert both safety (never two accepted writers for one executor/TASK) and liveness/recoverability (no blocked or frozen state is a dead end without a terminal accounted disposition).
 

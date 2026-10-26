@@ -208,7 +208,10 @@ These fixtures describe expected consuming-agent behavior. They are not executed
 | Aggregate records duplicate/miss/add an executor, use impossible state/custody, malformed date/evidence, unresolved receipt, or an older terminal generation | Return `INVALID` | Derive COMPLETE from arbitrary dictionaries or nonblank strings |
 | SOURCE_STOP outcome is blank, unknown, blocked, or says the source is still running | Reject stop, activation, and the closed graph | Treat any nonblank outcome as positive stop proof |
 | Team preflight omits the exact full-set FREEZE ref or FREEZE is causally/timestamped after preflight, activation, or completion | `RECEIPT_INVALID` | Accept FREEZE as an unrelated sibling whose eventual presence is enough |
+| Team FREEZE timestamp is equal to or earlier than a referenced SOURCE_STOP timestamp | `RECEIPT_INVALID`; require `SOURCE_STOP < FREEZE < TARGET_PREFLIGHT < ACTIVATION` | Infer temporal order from array order or allow equal instants with different offsets |
 | FROZEN, READY_TO_RESUME, or RESUMING aggregate receives empty, malformed, unresolved, missing, or extra receipt context | Return `INVALID`; valid minimum state evidence remains derivable | Validate receipts only on the COMPLETE branch |
+| Earlier PASS preflight/activation exists, but a later rollback and new blocked preflight is the current generation | Return `INVALID` for stale READY/ACTIVE aggregate claims | Search history for any matching PASS or activation |
+| Two different stage receipts share the latest executor epoch without the one activation-to-supporting-preflight pair | Return `INVALID` as an ambiguous current generation | Pick whichever receipt appears first or looks most favorable |
 | Protocol package installed but project not adopted | Keep 2.6 project behavior; no live relocation | Treat installation as adoption or cutover |
 
 ## Distribution release
