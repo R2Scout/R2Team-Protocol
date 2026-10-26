@@ -81,6 +81,8 @@ Each role handoff records repository/project identity, executor/functions, curre
 
 Each affected executor has a fencing record keyed by repository/project identity plus logical `executor_id`. It carries `current_epoch`, `expected_prior_epoch`, prior accepted fencing-record ref, source/target states, physical-custody class, stop receipt, activation receipt, and disposition. A global cutover generation may group records but never substitutes for them.
 
+Fence validation accepts only explicit legal source/target/custody tuples. Source ACTIVE implies target INACTIVE and source custody; target ACTIVE implies source STOPPED and target custody. Known state labels are not independently composable, because a Cartesian-product validator can admit two simultaneous writers.
+
 Fencing is cooperative protocol fencing unless a separate receipt proves provider-enforced revocation. Every writer-capable R2Team entry point re-reads the accepted default-branch record immediately before product or TASK publication. A successor is valid only when both its expected prior epoch and causal parent match accepted state. Two branches proposing the same next integer are conflicting proposals, not co-valid writers. Unknown, stale, equal-conflicting, or causally unrelated state is `WRITER_CONFLICT` and blocks work. Notification, silence, registry presence, chat title, archive state, or absence of an observed process cannot advance the epoch or prove stop.
 
 After `FROZEN`, the sole control-write exception is the executor named as migration PM publishing only the declared `migration_control_paths`: `Team/Migrations/<migration-id>/**` and the governing relocation TASK's status/evidence fields. Product source, active product TASK scope/candidate/result, TEAM ownership, and other paths remain write-frozen until their executor is target-active.
@@ -99,7 +101,9 @@ Receipt types are `PREPARE`, `SOURCE_STOP`, `FREEZE`, `TARGET_PREFLIGHT`, `ACTIV
 
 A source-stop receipt additionally binds expected epoch, final accepted TASK/product checkpoint and candidate/tree, outstanding publisher/helper state, workspace/native-resource custody, stop mechanism, and accepted cutover parent. Accepted mechanisms are cooperative source acknowledgement after its final checkpoint, independently verifiable administrative fence/revocation, or another mechanism explicitly modeled and independently evidenced. An unreachable source without enforceable revocation remains blocked.
 
-A target activation receipt causally references the accepted source-stop receipt and cutover record, binds target preflight plus exact executor/TASK/candidate/workspace facts, and must be accepted and read back before product work. Duplicate or mismatched causal parents are invalid.
+A target activation receipt causally references the accepted source-stop receipt and an included target-preflight receipt, binds accepted cutover to the accepted commit, mapping result to registry evidence, exact executor/TASK/candidate/workspace facts, and must be accepted and read back before product work. Duplicate or mismatched causal parents are invalid.
+
+Receipt-set validation takes an explicit accepted-root ref and affected-executor set. PREPARE and SOURCE_STOP bind the root; every other receipt resolves an allowed included parent with matching identity, epoch and evidence collections. Freeze resolves the exact stop set, stopped cancellation resolves its stop, forward rollback resolves an activation and higher epoch, and completion requires exactly one terminal receipt for every affected executor. Per-type outcomes and state enums are closed; a syntactically nonblank but unknown value is not evidence.
 
 ## Command surface
 

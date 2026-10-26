@@ -95,10 +95,12 @@ timestamp: "<iso-8601>"
 review_date: "<yyyy-mm-dd-or-null>"
 ```
 
-`SOURCE_STOP` additionally records final TASK/product checkpoint and candidate tree, publisher/helper state, workspace/native-resource custody, stop mechanism, and cutover parent. `ACTIVATION` causally references the accepted stop receipt and cutover, exact target preflight, executor/TASK/candidate/workspace facts, and new accepted epoch.
+`SOURCE_STOP` additionally records final TASK/product checkpoint and candidate tree, publisher/helper state, workspace/native-resource custody, stop mechanism, and cutover parent. `FREEZE` records exact affected/stopped executor sets plus the corresponding source-stop receipt refs. `ACTIVATION` causally references both the accepted stop and target-preflight receipts and binds its accepted cutover to `accepted_commit_sha`, its mapping result to `registry_evidence`, exact executor/TASK/candidate/workspace facts, and new accepted epoch. `CANCELLATION` records source/target state and either `SOURCE_RETAINED` before stop or `REACTIVATION_REQUIRED` after stop. `FORWARD_ROLLBACK` references a prior activation and uses its strictly higher new epoch as `rollback_target_epoch`. `COMPLETION` accounts the exact affected-executor set.
 
 Allowed stop mechanisms are cooperative acknowledgement after final checkpoint, independently verifiable administrative revocation, or another explicitly modeled enforceable fence. Silence, notification delivery, registry state, chat title/archive, or absence of an observed process is not stop proof.
 
 `MAPPING_PRESENT_READ_BACK` is an enum, not a place for the private mapping. Local evidence never grants assignment, permission, identity, epoch, or acceptance.
 
 All epoch values are strict non-boolean integers. IDs, causal/cutover/commit refs, singular checkpoint/tree/custody facts, and every TASK/candidate/workspace list element are nonblank portable strings with no duplicate list entries. `SOURCE_STOP.causal_parent_ref` equals its `cutover_parent` unless an accepted future schema explicitly names an intermediate parent; singular checkpoint/tree facts must appear in their corresponding reference lists.
+
+Validate a receipt set with an explicit accepted-root ref and affected-executor set. PREPARE and SOURCE_STOP bind that root; every other receipt resolves an allowed included parent with matching migration/project, executor where applicable, epoch, TASK/candidate, and workspace facts. Duplicate executor/type receipts, orphan edges, unknown enum values, incomplete freeze/terminal accounting, or missing/extra/duplicate completion executors are invalid.

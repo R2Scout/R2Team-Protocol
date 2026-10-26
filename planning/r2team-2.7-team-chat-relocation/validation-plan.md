@@ -39,6 +39,13 @@
 28. Registry remap collision or wrong-executor mapping is rejected while durable output exposes no private value or stable hash.
 29. Workspace reuse with the correct candidate but wrong custody, host, dependency, or native-resource facts is rejected.
 30. Every blocked/frozen model state has an explicit permitted recovery transition or terminal accounted disposition.
+31. Null/numeric/text/collection freeze inputs fail closed for every publication class; exact boolean false/true retains only its declared behavior.
+32. The complete legal fence state/custody matrix is enumerated; simultaneous ACTIVE placements, preflight while source ACTIVE, and custody disagreement are rejected.
+33. Activation rejects cutover/accepted-commit disagreement, mapping/registry disagreement, and missing/stale preflight receipt edges; remote/manual absent/not-applicable evidence is exercised separately.
+34. Every receipt type rejects orphan and wrong-type parents under an explicit accepted-root and affected-set context; target-preflight/disposition/outcome enums and rollback ranges are strict.
+35. Completion rejects missing, duplicate, or extra executors and any executor without exactly one terminal receipt; one closed two-executor chain passes.
+36. Remote/manual no-mapping accepts only no observation/no collision; contradictory observations and collisions fail closed.
+37. Canonical path fixtures reject CR/LF/NUL, leading/trailing segment whitespace, dot segments, duplicate separators, and backslashes.
 
 The pure model must assert both safety (never two accepted writers for one executor/TASK) and liveness/recoverability (no blocked or frozen state is a dead end without a terminal accounted disposition).
 

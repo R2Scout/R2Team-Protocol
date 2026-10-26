@@ -90,6 +90,7 @@ class RelocationPolicyTests(unittest.TestCase):
             "registry_evidence": "MAPPING_PRESENT_READ_BACK",
             "review_date": "2026-01-02",
             "causal_stop_receipt": "stop-1",
+            "target_preflight_receipt": "preflight-1",
             "cutover_parent": "fence-4",
             "accepted_cutover": "commit-5",
             "target_preflight": "PASS",
@@ -100,6 +101,79 @@ class RelocationPolicyTests(unittest.TestCase):
             "mapping_result": "MAPPING_PRESENT_READ_BACK",
             "observed_outcome": "TARGET_ACTIVE",
             "timestamp": "2026-01-01T00:01:00Z",
+        }
+
+    @staticmethod
+    def prepare_receipt():
+        return {
+            "receipt_id": "prepare-1",
+            "receipt_type": "PREPARE",
+            "migration_id": "migration-1",
+            "repository_or_project_id": "project-a",
+            "executor_id": None,
+            "prior_epoch": 2,
+            "new_epoch": 3,
+            "causal_parent_ref": "fence-4",
+            "accepted_commit_sha": "commit-3",
+            "task_checkpoint_refs": ["commit-4"],
+            "candidate_refs": ["tree-4"],
+            "workspace_disposition_refs": ["workspace-1"],
+            "actor_executor_id": "pm-a",
+            "actor_provider_class": "local-standalone",
+            "observed_outcome": "PREPARED",
+            "registry_evidence": "NOT_APPLICABLE",
+            "review_date": "2026-01-02",
+            "affected_executor_ids": ["dev-a"],
+            "timestamp": "2026-01-01T00:00:00Z",
+        }
+
+    @staticmethod
+    def preflight_receipt():
+        return {
+            "receipt_id": "preflight-1",
+            "receipt_type": "TARGET_PREFLIGHT",
+            "migration_id": "migration-1",
+            "repository_or_project_id": "project-a",
+            "executor_id": "dev-a",
+            "prior_epoch": 4,
+            "new_epoch": 5,
+            "causal_parent_ref": "stop-1",
+            "accepted_commit_sha": "commit-5",
+            "task_checkpoint_refs": ["commit-4"],
+            "candidate_refs": ["tree-4"],
+            "workspace_disposition_refs": ["workspace-1"],
+            "actor_executor_id": "dev-a-target",
+            "actor_provider_class": "local-standalone",
+            "observed_outcome": "TARGET_PREFLIGHT_PASS",
+            "registry_evidence": "MAPPING_PRESENT_READ_BACK",
+            "review_date": "2026-01-02",
+            "target_preflight": "PASS",
+            "target_placement_class": "local-standalone",
+            "timestamp": "2026-01-01T00:00:30Z",
+        }
+
+    @staticmethod
+    def completion_receipt():
+        return {
+            "receipt_id": "completion-1",
+            "receipt_type": "COMPLETION",
+            "migration_id": "migration-1",
+            "repository_or_project_id": "project-a",
+            "executor_id": None,
+            "prior_epoch": 5,
+            "new_epoch": 6,
+            "causal_parent_ref": "activation-1",
+            "accepted_commit_sha": "commit-6",
+            "task_checkpoint_refs": ["commit-4"],
+            "candidate_refs": ["tree-4"],
+            "workspace_disposition_refs": ["workspace-1"],
+            "actor_executor_id": "pm-a",
+            "actor_provider_class": "local-standalone",
+            "observed_outcome": "COMPLETE",
+            "registry_evidence": "NOT_APPLICABLE",
+            "review_date": "2026-01-02",
+            "accounted_executor_ids": ["dev-a"],
+            "timestamp": "2026-01-01T00:02:00Z",
         }
 
     def test_causal_successor_accepts_expected_prior(self):
@@ -1068,18 +1142,34 @@ class RelocationPolicyTests(unittest.TestCase):
 
         self.assertEqual(
             "ALLOW",
-            receipt_set_allowed((self.stop_receipt(), self.activation_receipt())).code,
+            receipt_set_allowed(
+                (
+                    self.stop_receipt(),
+                    self.preflight_receipt(),
+                    self.activation_receipt(),
+                ),
+                accepted_root_ref="fence-4",
+                affected_executor_ids=("dev-a",),
+            ).code,
         )
 
     def test_receipt_set_rejects_orphan_or_wrong_type_activation_parent(self):
         receipt_set_allowed = self.require("receipt_set_allowed")
-        orphan = receipt_set_allowed((self.activation_receipt(),))
+        orphan = receipt_set_allowed(
+            (self.activation_receipt(),),
+            accepted_root_ref="fence-4",
+            affected_executor_ids=("dev-a",),
+        )
 
         wrong_type = self.stop_receipt()
         wrong_type["receipt_type"] = "TARGET_PREFLIGHT"
         wrong_type["target_preflight"] = "PASS"
         wrong_type["target_placement_class"] = "local-standalone"
-        wrong_type_result = receipt_set_allowed((wrong_type, self.activation_receipt()))
+        wrong_type_result = receipt_set_allowed(
+            (wrong_type, self.activation_receipt()),
+            accepted_root_ref="fence-4",
+            affected_executor_ids=("dev-a",),
+        )
 
         self.assertEqual("RECEIPT_INVALID", orphan.code)
         self.assertEqual("RECEIPT_INVALID", wrong_type_result.code)
@@ -1099,7 +1189,11 @@ class RelocationPolicyTests(unittest.TestCase):
                 stop[field] = value
                 self.assertEqual(
                     "RECEIPT_INVALID",
-                    receipt_set_allowed((stop, self.activation_receipt())).code,
+                    receipt_set_allowed(
+                        (stop, self.preflight_receipt(), self.activation_receipt()),
+                        accepted_root_ref="fence-4",
+                        affected_executor_ids=("dev-a",),
+                    ).code,
                 )
 
     def test_receipts_reject_malformed_exact_evidence_and_list_elements(self):
@@ -1187,6 +1281,435 @@ class RelocationPolicyTests(unittest.TestCase):
         boundary["new_epoch"] = 1
         boundary["expected_epoch"] = 1
         self.assertEqual("ALLOW", validate_receipt(boundary).code)
+
+    def test_publication_freeze_state_is_strict_boolean_and_paths_reject_controls(self):
+        publication_allowed = self.require("publication_allowed")
+        base = {
+            "claim_project_id": "project-a",
+            "claim_executor_id": "dev-a",
+            "claim_epoch": 4,
+            "claim_record_ref": "fence-4",
+            "actor_executor_id": "pm-a",
+            "migration_pm_executor_id": "pm-a",
+            "migration_id": "migration-1",
+        }
+        for frozen in (None, 0, 1, "", "false", [], {}):
+            for publication_class, path in (
+                ("PRODUCT", "src/product.py"),
+                ("TASK", "Tasks/TASK-1.md"),
+                ("TEAM", "Team/TEAM.md"),
+                ("MIGRATION_CONTROL", "Team/Migrations/migration-1/MIGRATION.md"),
+            ):
+                with self.subTest(frozen=frozen, publication_class=publication_class):
+                    self.assertNotEqual(
+                        "ALLOW",
+                        publication_allowed(
+                            self.accepted_fence(),
+                            publication_class=publication_class,
+                            frozen=frozen,
+                            path=path,
+                            **base,
+                        ).code,
+                    )
+
+        self.assertEqual(
+            "ALLOW",
+            publication_allowed(
+                self.accepted_fence(),
+                publication_class="PRODUCT",
+                frozen=False,
+                path="src/product.py",
+                **base,
+            ).code,
+        )
+        for path in (
+            "src/product.py\n",
+            "src/product.py\r",
+            "src/\x00product.py",
+            " src/product.py",
+            "src/product.py ",
+            "src/ product.py",
+            "src/./product.py",
+            "src//product.py",
+            "src\\product.py",
+        ):
+            with self.subTest(path=repr(path)):
+                self.assertEqual(
+                    "PUBLICATION_PATH_INVALID",
+                    publication_allowed(
+                        self.accepted_fence(),
+                        publication_class="PRODUCT",
+                        frozen=False,
+                        path=path,
+                        **base,
+                    ).code,
+                )
+
+    def test_fence_state_custody_matrix_rejects_simultaneous_or_disagreeing_writers(self):
+        from relocation_policy import FenceRecord
+
+        publication_allowed = self.require("publication_allowed")
+        invalid = (
+            ("ACTIVE", "ACTIVE", "TARGET_ACTIVE"),
+            ("ACTIVE", "READY", "SOURCE_ACTIVE"),
+            ("ACTIVE", "PREFLIGHTED", "TARGET_PENDING"),
+            ("STOP_REQUESTED", "ACTIVE", "TARGET_ACTIVE"),
+            ("STOPPED", "ACTIVE", "SOURCE_ACTIVE"),
+            ("STOPPED", "READY", "TARGET_ACTIVE"),
+        )
+        for source_state, target_state, custody in invalid:
+            with self.subTest(source=source_state, target=target_state, custody=custody):
+                fence = FenceRecord(
+                    "project-a", "dev-a", 4, "fence-4", source_state, target_state, custody
+                )
+                decision = publication_allowed(
+                    fence,
+                    claim_project_id="project-a",
+                    claim_executor_id="dev-a",
+                    claim_epoch=4,
+                    claim_record_ref="fence-4",
+                    publication_class="PRODUCT",
+                    frozen=False,
+                    actor_executor_id="dev-a",
+                    migration_pm_executor_id="pm-a",
+                    path="src/product.py",
+                    migration_id="migration-1",
+                )
+                self.assertEqual("FENCE_INVALID", decision.code)
+
+        legal = (
+            ("ACTIVE", "INACTIVE", "SOURCE_ACTIVE"),
+            ("STOP_REQUESTED", "INACTIVE", "SOURCE_STOPPING"),
+            ("STOPPED", "INACTIVE", "SOURCE_STOPPED"),
+            ("STOPPED", "PREFLIGHTED", "TARGET_PREFLIGHT"),
+            ("STOPPED", "READY", "TARGET_PENDING"),
+            ("STOPPED", "ACTIVE", "TARGET_ACTIVE"),
+        )
+        for source_state, target_state, custody in legal:
+            with self.subTest(legal=(source_state, target_state, custody)):
+                fence = FenceRecord(
+                    "project-a", "dev-a", 4, "fence-4", source_state, target_state, custody
+                )
+                self.assertNotEqual(
+                    "FENCE_INVALID",
+                    publication_allowed(
+                        fence,
+                        claim_project_id="project-a",
+                        claim_executor_id="dev-a",
+                        claim_epoch=4,
+                        claim_record_ref="fence-4",
+                        publication_class="PRODUCT",
+                        frozen=False,
+                        actor_executor_id="dev-a",
+                        migration_pm_executor_id="pm-a",
+                        path="src/product.py",
+                        migration_id="migration-1",
+                    ).code,
+                )
+
+    def test_activation_binds_cutover_commit_registry_and_preflight_receipt(self):
+        activation_allowed = self.require("activation_allowed")
+        receipt_set_allowed = self.require("receipt_set_allowed")
+        for field, value in (
+            ("accepted_cutover", "different-commit"),
+            ("mapping_result", "MAPPING_ABSENT"),
+            ("target_preflight_receipt", "preflight-other"),
+        ):
+            with self.subTest(field=field):
+                activation = self.activation_receipt()
+                activation[field] = value
+                if field != "target_preflight_receipt":
+                    self.assertNotEqual(
+                        "ALLOW",
+                        activation_allowed(
+                            self.accepted_fence(),
+                            stop_receipt=self.stop_receipt(),
+                            activation_receipt=activation,
+                            source_reachable=True,
+                            enforceable_revocation=False,
+                        ).code,
+                    )
+                self.assertEqual(
+                    "RECEIPT_INVALID",
+                    receipt_set_allowed(
+                        (self.stop_receipt(), self.preflight_receipt(), activation),
+                        accepted_root_ref="fence-4",
+                        affected_executor_ids=("dev-a",),
+                    ).code,
+                )
+
+        for evidence in ("NOT_APPLICABLE", "MAPPING_ABSENT"):
+            with self.subTest(remote_manual=evidence):
+                preflight = self.preflight_receipt()
+                preflight["actor_provider_class"] = "remote-manual"
+                preflight["registry_evidence"] = evidence
+                activation = self.activation_receipt()
+                activation["actor_provider_class"] = "remote-manual"
+                activation["registry_evidence"] = evidence
+                activation["mapping_result"] = evidence
+                self.assertEqual(
+                    "ALLOW",
+                    receipt_set_allowed(
+                        (self.stop_receipt(), preflight, activation),
+                        accepted_root_ref="fence-4",
+                        affected_executor_ids=("dev-a",),
+                    ).code,
+                )
+
+    def test_remote_manual_registry_absence_rejects_collision_or_observation(self):
+        registry_mapping_allowed = self.require("registry_mapping_allowed")
+        base = {
+            "expected_executor_id": "vendor-a",
+            "executor_mode": "remote_manual",
+            "mapping_present": False,
+            "local_authority": False,
+            "read_back": False,
+        }
+        self.assertEqual(
+            "ALLOW_REMOTE_MANUAL",
+            registry_mapping_allowed(observed_executor_id=None, collision=False, **base).code,
+        )
+        self.assertEqual(
+            "REGISTRY_CONFLICT",
+            registry_mapping_allowed(observed_executor_id=None, collision=True, **base).code,
+        )
+        self.assertEqual(
+            "REGISTRY_CONFLICT",
+            registry_mapping_allowed(observed_executor_id="qa-a", collision=False, **base).code,
+        )
+
+    def test_all_receipt_types_enforce_typed_semantics_and_causal_context(self):
+        receipt_set_allowed = self.require("receipt_set_allowed")
+        validate_receipt = self.require("validate_receipt")
+
+        malformed_preflight = self.preflight_receipt()
+        malformed_preflight["target_preflight"] = "MAYBE"
+        self.assertEqual("RECEIPT_INVALID", validate_receipt(malformed_preflight).code)
+
+        partial = self.preflight_receipt()
+        partial.update(
+            receipt_id="partial-1",
+            receipt_type="PARTIAL_DISPOSITION",
+            causal_parent_ref="preflight-1",
+            prior_epoch=5,
+            new_epoch=6,
+            observed_outcome="PARTIAL_BLOCKED",
+            blocked_from_state="UNKNOWN",
+            permitted_successors=["MAGIC"],
+        )
+        self.assertEqual("RECEIPT_INVALID", validate_receipt(partial).code)
+
+        rollback = self.activation_receipt()
+        rollback.update(
+            receipt_id="rollback-1",
+            receipt_type="FORWARD_ROLLBACK",
+            causal_parent_ref="activation-1",
+            prior_epoch=5,
+            new_epoch=6,
+            observed_outcome="FORWARD_ROLLBACK",
+            rollback_target_epoch=0,
+            causal_activation_receipt="activation-1",
+        )
+        self.assertEqual("RECEIPT_INVALID", validate_receipt(rollback).code)
+
+        self.assertEqual(
+            "RECEIPT_CONTEXT_REQUIRED",
+            receipt_set_allowed((self.stop_receipt(), self.activation_receipt())).code,
+        )
+        self.assertEqual(
+            "RECEIPT_INVALID",
+            receipt_set_allowed(
+                (self.completion_receipt(),),
+                accepted_root_ref="fence-4",
+                affected_executor_ids=("dev-a",),
+            ).code,
+        )
+
+    def test_receipt_graph_accepts_one_closed_chain_and_rejects_completion_set_drift(self):
+        receipt_set_allowed = self.require("receipt_set_allowed")
+        chain = (
+            self.prepare_receipt(),
+            self.stop_receipt(),
+            self.preflight_receipt(),
+            self.activation_receipt(),
+            self.completion_receipt(),
+        )
+        self.assertEqual(
+            "ALLOW",
+            receipt_set_allowed(
+                chain,
+                accepted_root_ref="fence-4",
+                affected_executor_ids=("dev-a",),
+            ).code,
+        )
+        for accounted in ([], ["qa-a"], ["dev-a", "qa-a"], ["dev-a", "dev-a"]):
+            with self.subTest(accounted=accounted):
+                completion = self.completion_receipt()
+                completion["accounted_executor_ids"] = accounted
+                self.assertEqual(
+                    "RECEIPT_INVALID",
+                    receipt_set_allowed(
+                        (*chain[:-1], completion),
+                        accepted_root_ref="fence-4",
+                        affected_executor_ids=("dev-a",),
+                    ).code,
+                )
+
+    def test_receipt_graph_rejects_wrong_parent_for_every_receipt_type(self):
+        receipt_set_allowed = self.require("receipt_set_allowed")
+        prepare = self.prepare_receipt()
+        stop = self.stop_receipt()
+        preflight = self.preflight_receipt()
+        activation = self.activation_receipt()
+
+        freeze = dict(prepare)
+        freeze.update(
+            receipt_id="freeze-1",
+            receipt_type="FREEZE",
+            causal_parent_ref="prepare-1",
+            prior_epoch=3,
+            new_epoch=4,
+            observed_outcome="FROZEN",
+            affected_executor_ids=["dev-a"],
+            stopped_executor_ids=["dev-a"],
+            source_stop_receipt_refs=["stop-1"],
+        )
+        partial = dict(preflight)
+        partial.update(
+            receipt_id="partial-1",
+            receipt_type="PARTIAL_DISPOSITION",
+            causal_parent_ref="preflight-1",
+            prior_epoch=5,
+            new_epoch=6,
+            observed_outcome="PARTIAL_BLOCKED",
+            blocked_from_state="RESUMING",
+            permitted_successors=["RESUMING", "CANCELLATION", "FORWARD_ROLLBACK"],
+        )
+        cancellation = dict(prepare)
+        cancellation.update(
+            receipt_id="cancel-1",
+            receipt_type="CANCELLATION",
+            executor_id="dev-a",
+            causal_parent_ref="prepare-1",
+            prior_epoch=3,
+            new_epoch=4,
+            observed_outcome="SOURCE_RETAINED",
+            terminal_disposition="SOURCE_RETAINED",
+            source_state="ACTIVE",
+            target_state="INACTIVE",
+        )
+        rollback = dict(activation)
+        rollback.update(
+            receipt_id="rollback-1",
+            receipt_type="FORWARD_ROLLBACK",
+            causal_parent_ref="activation-1",
+            prior_epoch=5,
+            new_epoch=6,
+            observed_outcome="FORWARD_ROLLBACK",
+            rollback_target_epoch=6,
+            causal_activation_receipt="activation-1",
+        )
+        completion = self.completion_receipt()
+
+        cases = (
+            (({**prepare, "causal_parent_ref": "wrong-root"},),),
+            (({**stop, "causal_parent_ref": "wrong-root", "cutover_parent": "wrong-root"},),),
+            ((prepare, stop, {**freeze, "causal_parent_ref": "missing"}),),
+            ((stop, {**preflight, "causal_parent_ref": "missing"}),),
+            ((stop, preflight, {**activation, "causal_parent_ref": "missing"}),),
+            ((stop, preflight, {**partial, "causal_parent_ref": "missing"}),),
+            ((prepare, {**cancellation, "causal_parent_ref": "missing"}),),
+            ((stop, preflight, activation, {**rollback, "causal_parent_ref": "missing"}),),
+            ((stop, preflight, activation, {**completion, "causal_parent_ref": "missing"}),),
+        )
+        for wrapped in cases:
+            receipts = wrapped[0]
+            with self.subTest(receipt_types=[item["receipt_type"] for item in receipts]):
+                self.assertEqual(
+                    "RECEIPT_INVALID",
+                    receipt_set_allowed(
+                        receipts,
+                        accepted_root_ref="fence-4",
+                        affected_executor_ids=("dev-a",),
+                    ).code,
+                )
+
+    def test_receipt_graph_accepts_closed_two_executor_chain_and_typed_cancellation(self):
+        receipt_set_allowed = self.require("receipt_set_allowed")
+        validate_receipt = self.require("validate_receipt")
+
+        prepare = self.prepare_receipt()
+        prepare["affected_executor_ids"] = ["dev-a", "qa-a"]
+        qa_stop = self.stop_receipt()
+        qa_stop.update(receipt_id="stop-qa", executor_id="qa-a")
+        qa_preflight = self.preflight_receipt()
+        qa_preflight.update(
+            receipt_id="preflight-qa",
+            executor_id="qa-a",
+            causal_parent_ref="stop-qa",
+            actor_executor_id="qa-a-target",
+        )
+        qa_activation = self.activation_receipt()
+        qa_activation.update(
+            receipt_id="activation-qa",
+            executor_id="qa-a",
+            causal_parent_ref="stop-qa",
+            causal_stop_receipt="stop-qa",
+            target_preflight_receipt="preflight-qa",
+            actor_executor_id="qa-a-target",
+        )
+        completion = self.completion_receipt()
+        completion["accounted_executor_ids"] = ["dev-a", "qa-a"]
+        chain = (
+            prepare,
+            self.stop_receipt(),
+            qa_stop,
+            self.preflight_receipt(),
+            qa_preflight,
+            self.activation_receipt(),
+            qa_activation,
+            completion,
+        )
+        self.assertEqual(
+            "ALLOW",
+            receipt_set_allowed(
+                chain,
+                accepted_root_ref="fence-4",
+                affected_executor_ids=("dev-a", "qa-a"),
+            ).code,
+        )
+
+        before_stop = dict(prepare)
+        before_stop.update(
+            receipt_id="cancel-before",
+            receipt_type="CANCELLATION",
+            executor_id="dev-a",
+            causal_parent_ref="prepare-1",
+            prior_epoch=3,
+            new_epoch=4,
+            observed_outcome="SOURCE_RETAINED",
+            terminal_disposition="SOURCE_RETAINED",
+            source_state="ACTIVE",
+            target_state="INACTIVE",
+        )
+        after_stop = dict(self.stop_receipt())
+        after_stop.update(
+            receipt_id="cancel-after",
+            receipt_type="CANCELLATION",
+            causal_parent_ref="stop-1",
+            prior_epoch=4,
+            new_epoch=5,
+            observed_outcome="REACTIVATION_REQUIRED",
+            terminal_disposition="REACTIVATION_REQUIRED",
+            source_state="STOPPED",
+            target_state="READY",
+            causal_stop_receipt="stop-1",
+        )
+        self.assertEqual("ALLOW", validate_receipt(before_stop).code)
+        self.assertEqual("ALLOW", validate_receipt(after_stop).code)
+        invalid_active_target = dict(after_stop)
+        invalid_active_target["target_state"] = "ACTIVE"
+        self.assertEqual("RECEIPT_INVALID", validate_receipt(invalid_active_target).code)
 
     def test_same_next_epoch_branches_are_serialized_by_accepted_parent(self):
         materialize_successor = self.require("materialize_successor")

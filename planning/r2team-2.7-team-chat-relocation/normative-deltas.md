@@ -39,6 +39,7 @@
 - Unknown, conflicting, or concurrent writer claims MUST produce `WRITER_CONFLICT` and block product work.
 - Every writer-capable R2Team entry point MUST re-read accepted fencing state immediately before product/TASK publication and MUST reject stale, equal-conflicting, or causally unrelated state.
 - Protocol fencing MUST be described as cooperative unless a separate receipt proves provider-enforced exclusion.
+- An accepted fence MUST match an explicit legal `(source_state, target_state, custody)` tuple. Source and target MUST NOT both be writer-capable, and custody MUST agree with the sole writer-capable placement.
 
 ## Freeze and resume
 
@@ -48,6 +49,7 @@
 - `PARTIAL_BLOCKED` MUST derive custody from per-executor records and MUST permit return to `RESUMING`, terminal accounted disposition, or forward rollback without rewriting already active targets as source-active.
 - An executor MAY be `retained` only when removed from the affected set by an accepted prepare revision before `FREEZE_PENDING`; an affected frozen executor MUST NOT remain an ambiguous source-active exception.
 - After `FROZEN`, old product writers MUST NOT publish product/TASK changes; only the named migration PM MAY publish the declared migration-control paths and governing relocation-TASK status/evidence fields.
+- Freeze state MUST be a strict boolean; unknown or coerced freeze input MUST fail closed before publication-class handling. Declared publication paths MUST reject control characters, traversal, nonportable separators, duplicate separators, and leading/trailing segment whitespace.
 - Target PM MUST follow the accepted startup order and MUST record roles that remain blocked/not-run.
 - A local notification, chat title, copied prompt, or registry entry MUST NOT open the resume gate.
 
@@ -57,7 +59,7 @@
 - Local registry updates MUST require local owner authority and read-back.
 - Local mapping MUST NOT grant assignment, ownership, permission, provider identity, writer epoch, or acceptance.
 - Durable registry evidence MUST contain only an enum/result plus authority/host class; it MUST NOT contain a physical ID/path, transcript, or stable hash of a private identifier.
-- Registry remap MUST validate executor identity and collisions and MUST NOT make a local mapping mandatory for remote/manual executors.
+- Registry remap MUST validate executor identity and collisions and MUST NOT make a local mapping mandatory for remote/manual executors. The remote/manual absence exception MUST require no observed executor and no collision or contradictory present/absent evidence.
 
 ## Workspace custody
 
@@ -75,11 +77,11 @@
 
 ## Evidence and completion
 
-- Prepare, source-stop, freeze, target-preflight, activation, partial-disposition, completion, cancellation, and forward-rollback receipts MUST be immutable, uniquely identified, append-only, and causally linked.
+- Prepare, source-stop, freeze, target-preflight, activation, partial-disposition, completion, cancellation, and forward-rollback receipts MUST be immutable, uniquely identified, append-only, and causally linked against an explicit accepted-root ref and affected-executor set.
 - Each receipt MUST bind the applicable migration/executor, prior/new epoch, causal parent, accepted commit, TASK/candidate refs, workspace and close-receipt refs, actor/provider identity class, observed outcome, blocker, timestamp, and review date without private local identifiers.
 - Source-stop evidence MUST include the final accepted checkpoint/tree, outstanding publisher/helper state, workspace/native-resource custody, observed stop mechanism, and cutover parent. Silence, notification, registry state, chat title/archive, or unobserved process absence MUST NOT prove stop.
 - If a source is unreachable and no independently enforceable fence/revocation exists, target activation MUST remain blocked.
-- Activation MUST causally reference the accepted stop receipt and cutover; duplicate or mismatched causal parents MUST be rejected.
+- Every receipt type MUST have declared enum/range semantics and an allowed resolved parent. Freeze MUST resolve its exact source-stop set; activation MUST resolve both stop and preflight, bind accepted cutover to the accepted commit, and make mapping result agree with registry evidence; stopped cancellation MUST resolve its stop; forward rollback MUST resolve an activation and advance to its new higher epoch; completion MUST account the exact affected set through one terminal receipt per executor. Duplicate executor/type receipts, orphan parents, contradictory evidence, and missing/extra/duplicate completion executors MUST be rejected.
 - A role is resumed only after its own receipt and current assignment/capacity gates pass.
 - Team relocation is complete only when every affected executor is resumed or has a terminal accounted blocked/cancelled/rollback disposition with owner, review date, and next action. A retained executor removed before freeze is outside that affected set and remains listed in the prepare history.
 - Protocol/package tests MUST NOT perform live chat creation, registry mutation outside isolated fixtures, workspace cleanup, process stop, or real relocation.

@@ -192,6 +192,13 @@ These fixtures describe expected consuming-agent behavior. They are not executed
 | Any accepted/expected/claimed/current/proposed/stop epoch is boolean or coerced text/float/null/negative | Reject the authority claim; accept only strict non-boolean integer ranges and exact successor relations | Rely on language equality such as `True == 1` |
 | Stop common causal parent differs from its cutover parent | Reject stop, activation, and receipt set | Carry two unrelated nonblank parent strings |
 | Singular checkpoint/tree/custody/cutover fact or any reference-list element is whitespace/non-string/null/duplicate | Reject typed receipt evidence | Accept malformed values because both sides compare equal |
+| Freeze state is null, numeric, text, or a collection | Reject the publication input before class/path handling | Interpret falsey or truthy coercion as a freeze decision |
+| Source and target are both ACTIVE, or custody disagrees with their states | `FENCE_INVALID`; accept only an explicit legal single-writer tuple | Validate each label independently and permit simultaneous writers |
+| Activation cutover differs from its accepted commit, mapping result differs from registry evidence, or target-preflight receipt is absent/stale | Reject activation and receipt-set closure | Accept individually valid-looking contradictory strings |
+| Remote/manual mapping is absent but a collision or observed executor is reported | `REGISTRY_CONFLICT` | Return the no-local-mapping shortcut before checking contradictions |
+| PREPARE/FREEZE/PREFLIGHT/disposition/completion/cancellation/rollback receipt has an unresolved or wrong-type parent | `RECEIPT_INVALID`; require accepted root and affected-set context | Validate only ACTIVATION-to-SOURCE_STOP edges |
+| Completion omits, duplicates, or adds an executor, or an executor has no unique terminal receipt | Reject completion accounting | Treat a standalone COMPLETION label as a closed migration |
+| Publication path contains CR/LF/NUL, leading/trailing segment whitespace, traversal, duplicate separators, or backslashes | `PUBLICATION_PATH_INVALID` | Treat a nonblank string as a canonical portable path |
 | Protocol package installed but project not adopted | Keep 2.6 project behavior; no live relocation | Treat installation as adoption or cutover |
 
 ## Distribution release
