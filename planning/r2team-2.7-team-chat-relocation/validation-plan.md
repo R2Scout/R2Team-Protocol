@@ -46,6 +46,11 @@
 35. Completion rejects missing, duplicate, or extra executors and any executor without exactly one terminal receipt; one closed two-executor chain passes.
 36. Remote/manual no-mapping accepts only no observation/no collision; contradictory observations and collisions fail closed.
 37. Canonical path fixtures reject CR/LF/NUL, leading/trailing segment whitespace, dot segments, duplicate separators, and backslashes.
+38. Standalone and graph activation both reject missing/orphan/wrong-type/stale/cross-executor/BLOCKED/FAIL preflight and accept one exact included PASS chain.
+39. Completion rejects an in-set accepted root, missing PREPARE, cross-migration/project root branches, and subset/extra freeze accounting; valid role and frozen two-executor team graphs pass.
+40. Append-only history accepts later stop/preflight/activation generations after forward rollback, rejects the same logical event under another ID, and rejects ambiguous same-epoch latest terminals.
+41. Typed terminal BLOCKED with owner/date/action/receipt may complete; bare or malformed BLOCKED cannot.
+42. Aggregate derivation rejects duplicate/missing/extra/impossible/malformed/wrong-executor/unresolved/stale records and accepts mixed resumed plus BLOCKED/CANCELLED/FORWARD_ROLLBACK graphs.
 
 The pure model must assert both safety (never two accepted writers for one executor/TASK) and liveness/recoverability (no blocked or frozen state is a dead end without a terminal accounted disposition).
 

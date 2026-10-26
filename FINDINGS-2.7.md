@@ -48,4 +48,8 @@ Strict typing applies at every authority boundary, not just serialized receipt e
 
 ## 11. Valid labels still need a valid state graph
 
-Individually known fence states, custody labels, receipt types, and registry enums are not freely composable. The protocol accepts only explicit single-writer fence tuples, exact cutover/commit and mapping/evidence pairs, and a receipt graph rooted in an accepted record with typed per-type outcomes and a complete affected-executor context. Unknown freeze state, contradictory remote-manual mapping observations, orphan receipts, duplicate executor/type receipts, incomplete completion accounting, and control-character paths all fail closed.
+Individually known fence states, custody labels, receipt types, and registry enums are not freely composable. The protocol accepts only explicit single-writer fence tuples, exact cutover/commit and mapping/evidence pairs, and a receipt graph rooted in an accepted record with typed per-type outcomes and a complete affected-executor context. Unknown freeze state, contradictory remote-manual mapping observations, orphan receipts, duplicate logical events, incomplete completion accounting, and control-character paths all fail closed.
+
+## 12. Append-only history and aggregate state share one lineage
+
+An activation API cannot outsource PASS-preflight proof to a different optional graph check. Completion needs one external accepted root, exactly one PREPARE, one migration/project/evidence lineage, and an explicit role/team mode; team completion also needs a full affected-set FREEZE. Receipt types may recur at later causal epochs, while duplicate logical events remain invalid. Aggregate state is accepted only for the exact unique affected records and the latest resolved terminal receipts; arbitrary dictionaries, impossible state/custody tuples, malformed terminal evidence, or older generation receipts return `INVALID`.

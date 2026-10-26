@@ -199,6 +199,13 @@ These fixtures describe expected consuming-agent behavior. They are not executed
 | PREPARE/FREEZE/PREFLIGHT/disposition/completion/cancellation/rollback receipt has an unresolved or wrong-type parent | `RECEIPT_INVALID`; require accepted root and affected-set context | Validate only ACTIVATION-to-SOURCE_STOP edges |
 | Completion omits, duplicates, or adds an executor, or an executor has no unique terminal receipt | Reject completion accounting | Treat a standalone COMPLETION label as a closed migration |
 | Publication path contains CR/LF/NUL, leading/trailing segment whitespace, traversal, duplicate separators, or backslashes | `PUBLICATION_PATH_INVALID` | Treat a nonblank string as a canonical portable path |
+| Standalone activation has no included same-identity PASS preflight, or the included preflight is BLOCKED/FAIL | Reject activation in both the decision API and receipt graph | Let one public API rely on evidence checked only by another optional call |
+| Completion omits PREPARE, uses an in-set receipt as accepted root, or combines executor branches from another migration/project lineage | `RECEIPT_INVALID` | Join branches merely because the affected IDs and external root text match |
+| Team completion omits FREEZE or freeze accounts only a subset/extra executor/stop | `RECEIPT_INVALID`; role mode may complete without team freeze | Treat freeze as optional metadata for whole-team cutover |
+| Later causal generation repeats SOURCE_STOP/PREFLIGHT/ACTIVATION at higher epochs | Accept append-only history when every new edge advances causally | Reject all repeated executor/type pairs or overwrite prior receipts |
+| Same executor/type/epoch/parent logical event is repeated under another receipt ID | Reject duplicate logical event | Treat unique receipt IDs as sufficient uniqueness |
+| Terminal BLOCKED has owner/date/action/receipt and is the unique latest terminal disposition | Permit exact completion accounting | Require target ACTIVE or accept a bare BLOCKED label |
+| Aggregate records duplicate/miss/add an executor, use impossible state/custody, malformed date/evidence, unresolved receipt, or an older terminal generation | Return `INVALID` | Derive COMPLETE from arbitrary dictionaries or nonblank strings |
 | Protocol package installed but project not adopted | Keep 2.6 project behavior; no live relocation | Treat installation as adoption or cutover |
 
 ## Distribution release

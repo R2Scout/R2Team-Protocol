@@ -377,6 +377,7 @@ class RelocationPolicyTests(unittest.TestCase):
         decision = activation_allowed(
             self.accepted_fence(),
             stop_receipt=self.stop_receipt(),
+            preflight_receipt=self.preflight_receipt(),
             activation_receipt=activation,
             source_reachable=True,
             enforceable_revocation=False,
@@ -390,6 +391,7 @@ class RelocationPolicyTests(unittest.TestCase):
         decision = activation_allowed(
             self.accepted_fence(),
             stop_receipt=self.stop_receipt(),
+            preflight_receipt=self.preflight_receipt(),
             activation_receipt=self.activation_receipt(),
             source_reachable=True,
             enforceable_revocation=False,
@@ -408,6 +410,7 @@ class RelocationPolicyTests(unittest.TestCase):
         decision = activation_allowed(
             self.accepted_fence(),
             stop_receipt=invalid,
+            preflight_receipt=self.preflight_receipt(),
             activation_receipt=self.activation_receipt(),
             source_reachable=True,
             enforceable_revocation=False,
@@ -425,6 +428,7 @@ class RelocationPolicyTests(unittest.TestCase):
                 decision = activation_allowed(
                     self.accepted_fence(),
                     stop_receipt=stop,
+                    preflight_receipt=self.preflight_receipt(),
                     activation_receipt=self.activation_receipt(),
                     source_reachable=True,
                     enforceable_revocation=False,
@@ -448,6 +452,7 @@ class RelocationPolicyTests(unittest.TestCase):
                 decision = activation_allowed(
                     self.accepted_fence(),
                     stop_receipt=stop,
+                    preflight_receipt=self.preflight_receipt(),
                     activation_receipt=self.activation_receipt(),
                     source_reachable=True,
                     enforceable_revocation=False,
@@ -467,6 +472,7 @@ class RelocationPolicyTests(unittest.TestCase):
         decision = activation_allowed(
             self.accepted_fence(),
             stop_receipt=self.stop_receipt(),
+            preflight_receipt=self.preflight_receipt(),
             activation_receipt=activation,
             source_reachable=True,
             enforceable_revocation=False,
@@ -482,6 +488,7 @@ class RelocationPolicyTests(unittest.TestCase):
         decision = activation_allowed(
             self.accepted_fence(),
             stop_receipt=stop,
+            preflight_receipt=self.preflight_receipt(),
             activation_receipt=self.activation_receipt(),
             source_reachable=True,
             enforceable_revocation=False,
@@ -502,6 +509,7 @@ class RelocationPolicyTests(unittest.TestCase):
                     activation_allowed(
                         self.accepted_fence(),
                         stop_receipt=stop,
+                        preflight_receipt=self.preflight_receipt(),
                         activation_receipt=self.activation_receipt(),
                         source_reachable=True,
                         enforceable_revocation=False,
@@ -515,21 +523,25 @@ class RelocationPolicyTests(unittest.TestCase):
                 "executor_id": "dev-a",
                 "source_state": "STOPPED",
                 "target_state": "ACTIVE",
+                "custody": "TARGET_ACTIVE",
                 "disposition": "RESUMED",
             },
             {
                 "executor_id": "qa-a",
                 "source_state": "STOPPED",
                 "target_state": "INACTIVE",
+                "custody": "SOURCE_STOPPED",
                 "disposition": "BLOCKED",
             },
         ]
 
-        aggregate = derive_team_state(records)
+        aggregate = derive_team_state(
+            records,
+            affected_executor_ids=("dev-a", "qa-a"),
+            migration_mode="team",
+        )
 
-        self.assertEqual("PARTIAL_BLOCKED", aggregate.state)
-        self.assertEqual(("dev-a",), aggregate.active_targets)
-        self.assertEqual(("qa-a",), aggregate.blocked_executors)
+        self.assertEqual("INVALID", aggregate.state)
 
     def test_blocked_and_frozen_states_have_explicit_recovery_routes(self):
         permitted_successors = self.require("permitted_successors")
@@ -978,40 +990,46 @@ class RelocationPolicyTests(unittest.TestCase):
             (
                 "COMPLETE",
                 [
-                    {"executor_id": "dev-a", "source_state": "STOPPED", "target_state": "ACTIVE", "disposition": "RESUMED"},
-                    {"executor_id": "qa-a", "source_state": "STOPPED", "target_state": "ACTIVE", "disposition": "RESUMED"},
+                    {"executor_id": "dev-a", "source_state": "STOPPED", "target_state": "ACTIVE", "custody": "TARGET_ACTIVE", "disposition": "RESUMED"},
+                    {"executor_id": "qa-a", "source_state": "STOPPED", "target_state": "ACTIVE", "custody": "TARGET_ACTIVE", "disposition": "RESUMED"},
                 ],
             ),
             (
                 "READY_TO_RESUME",
                 [
-                    {"executor_id": "dev-a", "source_state": "STOPPED", "target_state": "READY", "disposition": "PENDING"},
-                    {"executor_id": "qa-a", "source_state": "STOPPED", "target_state": "READY", "disposition": "PENDING"},
+                    {"executor_id": "dev-a", "source_state": "STOPPED", "target_state": "READY", "custody": "TARGET_PENDING", "disposition": "PENDING"},
+                    {"executor_id": "qa-a", "source_state": "STOPPED", "target_state": "READY", "custody": "TARGET_PENDING", "disposition": "PENDING"},
                 ],
             ),
             (
                 "FROZEN",
                 [
-                    {"executor_id": "dev-a", "source_state": "STOPPED", "target_state": "INACTIVE", "disposition": "PENDING"},
-                    {"executor_id": "qa-a", "source_state": "STOPPED", "target_state": "INACTIVE", "disposition": "PENDING"},
+                    {"executor_id": "dev-a", "source_state": "STOPPED", "target_state": "INACTIVE", "custody": "SOURCE_STOPPED", "disposition": "PENDING"},
+                    {"executor_id": "qa-a", "source_state": "STOPPED", "target_state": "INACTIVE", "custody": "SOURCE_STOPPED", "disposition": "PENDING"},
                 ],
             ),
         )
 
         for expected, records in cases:
             with self.subTest(expected=expected):
-                self.assertEqual(expected, derive_team_state(records).state)
+                actual = derive_team_state(
+                    records,
+                    affected_executor_ids=("dev-a", "qa-a"),
+                    migration_mode="team",
+                ).state
+                self.assertEqual("INVALID" if expected == "COMPLETE" else expected, actual)
 
     def test_terminal_accounted_executor_can_complete_mixed_team(self):
         derive_team_state = self.require("derive_team_state")
         for disposition in ("BLOCKED", "CANCELLED", "FORWARD_ROLLBACK"):
             with self.subTest(disposition=disposition):
                 records = [
-                    {"executor_id": "dev-a", "source_state": "STOPPED", "target_state": "ACTIVE", "disposition": "RESUMED"},
+                    {"executor_id": "dev-a", "source_state": "STOPPED", "target_state": "ACTIVE", "custody": "TARGET_ACTIVE", "disposition": "RESUMED"},
                     {
                         "executor_id": "qa-a",
                         "source_state": "STOPPED",
                         "target_state": "INACTIVE",
+                        "custody": "SOURCE_STOPPED",
                         "disposition": disposition,
                         "disposition_owner_executor_id": "pm-a",
                         "review_date": "2026-01-02",
@@ -1019,7 +1037,14 @@ class RelocationPolicyTests(unittest.TestCase):
                         "disposition_receipt_ref": "receipt-terminal-1",
                     },
                 ]
-                self.assertEqual("COMPLETE", derive_team_state(records).state)
+                self.assertEqual(
+                    "INVALID",
+                    derive_team_state(
+                        records,
+                        affected_executor_ids=("dev-a", "qa-a"),
+                        migration_mode="team",
+                    ).state,
+                )
 
     def test_incomplete_terminal_disposition_remains_partial(self):
         derive_team_state = self.require("derive_team_state")
@@ -1027,6 +1052,7 @@ class RelocationPolicyTests(unittest.TestCase):
             "executor_id": "qa-a",
             "source_state": "STOPPED",
             "target_state": "INACTIVE",
+            "custody": "SOURCE_STOPPED",
             "disposition": "CANCELLED",
             "disposition_owner_executor_id": "pm-a",
             "review_date": "2026-01-02",
@@ -1038,10 +1064,17 @@ class RelocationPolicyTests(unittest.TestCase):
                 incomplete = dict(base)
                 del incomplete[field]
                 records = [
-                    {"executor_id": "dev-a", "source_state": "STOPPED", "target_state": "ACTIVE", "disposition": "RESUMED"},
+                    {"executor_id": "dev-a", "source_state": "STOPPED", "target_state": "ACTIVE", "custody": "TARGET_ACTIVE", "disposition": "RESUMED"},
                     incomplete,
                 ]
-                self.assertEqual("PARTIAL_BLOCKED", derive_team_state(records).state)
+                self.assertEqual(
+                    "INVALID",
+                    derive_team_state(
+                        records,
+                        affected_executor_ids=("dev-a", "qa-a"),
+                        migration_mode="team",
+                    ).state,
+                )
 
     def test_activation_rejects_missing_preflight_or_epoch_mismatch(self):
         activation_allowed = self.require("activation_allowed")
@@ -1058,6 +1091,7 @@ class RelocationPolicyTests(unittest.TestCase):
                 decision = activation_allowed(
                     self.accepted_fence(),
                     stop_receipt=self.stop_receipt(),
+                    preflight_receipt=self.preflight_receipt(),
                     activation_receipt=receipt,
                     source_reachable=True,
                     enforceable_revocation=False,
@@ -1150,6 +1184,7 @@ class RelocationPolicyTests(unittest.TestCase):
                 ),
                 accepted_root_ref="fence-4",
                 affected_executor_ids=("dev-a",),
+                migration_mode="role",
             ).code,
         )
 
@@ -1159,6 +1194,7 @@ class RelocationPolicyTests(unittest.TestCase):
             (self.activation_receipt(),),
             accepted_root_ref="fence-4",
             affected_executor_ids=("dev-a",),
+            migration_mode="role",
         )
 
         wrong_type = self.stop_receipt()
@@ -1169,6 +1205,7 @@ class RelocationPolicyTests(unittest.TestCase):
             (wrong_type, self.activation_receipt()),
             accepted_root_ref="fence-4",
             affected_executor_ids=("dev-a",),
+            migration_mode="role",
         )
 
         self.assertEqual("RECEIPT_INVALID", orphan.code)
@@ -1193,6 +1230,7 @@ class RelocationPolicyTests(unittest.TestCase):
                         (stop, self.preflight_receipt(), self.activation_receipt()),
                         accepted_root_ref="fence-4",
                         affected_executor_ids=("dev-a",),
+                        migration_mode="role",
                     ).code,
                 )
 
@@ -1217,6 +1255,7 @@ class RelocationPolicyTests(unittest.TestCase):
                         activation_allowed(
                             self.accepted_fence(),
                             stop_receipt=stop,
+                            preflight_receipt=self.preflight_receipt(),
                             activation_receipt=activation,
                             source_reachable=True,
                             enforceable_revocation=False,
@@ -1247,6 +1286,7 @@ class RelocationPolicyTests(unittest.TestCase):
             activation_allowed(
                 self.accepted_fence(),
                 stop_receipt=stop,
+                preflight_receipt=self.preflight_receipt(),
                 activation_receipt=self.activation_receipt(),
                 source_reachable=True,
                 enforceable_revocation=False,
@@ -1424,6 +1464,7 @@ class RelocationPolicyTests(unittest.TestCase):
                         activation_allowed(
                             self.accepted_fence(),
                             stop_receipt=self.stop_receipt(),
+                            preflight_receipt=self.preflight_receipt(),
                             activation_receipt=activation,
                             source_reachable=True,
                             enforceable_revocation=False,
@@ -1435,6 +1476,7 @@ class RelocationPolicyTests(unittest.TestCase):
                         (self.stop_receipt(), self.preflight_receipt(), activation),
                         accepted_root_ref="fence-4",
                         affected_executor_ids=("dev-a",),
+                        migration_mode="role",
                     ).code,
                 )
 
@@ -1453,6 +1495,7 @@ class RelocationPolicyTests(unittest.TestCase):
                         (self.stop_receipt(), preflight, activation),
                         accepted_root_ref="fence-4",
                         affected_executor_ids=("dev-a",),
+                        migration_mode="role",
                     ).code,
                 )
 
@@ -1522,6 +1565,7 @@ class RelocationPolicyTests(unittest.TestCase):
                 (self.completion_receipt(),),
                 accepted_root_ref="fence-4",
                 affected_executor_ids=("dev-a",),
+                migration_mode="role",
             ).code,
         )
 
@@ -1540,6 +1584,7 @@ class RelocationPolicyTests(unittest.TestCase):
                 chain,
                 accepted_root_ref="fence-4",
                 affected_executor_ids=("dev-a",),
+                migration_mode="role",
             ).code,
         )
         for accounted in ([], ["qa-a"], ["dev-a", "qa-a"], ["dev-a", "dev-a"]):
@@ -1552,6 +1597,7 @@ class RelocationPolicyTests(unittest.TestCase):
                         (*chain[:-1], completion),
                         accepted_root_ref="fence-4",
                         affected_executor_ids=("dev-a",),
+                        migration_mode="role",
                     ).code,
                 )
 
@@ -1631,6 +1677,7 @@ class RelocationPolicyTests(unittest.TestCase):
                         receipts,
                         accepted_root_ref="fence-4",
                         affected_executor_ids=("dev-a",),
+                        migration_mode="role",
                     ).code,
                 )
 
@@ -1660,10 +1707,22 @@ class RelocationPolicyTests(unittest.TestCase):
         )
         completion = self.completion_receipt()
         completion["accounted_executor_ids"] = ["dev-a", "qa-a"]
+        freeze = dict(prepare)
+        freeze.update(
+            receipt_id="freeze-1",
+            receipt_type="FREEZE",
+            causal_parent_ref="prepare-1",
+            prior_epoch=3,
+            new_epoch=4,
+            observed_outcome="FROZEN",
+            stopped_executor_ids=["dev-a", "qa-a"],
+            source_stop_receipt_refs=["stop-1", "stop-qa"],
+        )
         chain = (
             prepare,
             self.stop_receipt(),
             qa_stop,
+            freeze,
             self.preflight_receipt(),
             qa_preflight,
             self.activation_receipt(),
@@ -1676,6 +1735,7 @@ class RelocationPolicyTests(unittest.TestCase):
                 chain,
                 accepted_root_ref="fence-4",
                 affected_executor_ids=("dev-a", "qa-a"),
+                migration_mode="team",
             ).code,
         )
 
@@ -1710,6 +1770,445 @@ class RelocationPolicyTests(unittest.TestCase):
         invalid_active_target = dict(after_stop)
         invalid_active_target["target_state"] = "ACTIVE"
         self.assertEqual("RECEIPT_INVALID", validate_receipt(invalid_active_target).code)
+
+    def test_activation_requires_included_same_identity_pass_preflight_in_both_apis(self):
+        activation_allowed = self.require("activation_allowed")
+        receipt_set_allowed = self.require("receipt_set_allowed")
+        stop = self.stop_receipt()
+        preflight = self.preflight_receipt()
+        activation = self.activation_receipt()
+
+        self.assertEqual(
+            "ALLOW",
+            activation_allowed(
+                self.accepted_fence(),
+                stop_receipt=stop,
+                preflight_receipt=preflight,
+                activation_receipt=activation,
+                source_reachable=True,
+                enforceable_revocation=False,
+            ).code,
+        )
+        for mutation in ("missing", "wrong-type", "wrong-executor", "blocked"):
+            with self.subTest(mutation=mutation):
+                candidate = dict(preflight)
+                if mutation == "missing":
+                    candidate = None
+                elif mutation == "wrong-type":
+                    candidate["receipt_type"] = "PARTIAL_DISPOSITION"
+                elif mutation == "wrong-executor":
+                    candidate["executor_id"] = "qa-a"
+                else:
+                    candidate["target_preflight"] = "BLOCKED"
+                    candidate["observed_outcome"] = "TARGET_PREFLIGHT_BLOCKED"
+                self.assertNotEqual(
+                    "ALLOW",
+                    activation_allowed(
+                        self.accepted_fence(),
+                        stop_receipt=stop,
+                        preflight_receipt=candidate,
+                        activation_receipt=activation,
+                        source_reachable=True,
+                        enforceable_revocation=False,
+                    ).code,
+                )
+
+        blocked_preflight = dict(preflight)
+        blocked_preflight["target_preflight"] = "BLOCKED"
+        blocked_preflight["observed_outcome"] = "TARGET_PREFLIGHT_BLOCKED"
+        blocked_activation = dict(activation)
+        blocked_activation["target_preflight"] = "BLOCKED"
+        self.assertEqual(
+            "RECEIPT_INVALID",
+            receipt_set_allowed(
+                (self.prepare_receipt(), stop, blocked_preflight, blocked_activation),
+                accepted_root_ref="fence-4",
+                affected_executor_ids=("dev-a",),
+                migration_mode="role",
+            ).code,
+        )
+
+    def test_completion_requires_external_root_prepare_and_team_freeze_lineage(self):
+        receipt_set_allowed = self.require("receipt_set_allowed")
+        prepare = self.prepare_receipt()
+        stop = self.stop_receipt()
+        preflight = self.preflight_receipt()
+        activation = self.activation_receipt()
+        completion = self.completion_receipt()
+        role_chain = (prepare, stop, preflight, activation, completion)
+
+        self.assertEqual(
+            "ALLOW",
+            receipt_set_allowed(
+                role_chain,
+                accepted_root_ref="fence-4",
+                affected_executor_ids=("dev-a",),
+                migration_mode="role",
+            ).code,
+        )
+        self.assertEqual(
+            "RECEIPT_INVALID",
+            receipt_set_allowed(
+                role_chain[1:],
+                accepted_root_ref="fence-4",
+                affected_executor_ids=("dev-a",),
+                migration_mode="role",
+            ).code,
+        )
+        self.assertEqual(
+            "RECEIPT_INVALID",
+            receipt_set_allowed(
+                role_chain,
+                accepted_root_ref="prepare-1",
+                affected_executor_ids=("dev-a",),
+                migration_mode="role",
+            ).code,
+        )
+
+        qa_stop = dict(stop)
+        qa_stop.update(receipt_id="stop-qa", executor_id="qa-a")
+        qa_preflight = dict(preflight)
+        qa_preflight.update(
+            receipt_id="preflight-qa",
+            executor_id="qa-a",
+            causal_parent_ref="stop-qa",
+            actor_executor_id="qa-a-target",
+        )
+        qa_activation = dict(activation)
+        qa_activation.update(
+            receipt_id="activation-qa",
+            executor_id="qa-a",
+            causal_parent_ref="stop-qa",
+            causal_stop_receipt="stop-qa",
+            target_preflight_receipt="preflight-qa",
+            actor_executor_id="qa-a-target",
+        )
+        prepare_team = dict(prepare)
+        prepare_team["affected_executor_ids"] = ["dev-a", "qa-a"]
+        completion_team = dict(completion)
+        completion_team["accounted_executor_ids"] = ["dev-a", "qa-a"]
+        team_without_freeze = (
+            prepare_team,
+            stop,
+            qa_stop,
+            preflight,
+            qa_preflight,
+            activation,
+            qa_activation,
+            completion_team,
+        )
+        self.assertEqual(
+            "RECEIPT_INVALID",
+            receipt_set_allowed(
+                team_without_freeze,
+                accepted_root_ref="fence-4",
+                affected_executor_ids=("dev-a", "qa-a"),
+                migration_mode="team",
+            ).code,
+        )
+        freeze = dict(prepare_team)
+        freeze.update(
+            receipt_id="freeze-1",
+            receipt_type="FREEZE",
+            causal_parent_ref="prepare-1",
+            prior_epoch=3,
+            new_epoch=4,
+            observed_outcome="FROZEN",
+            stopped_executor_ids=["dev-a", "qa-a"],
+            source_stop_receipt_refs=["stop-1", "stop-qa"],
+        )
+        self.assertEqual(
+            "ALLOW",
+            receipt_set_allowed(
+                (*team_without_freeze[:-1], freeze, completion_team),
+                accepted_root_ref="fence-4",
+                affected_executor_ids=("dev-a", "qa-a"),
+                migration_mode="team",
+            ).code,
+        )
+        cross_lineage = dict(qa_stop)
+        cross_lineage["migration_id"] = "migration-other"
+        self.assertEqual(
+            "RECEIPT_INVALID",
+            receipt_set_allowed(
+                (prepare_team, stop, cross_lineage, freeze),
+                accepted_root_ref="fence-4",
+                affected_executor_ids=("dev-a", "qa-a"),
+                migration_mode="team",
+            ).code,
+        )
+
+    def test_append_only_graph_allows_later_generations_and_terminal_blocked(self):
+        receipt_set_allowed = self.require("receipt_set_allowed")
+        prepare = self.prepare_receipt()
+        stop1 = self.stop_receipt()
+        preflight1 = self.preflight_receipt()
+        activation1 = self.activation_receipt()
+        rollback = dict(activation1)
+        rollback.update(
+            receipt_id="rollback-1",
+            receipt_type="FORWARD_ROLLBACK",
+            causal_parent_ref="activation-1",
+            prior_epoch=5,
+            new_epoch=6,
+            observed_outcome="FORWARD_ROLLBACK",
+            rollback_target_epoch=6,
+            causal_activation_receipt="activation-1",
+        )
+        stop2 = dict(stop1)
+        stop2.update(
+            receipt_id="stop-2",
+            prior_epoch=6,
+            new_epoch=7,
+            expected_epoch=7,
+            causal_parent_ref="rollback-1",
+            cutover_parent="rollback-1",
+        )
+        preflight2 = dict(preflight1)
+        preflight2.update(
+            receipt_id="preflight-2",
+            prior_epoch=7,
+            new_epoch=8,
+            causal_parent_ref="stop-2",
+        )
+        activation2 = dict(activation1)
+        activation2.update(
+            receipt_id="activation-2",
+            prior_epoch=7,
+            new_epoch=8,
+            causal_parent_ref="stop-2",
+            causal_stop_receipt="stop-2",
+            target_preflight_receipt="preflight-2",
+        )
+        completion = self.completion_receipt()
+        completion.update(
+            prior_epoch=8,
+            new_epoch=9,
+            causal_parent_ref="activation-2",
+        )
+        history = (
+            prepare,
+            stop1,
+            preflight1,
+            activation1,
+            rollback,
+            stop2,
+            preflight2,
+            activation2,
+            completion,
+        )
+        self.assertEqual(
+            "ALLOW",
+            receipt_set_allowed(
+                history,
+                accepted_root_ref="fence-4",
+                affected_executor_ids=("dev-a",),
+                migration_mode="role",
+            ).code,
+        )
+        duplicate_event = dict(stop2)
+        duplicate_event["receipt_id"] = "stop-2-copy"
+        self.assertEqual(
+            "RECEIPT_INVALID",
+            receipt_set_allowed(
+                (*history, duplicate_event),
+                accepted_root_ref="fence-4",
+                affected_executor_ids=("dev-a",),
+                migration_mode="role",
+            ).code,
+        )
+
+        terminal_blocked = dict(preflight1)
+        terminal_blocked.update(
+            receipt_id="blocked-1",
+            receipt_type="PARTIAL_DISPOSITION",
+            causal_parent_ref="preflight-1",
+            prior_epoch=5,
+            new_epoch=6,
+            observed_outcome="TERMINAL_BLOCKED",
+            blocked_from_state="RESUMING",
+            permitted_successors=["RESUMING", "CANCELLATION", "FORWARD_ROLLBACK"],
+            terminal_disposition="BLOCKED",
+            disposition_owner_executor_id="pm-a",
+            next_action="Retain protected custody",
+            disposition_receipt_ref="blocked-1",
+        )
+        blocked_completion = self.completion_receipt()
+        blocked_completion.update(
+            prior_epoch=6,
+            new_epoch=7,
+            causal_parent_ref="blocked-1",
+        )
+        self.assertEqual(
+            "ALLOW",
+            receipt_set_allowed(
+                (prepare, stop1, preflight1, terminal_blocked, blocked_completion),
+                accepted_root_ref="fence-4",
+                affected_executor_ids=("dev-a",),
+                migration_mode="role",
+            ).code,
+        )
+
+    def test_team_state_rejects_invalid_records_and_resolves_exact_receipts(self):
+        derive_team_state = self.require("derive_team_state")
+        invalid_records = (
+            [{"executor_id": "dev-a", "source_state": "ACTIVE", "target_state": "ACTIVE", "custody": "TARGET_ACTIVE", "disposition": "RESUMED"}],
+            [
+                {"executor_id": "dev-a", "source_state": "STOPPED", "target_state": "ACTIVE", "custody": "TARGET_ACTIVE", "disposition": "RESUMED"},
+                {"executor_id": "dev-a", "source_state": "STOPPED", "target_state": "ACTIVE", "custody": "TARGET_ACTIVE", "disposition": "RESUMED"},
+            ],
+            ["not-a-record"],
+        )
+        for records in invalid_records:
+            with self.subTest(records=records):
+                self.assertEqual(
+                    "INVALID",
+                    derive_team_state(
+                        records,
+                        affected_executor_ids=("dev-a",),
+                        receipts=(),
+                        accepted_root_ref="fence-4",
+                        migration_mode="role",
+                    ).state,
+                )
+
+    def test_team_state_accepts_valid_mixed_terminal_receipt_graphs(self):
+        derive_team_state = self.require("derive_team_state")
+        prepare = self.prepare_receipt()
+        prepare["affected_executor_ids"] = ["dev-a", "qa-a"]
+        dev_stop = self.stop_receipt()
+        qa_stop = self.stop_receipt()
+        qa_stop.update(receipt_id="stop-qa", executor_id="qa-a")
+        freeze = dict(prepare)
+        freeze.update(
+            receipt_id="freeze-1",
+            receipt_type="FREEZE",
+            causal_parent_ref="prepare-1",
+            prior_epoch=3,
+            new_epoch=4,
+            observed_outcome="FROZEN",
+            stopped_executor_ids=["dev-a", "qa-a"],
+            source_stop_receipt_refs=["stop-1", "stop-qa"],
+        )
+        dev_preflight = self.preflight_receipt()
+        dev_activation = self.activation_receipt()
+
+        for disposition in ("BLOCKED", "CANCELLED", "FORWARD_ROLLBACK"):
+            qa_receipts = []
+            if disposition in {"BLOCKED", "FORWARD_ROLLBACK"}:
+                qa_preflight = self.preflight_receipt()
+                qa_preflight.update(
+                    receipt_id="preflight-qa",
+                    executor_id="qa-a",
+                    causal_parent_ref="stop-qa",
+                    actor_executor_id="qa-a-target",
+                )
+                qa_receipts.append(qa_preflight)
+            if disposition == "BLOCKED":
+                terminal = dict(qa_receipts[-1])
+                terminal.update(
+                    receipt_id="blocked-qa",
+                    receipt_type="PARTIAL_DISPOSITION",
+                    causal_parent_ref="preflight-qa",
+                    prior_epoch=5,
+                    new_epoch=6,
+                    observed_outcome="TERMINAL_BLOCKED",
+                    blocked_from_state="RESUMING",
+                    permitted_successors=["RESUMING", "CANCELLATION", "FORWARD_ROLLBACK"],
+                    terminal_disposition="BLOCKED",
+                    disposition_owner_executor_id="pm-a",
+                    next_action="Retain protected custody",
+                    disposition_receipt_ref="blocked-qa",
+                )
+                qa_record_state = ("STOPPED", "INACTIVE", "SOURCE_STOPPED")
+            elif disposition == "CANCELLED":
+                terminal = dict(qa_stop)
+                terminal.update(
+                    receipt_id="cancel-qa",
+                    receipt_type="CANCELLATION",
+                    causal_parent_ref="stop-qa",
+                    prior_epoch=4,
+                    new_epoch=5,
+                    observed_outcome="REACTIVATION_REQUIRED",
+                    terminal_disposition="REACTIVATION_REQUIRED",
+                    source_state="STOPPED",
+                    target_state="READY",
+                    causal_stop_receipt="stop-qa",
+                )
+                qa_record_state = ("STOPPED", "READY", "TARGET_PENDING")
+            else:
+                qa_activation = self.activation_receipt()
+                qa_activation.update(
+                    receipt_id="activation-qa",
+                    executor_id="qa-a",
+                    causal_parent_ref="stop-qa",
+                    causal_stop_receipt="stop-qa",
+                    target_preflight_receipt="preflight-qa",
+                    actor_executor_id="qa-a-target",
+                )
+                qa_receipts.append(qa_activation)
+                terminal = dict(qa_activation)
+                terminal.update(
+                    receipt_id="rollback-qa",
+                    receipt_type="FORWARD_ROLLBACK",
+                    causal_parent_ref="activation-qa",
+                    prior_epoch=5,
+                    new_epoch=6,
+                    observed_outcome="FORWARD_ROLLBACK",
+                    rollback_target_epoch=6,
+                    causal_activation_receipt="activation-qa",
+                )
+                qa_record_state = ("STOPPED", "INACTIVE", "SOURCE_STOPPED")
+            qa_receipts.append(terminal)
+            completion = self.completion_receipt()
+            completion.update(
+                prior_epoch=terminal["new_epoch"],
+                new_epoch=terminal["new_epoch"] + 1,
+                causal_parent_ref=terminal["receipt_id"],
+                accounted_executor_ids=["dev-a", "qa-a"],
+            )
+            receipts = (
+                prepare,
+                dev_stop,
+                qa_stop,
+                freeze,
+                dev_preflight,
+                dev_activation,
+                *qa_receipts,
+                completion,
+            )
+            records = [
+                {
+                    "executor_id": "dev-a",
+                    "source_state": "STOPPED",
+                    "target_state": "ACTIVE",
+                    "custody": "TARGET_ACTIVE",
+                    "disposition": "RESUMED",
+                    "disposition_receipt_ref": "activation-1",
+                },
+                {
+                    "executor_id": "qa-a",
+                    "source_state": qa_record_state[0],
+                    "target_state": qa_record_state[1],
+                    "custody": qa_record_state[2],
+                    "disposition": disposition,
+                    "disposition_owner_executor_id": "pm-a",
+                    "review_date": "2026-01-02",
+                    "next_action": "Retain terminal custody",
+                    "disposition_receipt_ref": terminal["receipt_id"],
+                },
+            ]
+            with self.subTest(disposition=disposition):
+                state = derive_team_state(
+                    records,
+                    affected_executor_ids=("dev-a", "qa-a"),
+                    receipts=receipts,
+                    accepted_root_ref="fence-4",
+                    migration_mode="team",
+                )
+                self.assertEqual("COMPLETE", state.state)
+                self.assertEqual(("dev-a",), state.active_targets)
+                self.assertEqual(("qa-a",) if disposition == "BLOCKED" else (), state.blocked_executors)
 
     def test_same_next_epoch_branches_are_serialized_by_accepted_parent(self):
         materialize_successor = self.require("materialize_successor")
