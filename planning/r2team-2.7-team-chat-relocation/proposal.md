@@ -12,7 +12,7 @@ R2Team 2.7 adds an explicit relocation control plane for:
 2. one executor moving to another Codex host;
 3. a PM-controlled whole-team cutover with ordered resume.
 
-The durable unit is the accepted migration bundle and current TASK checkpoints, never a transcript or local thread identifier.
+The durable unit is the accepted migration bundle, per-executor causal fencing records, and current TASK checkpoints, never a transcript or local thread identifier.
 
 ## Identity model
 
@@ -36,16 +36,19 @@ Package a separate `r2team-relocate` skill for read-only status/doctor plus prep
 
 ## Durable records
 
-Each migration uses `Team/Migrations/<migration-id>/MIGRATION.md` plus `roles/<executor-id>.md`. The global file owns state, cutover SHA, PM, affected executors, target placement, startup order, writer-stop evidence, access/tool gates, rollback rule, receipts, and unresolved limits. Role records point to current TASK checkpoints and avoid copying their content.
+Each migration uses `Team/Migrations/<migration-id>/MIGRATION.md` plus `roles/<executor-id>.md`. The global file owns aggregate state, cutover generation, PM, affected executors, target placement, startup order, rollback rule, receipts, and unresolved limits. Each role record owns the executor-scoped causal fence, source/target substates, evidence and disposition, and points to current TASK checkpoints without copying their content.
 
 ## Safety invariants
 
-- At most one physical writer is active for an executor/TASK.
-- Old writer stop is proven before `READY_TO_RESUME`.
+- At most one accepted physical writer is active for an executor/TASK under cooperative protocol fencing; provider-enforced exclusion is claimed only when separately evidenced.
+- Every writer-capable R2Team entry point re-reads the accepted default-branch fencing record immediately before publication and rejects a stale, equal-conflicting, or causally unrelated successor.
+- Old writer stop is proven per executor before that executor can reach `READY` or `ACTIVE` on the target.
 - Replacement chat cannot work before its resume gate and cross-check succeed.
+- A blocked or partial migration preserves per-executor custody and always names a legal recovery transition or terminal accounted disposition.
 - Local mapping never grants ownership, permission, or assignment.
 - Unknown access, route, checkpoint, writer status, or workspace custody blocks resume.
 - Rollback is a forward accepted publication, never reset or force-push.
+- Receipts are append-only, uniquely identified, causally linked, and privacy-safe; no hash of a private thread identifier is durable evidence.
 - Relocation does not authorize chat creation, credential copying, process stop, archive, deletion, merge, deployment, release, or cleanup.
 
 ## Compatibility

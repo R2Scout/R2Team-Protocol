@@ -7,28 +7,30 @@
 
 ## 2. Update protocol and templates
 
-- Set candidate protocol/package version to 2.7.
-- Add relocation identity, bundle, writer-epoch, freeze/resume, rollback, evidence, and compatibility rules.
+- Label the unreleased protocol/package payload as a 2.7 candidate while preserving separate release and downstream-adoption gates.
+- Add relocation identity, bundle, per-executor causal fencing, recoverable source/target substates, partial-team custody, forward rollback, typed append-only receipts, and compatibility rules.
 - Update AGENTS, Setup, TEAM, TASK, role contracts, commands, scenarios, findings, changelog, verification, and 2.6-to-2.7 migration guide.
 - Add portable `TEAM_RELOCATION.md` and migration-bundle templates without live identifiers.
 
 ## 3. Add the relocation skill
 
 - Package `skills/r2team-relocate/SKILL.md` as a sixth skill.
-- Provide status, prepare role/team, resume role/team, and doctor contracts.
+- Provide status, prepare role/team, resume role/team, cancellation/forward-rollback routing, and doctor contracts.
 - Keep status/doctor read-only and prepare/resume stage-bounded.
 - Preserve existing function-transfer and work-skill boundaries.
+- Require compare-and-publish against accepted default-branch fencing state and identify cooperative versus provider-enforced fencing evidence.
 
 ## 4. Extend package validation
 
 - Require the relocation skill and migration templates.
-- Reject populated thread IDs, machine-private mappings, transcripts, secret material, implicit chat creation, writer overlap, and 2.7 payloads that redefine function transfer.
+- Reject populated thread IDs, machine-private mappings or stable hashes, transcripts, secret material, implicit chat creation, writer overlap, causally invalid receipts, and 2.7 payloads that redefine function transfer.
 - Require version/manifest/hash consistency and portable links.
 
 ## 5. Add deterministic policy fixtures
 
-- Implement a pure relocation policy model for state transitions, identity preservation, writer epochs, readiness gates, registry authority, workspace custody, and completion.
-- Add negative fixtures for replay, concurrent writers, missing evidence, wrong executor/TASK/candidate, and local mapping as authority.
+- Implement a pure relocation policy model for per-executor state transitions, causal epochs, identity preservation, partial-team custody, readiness/recovery gates, registry authority, workspace custody, and completion.
+- Add safety assertions that two writers can never be valid and liveness assertions that every blocked/frozen state has a permitted recovery transition or terminal accounted disposition.
+- Add the complete A6 adversarial set: same-epoch branch race, offline stale source, partial target activation, post-freeze cancellation, forward rollback, PM/old-writer publication race, in-flight helper, unreachable source, bad activation parent, retained-set ambiguity, registry collision/wrong executor, and correct-candidate/wrong-custody workspace reuse.
 
 ## 6. Verify package and migration
 
@@ -36,6 +38,7 @@
 - Verify command copies remain byte-identical.
 - Verify a fresh manifest-only package.
 - Prove 2.6 payloads/projects remain unchanged until explicit adoption.
+- Confirm no test performs live relocation, registry mutation outside isolated fixtures, process stop, workspace cleanup, skill installation, release, or adoption.
 
 ## 7. Independent review and PR
 

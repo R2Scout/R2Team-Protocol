@@ -1,7 +1,7 @@
 ---
 protocol_version: "2.6"
 id: "TASK-R2TEAM-2.7-TEAM-CHAT-RELOCATION-001"
-revision: 1
+revision: 2
 handoff_seq: 0
 status: DRAFT
 stage: DISCOVERY
@@ -52,16 +52,16 @@ workspace_disposition: ACTIVE
 candidate_dispositions: []
 artifact_manifests: []
 close_receipts: []
-next_action: "Publish the bounded planning checkpoint and obtain System Architect review of identity, freeze, resume, rollback, and skill-boundary decisions before implementation."
+next_action: "Publish the revision-2 planning checkpoint and obtain document-only System Architect re-review of the reconciled A1-A6 amendments before implementation."
 questions:
   - id: Q-2.7-SKILL-BOUNDARY
     mode: LOOP
-    status: OPEN
+    status: RESOLVED
     requester_executor_id: "r2team-protocol-pm"
     to_executor_id: "disk-worktree-system-architect"
     route: "https://github.com/R2Scout/R2Team-Protocol/issues/3"
     blocking: "implementation"
-    decision: null
+    decision: "Use a separate r2team-relocate skill as the sole relocation mutation entry point; retain r2team migrate for function transfer and keep relocation mutation out of r2team-work."
 ---
 
 # Outcome
@@ -92,8 +92,8 @@ Excluded:
 
 - Same logical executor relocation preserves participant, executor, TASK, Issue/PR, candidate, and evidence identity.
 - A changed participant/executor uses the existing ownership-transfer workflow, not relocation.
-- Old and replacement chats cannot both write for the same executor/TASK.
-- Resume requires an accepted Git cutover bundle, exact source SHA, writer-stop proof, target placement, access/tool preflight, and an opened resume gate.
+- Old and replacement chats cannot both be accepted writers for the same executor/TASK under per-executor causal cooperative fencing; provider-enforced exclusion requires separate evidence.
+- Resume requires an accepted Git cutover bundle, exact source SHA, per-executor expected epoch and causal parent, exact writer-stop receipt, target placement, access/tool preflight, causally linked activation receipt, and accepted read-back.
 - Durable Git contains no thread IDs, private machine paths, secrets, transcripts, or copied local runtime state.
 - Local thread registry remapping is ignored, read back, and insufficient by itself to authorize work.
 - Active workspace leases are closed, retained, or transferred with R2Team 2.6 evidence; relocation never implies cleanup authority.
@@ -111,9 +111,9 @@ Excluded:
 
 # Current checkpoint
 
-- Completed: merged R2Team 2.6 base read back; Issue #3 created; the clean 2.6 author worktree was reused as the 2.7 author lease without allocating another physical worktree; predecessor dirty material remains protected and untouched.
-- Remaining: publish planning; obtain System Architect review; reconcile accepted findings; implement, validate, independently review, and prepare a PR.
-- Blockers: implementation waits for the skill-boundary and cutover-state review. Merge, release, installation, downstream adoption, and live relocation remain separate gates.
+- Completed: merged R2Team 2.6 base read back; Issue #3 created; the clean 2.6 author worktree was reused as the 2.7 author lease without allocating another physical worktree; predecessor dirty material remains protected and untouched; planning rev1 was reviewed as `AMEND`; A1-A6 were reconciled into rev2.
+- Remaining: publish rev2; obtain document-only System Architect re-review; implement, validate, independently review, and prepare a PR.
+- Blockers: implementation waits for revision-2 planning PASS. Merge, release, installation, downstream adoption, and live relocation remain separate gates.
 
 # Evidence
 
@@ -121,6 +121,8 @@ Excluded:
 - Base tree: `f15f17d76acf245e8ff7ef2b89778ef423e11644`
 - Branch: `planning/r2team-2.7-team-chat-relocation`
 - Tracker: https://github.com/R2Scout/R2Team-Protocol/issues/3
+- Planning rev1: `6f0555a2003cd811f7c567b151539e4c90e5da65`, tree `bc679de82a0a85aa9d82a9480c2023388f7f9db0`.
+- System Architect rev1 verdict: `AMEND`; accepted separate skill/identity/registry/workspace/forward-rollback boundaries, required per-executor causal fencing, recoverable partial states, exact evidence, typed receipts, candidate wording, and missing fixtures.
 - Predecessor relocation material: read-only architectural input, not accepted authority or copied runtime state.
 - Runtime/live relocation: NOT_RUN and out of scope.
 
