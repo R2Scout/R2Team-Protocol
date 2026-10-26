@@ -1,7 +1,7 @@
 ---
 protocol_version: "2.6"
 id: "TASK-R2TEAM-2.7-TEAM-CHAT-RELOCATION-001"
-revision: 8
+revision: 9
 handoff_seq: 0
 status: REVIEW_READY
 stage: QA
@@ -26,7 +26,7 @@ branch: "planning/r2team-2.7-team-chat-relocation"
 pr: null
 openspec_change: null
 base_sha: "7e7a35eaf89726b0850da78aaa176d142d7fc1ce"
-candidate_sha: "363caa5a0b2838efcb7c8ded4622be1d6bd7e57a"
+candidate_sha: "b8697150c46a6f320c24b923cce33be7781161e0"
 verified_sha: null
 merged_sha: null
 workspace_policy: inherited_from_protocol_2.6
@@ -39,7 +39,7 @@ workspace_leases:
     owner_executor_id: "r2team-protocol-pm"
     closure_owner_executor_id: "r2team-protocol-pm"
     base_sha: "7e7a35eaf89726b0850da78aaa176d142d7fc1ce"
-    candidate_sha: "363caa5a0b2838efcb7c8ded4622be1d6bd7e57a"
+    candidate_sha: "b8697150c46a6f320c24b923cce33be7781161e0"
     mutability: mutable
     custody: ordinary-canonical
     state: ACTIVE
@@ -52,7 +52,7 @@ workspace_disposition: ACTIVE
 candidate_dispositions: []
 artifact_manifests: []
 close_receipts: []
-next_action: "Obtain fresh independent re-review of successor 363caa5a0b2838efcb7c8ded4622be1d6bd7e57a / tree 0bd0ffde59d0c1b3920aa745fc2a3a89747e2f28; prepare a PR without merging only if PASS."
+next_action: "Obtain fresh independent re-review of successor b8697150c46a6f320c24b923cce33be7781161e0 / tree 9c84141b8beb7cc9953156e7454e75b2abcede17; prepare a PR without merging only if PASS."
 questions:
   - id: Q-2.7-SKILL-BOUNDARY
     mode: LOOP
@@ -111,7 +111,7 @@ Excluded:
 
 # Current checkpoint
 
-- Completed: planning revision 2 received System Architect `PASS`; candidates `3971e5e863d3a1c19573f9fa99f9d73644758599`, `88d920f48690bd5b76a13138b08dd7bc40b2d2a1`, `9fd8a4a2a2b45cfe9ac97d8f49f47cc41bfd7bc4`, and `978697c11f26911a28533b6d521191721e7d1872` received independent `AMEND`; successor `363caa5a0b2838efcb7c8ded4622be1d6bd7e57a` closes S1-S6 with red-first boundary fixtures and passed local plus fresh manifest-only validation.
+- Completed: planning revision 2 received System Architect `PASS`; candidates `3971e5e863d3a1c19573f9fa99f9d73644758599`, `88d920f48690bd5b76a13138b08dd7bc40b2d2a1`, `9fd8a4a2a2b45cfe9ac97d8f49f47cc41bfd7bc4`, `978697c11f26911a28533b6d521191721e7d1872`, and `363caa5a0b2838efcb7c8ded4622be1d6bd7e57a` received independent `AMEND`; successor `b8697150c46a6f320c24b923cce33be7781161e0` closes G1-G4 with red-first global-graph fixtures and passed local plus fresh manifest-only validation.
 - Remaining: obtain fresh independent re-review of the exact successor and, only if PASS, prepare a PR without merging.
 - Blockers: none for independent review. Merge, release, installation, downstream adoption, provider-enforced fencing claims, and live relocation remain separate gates.
 
@@ -137,10 +137,12 @@ Excluded:
 - Accepted corrections B1-B3: all epoch-bearing boundaries use strict non-boolean successor integers; SOURCE_STOP binds its common causal parent to the cutover parent; singular evidence facts and reference collections reject blank, non-string, null, and duplicate values and preserve exact TASK/candidate membership.
 - Rejected successor: `978697c11f26911a28533b6d521191721e7d1872`, tree `a39d8ab07a3d87e7a71a5238d81712d767b80794`; independent verdict `AMEND`, review receipt `MSG-20261026-015636-978697c1`.
 - Accepted corrections S1-S6: freeze state is a strict boolean; fencing uses a closed single-writer state/custody matrix; activation binds accepted cutover/commit, registry/mapping, and included preflight evidence; every receipt type has typed semantics and accepted-root/affected-set causal closure; remote-manual absence rejects collisions/observations; canonical paths reject controls and nonportable segments.
-- Current successor candidate: `363caa5a0b2838efcb7c8ded4622be1d6bd7e57a`, tree `0bd0ffde59d0c1b3920aa745fc2a3a89747e2f28`, parent `458fbc8871cb9010be27809afdb0ba8bc66ae3ce`.
-- Structural validator: PASS; validator suite: 53/53; workspace policy: 32/32; relocation policy: 61/61; official skill validation: 6/6; command copies byte-identical; `compileall` and `git diff --check`: PASS.
-- Boundary probes: untyped freeze `PUBLICATION_INPUT_INVALID`; simultaneous/custody-disagreeing writers `FENCE_INVALID`; contradictory activation evidence, orphan receipt edges, incomplete completion accounting, invalid receipt enums/ranges `RECEIPT_INVALID`; remote-manual collision `REGISTRY_CONFLICT`; control-character path `PUBLICATION_PATH_INVALID`; closed two-executor chain `ALLOW`.
-- Fresh manifest-only package: PASS for 59 required files, all 53/32/61 suites, all six skill checks, byte-identical help, English-only public Markdown; temporary package removed after verification.
+- Rejected successor: `363caa5a0b2838efcb7c8ded4622be1d6bd7e57a`, tree `0bd0ffde59d0c1b3920aa745fc2a3a89747e2f28`; independent verdict `AMEND`, review receipt `MSG-20261026-021027-363caa5a`.
+- Accepted corrections G1-G4: every activation API consumes an included same-identity PASS preflight; completion binds an external root, exactly one PREPARE, one lineage, role/team mode, and full team FREEZE; later causal receipt generations coexist with logical-event deduplication and typed terminal BLOCKED; aggregate state validates exact unique affected records and resolves their latest graph terminals or returns INVALID.
+- Current successor candidate: `b8697150c46a6f320c24b923cce33be7781161e0`, tree `9c84141b8beb7cc9953156e7454e75b2abcede17`, parent `d46455cd4921bf461e3c50e1279f1166676e147e`.
+- Structural validator: PASS; validator suite: 53/53; workspace policy: 32/32; relocation policy: 66/66; official skill validation: 6/6; command copies byte-identical; `compileall` and `git diff --check`: PASS.
+- Boundary probes: missing/BLOCKED/cross-identity preflight `TARGET_PREFLIGHT_REQUIRED` or `RECEIPT_INVALID`; missing PREPARE/FREEZE, self-aliased root, cross-lineage branch, duplicate logical event, ambiguous completion `RECEIPT_INVALID`; later rollback generation and valid role/team mixed terminal graphs `ALLOW`; impossible/duplicate/unresolved aggregate input `INVALID`.
+- Fresh manifest-only package: PASS for 59 required files, all 53/32/66 suites, all six skill checks, byte-identical help, English-only public Markdown; temporary package removed after verification.
 - Predecessor relocation material: read-only architectural input, not accepted authority or copied runtime state.
 - Runtime/live relocation: NOT_RUN and out of scope.
 
