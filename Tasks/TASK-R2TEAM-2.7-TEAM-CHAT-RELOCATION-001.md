@@ -1,7 +1,7 @@
 ---
 protocol_version: "2.6"
 id: "TASK-R2TEAM-2.7-TEAM-CHAT-RELOCATION-001"
-revision: 11
+revision: 12
 handoff_seq: 0
 status: REVIEW_READY
 stage: QA
@@ -26,7 +26,7 @@ branch: "planning/r2team-2.7-team-chat-relocation"
 pr: null
 openspec_change: null
 base_sha: "7e7a35eaf89726b0850da78aaa176d142d7fc1ce"
-candidate_sha: "add35ad206d254f939038e5ce45eee825ba6ee1b"
+candidate_sha: "d531d3fb4e5b1356afecfaaf26785ede2a2421f2"
 verified_sha: null
 merged_sha: null
 workspace_policy: inherited_from_protocol_2.6
@@ -39,7 +39,7 @@ workspace_leases:
     owner_executor_id: "r2team-protocol-pm"
     closure_owner_executor_id: "r2team-protocol-pm"
     base_sha: "7e7a35eaf89726b0850da78aaa176d142d7fc1ce"
-    candidate_sha: "add35ad206d254f939038e5ce45eee825ba6ee1b"
+    candidate_sha: "d531d3fb4e5b1356afecfaaf26785ede2a2421f2"
     mutability: mutable
     custody: ordinary-canonical
     state: ACTIVE
@@ -52,7 +52,7 @@ workspace_disposition: ACTIVE
 candidate_dispositions: []
 artifact_manifests: []
 close_receipts: []
-next_action: "Obtain fresh independent re-review of successor add35ad206d254f939038e5ce45eee825ba6ee1b / tree 99a290dbe59c2f608755217c3373f1e921619f6a; prepare a PR without merging only if PASS."
+next_action: "Obtain fresh independent re-review of successor d531d3fb4e5b1356afecfaaf26785ede2a2421f2 / tree 47a9dbe6af05226ee73d6fae88f9c8a9a475c45f; prepare a PR without merging only if PASS."
 questions:
   - id: Q-2.7-SKILL-BOUNDARY
     mode: LOOP
@@ -111,7 +111,7 @@ Excluded:
 
 # Current checkpoint
 
-- Completed: planning revision 2 received System Architect `PASS`; candidates through `5a7a058d2ff01e6227e62b2a5d29919dff369545` received independent `AMEND`; successor `add35ad206d254f939038e5ce45eee825ba6ee1b` closes B1-B2 with red-first latest-generation and strict stop/freeze-time fixtures and passed local plus fresh manifest-only validation.
+- Completed: planning revision 2 received System Architect `PASS`; candidates through `add35ad206d254f939038e5ce45eee825ba6ee1b` received independent `AMEND`; successor `d531d3fb4e5b1356afecfaaf26785ede2a2421f2` closes C1-C2 with one shared latest-stage resolver and exhaustive mixed-peer matching, plus red-first fixtures and fresh manifest-only validation.
 - Remaining: obtain fresh independent re-review of the exact successor and, only if PASS, prepare a PR without merging.
 - Blockers: none for independent review. Merge, release, installation, downstream adoption, provider-enforced fencing claims, and live relocation remain separate gates.
 
@@ -143,10 +143,12 @@ Excluded:
 - Accepted corrections A1-A3: SOURCE_STOP requires exact typed `SOURCE_STOPPED` in stop/activation/graph paths; every team preflight references the exact full-set FREEZE and is causally/temporally later; aggregate derivation validates nonempty minimum receipt context before every FROZEN/READY/RESUMING return.
 - Rejected successor: `5a7a058d2ff01e6227e62b2a5d29919dff369545`, tree `f9a82018268f2a0d947199fbc084bc14a251fb35`; independent verdict `AMEND`, review receipt `MSG-20261026-055107-5a7a058d`.
 - Accepted corrections B1-B2: every non-complete aggregate state selects the unique latest causal stage per executor instead of historical PASS/activation existence, rejecting ambiguous same-epoch alternatives except the activation-to-supporting-preflight pair; team receipt graphs require strict `SOURCE_STOP < FREEZE < TARGET_PREFLIGHT < ACTIVATION` timestamps, including offset-equivalent instants.
-- Current successor candidate: `add35ad206d254f939038e5ce45eee825ba6ee1b`, tree `99a290dbe59c2f608755217c3373f1e921619f6a`, parent `71ab346fab76894035cf0f510e4a3b303714ff64`.
-- Structural validator: PASS; validator suite: 53/53; workspace policy: 32/32; relocation policy: 70/70; official skill validation: 6/6; command copies byte-identical; `compileall` and `git diff --check`: PASS.
-- Boundary probes: stale READY/ACTIVE claims after rollback plus a later BLOCKED preflight return `INVALID`; ambiguous same-epoch stage branches return `INVALID`; FREEZE equal to/later than any referenced stop returns `RECEIPT_INVALID`; exact role/team graphs remain `ALLOW`.
-- Fresh manifest-only package: PASS for 59 required files, all 53/32/70 suites, all six skill checks, byte-identical help, English-only public Markdown; temporary package removed after verification.
+- Rejected successor: `add35ad206d254f939038e5ce45eee825ba6ee1b`, tree `99a290dbe59c2f608755217c3373f1e921619f6a`; independent verdict `AMEND`, review receipt `MSG-20261026-060216-add35ad`.
+- Accepted corrections C1-C2: receipt-set completion and aggregate derivation use one shared latest-stage resolver, so an older terminal cannot close over a newer nonterminal generation; every mixed aggregate record, including PENDING/INACTIVE peers, is exhaustively matched to its latest stage and disposition.
+- Current successor candidate: `d531d3fb4e5b1356afecfaaf26785ede2a2421f2`, tree `47a9dbe6af05226ee73d6fae88f9c8a9a475c45f`, parent `1c38243004ea20a0605a63d5e58b0569caeb68e4`.
+- Structural validator: PASS; validator suite: 53/53; workspace policy: 32/32; relocation policy: 72/72; official skill validation: 6/6; command copies byte-identical; `compileall` and `git diff --check`: PASS.
+- Boundary probes: old rollback completion over newer stop/BLOCKED preflight is `RECEIPT_INVALID`; mixed inactive peers with BLOCKED/FAIL preflight, cancellation, rollback, or partial disposition return `INVALID`; a mixed peer whose latest stage is SOURCE_STOP remains valid `RESUMING`.
+- Fresh manifest-only package: PASS for 59 required files, all 53/32/72 suites, all six skill checks, byte-identical help, English-only public Markdown; temporary package removed after verification.
 - Predecessor relocation material: read-only architectural input, not accepted authority or copied runtime state.
 - Runtime/live relocation: NOT_RUN and out of scope.
 
