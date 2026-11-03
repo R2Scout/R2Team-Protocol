@@ -26,7 +26,7 @@ branch: "planning/r2team-2.7-team-chat-relocation"
 pr: "https://github.com/R2Scout/R2Team-Protocol/pull/4"
 openspec_change: null
 base_sha: "7e7a35eaf89726b0850da78aaa176d142d7fc1ce"
-candidate_sha: null
+candidate_sha: "1f97207fd671f7838c39fe26383151dbe674ba5e"
 verified_sha: null
 merged_sha: null
 workspace_policy: inherited_from_protocol_2.6
@@ -39,7 +39,7 @@ workspace_leases:
     owner_executor_id: "r2team-protocol-pm"
     closure_owner_executor_id: "r2team-protocol-pm"
     base_sha: "7e7a35eaf89726b0850da78aaa176d142d7fc1ce"
-    candidate_sha: null
+    candidate_sha: "1f97207fd671f7838c39fe26383151dbe674ba5e"
     mutability: mutable
     custody: ordinary-canonical
     state: ACTIVE
@@ -116,8 +116,8 @@ Excluded:
 
 # Current checkpoint
 
-- Completed: relocation candidate `ef761223685a8e05b2b4ce5cb6f964769a50120b` received independent System Architect `PASS`; bounded-materialization candidate `b3df6062d3c55032a7409d7abc2b7a48ee0e34fb` received independent `AMEND` because compatible reuse bypassed root-overlap and materialization-key conflict gates. The ordering defect now has RED-to-GREEN regression coverage.
-- Remaining: validate and publish one corrected combined candidate, obtain fresh independent review, then return to protocol-owner review.
+- Completed: relocation candidate `ef761223685a8e05b2b4ce5cb6f964769a50120b` received independent System Architect `PASS`; bounded-materialization candidate `b3df6062d3c55032a7409d7abc2b7a48ee0e34fb` received independent `AMEND` because compatible reuse bypassed root-overlap and materialization-key conflict gates. Corrected candidate `1f97207fd671f7838c39fe26383151dbe674ba5e`, tree `fa9f84c85af390f29c4c113f320b0d8584682d3d`, has RED-to-GREEN coverage and full local validation.
+- Remaining: publish the corrected candidate and this TASK checkpoint, obtain fresh independent review, then return to protocol-owner review.
 - Blockers: none for bounded implementation. Merge, release, installation, downstream adoption, live cleanup, provider-enforced fencing claims, and live relocation remain separate unauthorized gates.
 
 # Evidence
@@ -166,6 +166,10 @@ Excluded:
 - Fresh manifest-only package: PASS for 59 required files with validator 55/55, workspace 40/40, relocation 73/73, six skill checks, command-copy equality, and English-only public Markdown. The isolated test root was retained under ignored `.test-tmp` because host policy rejected both attempted PowerShell deletion forms before execution.
 - Independent bounded-materialization review: `AMEND` for candidate `b3df6062d3c55032a7409d7abc2b7a48ee0e34fb`; review receipt `MSG-20261103-040710-b3df6062`; all other requested boundaries retained.
 - Accepted correction E1: evaluate root-overlap and materialization-key conflicts before compatible reuse; both conflicts block, while clean exact reuse remains permitted under incomplete inventory, hard cap, and reuse-only capacity.
+- Corrected candidate: `1f97207fd671f7838c39fe26383151dbe674ba5e`, tree `fa9f84c85af390f29c4c113f320b0d8584682d3d`, parent `21b5d92609260a3432a5727ee110684fd3458a26`.
+- Corrected probes: overlap plus reuse `ALLOCATION_BLOCKED`; materialization-key conflict plus reuse `ALLOCATION_BLOCKED`; clean exact reuse `REUSE_EXISTING`.
+- Corrected validation: package PASS; validator 55/55; workspace 42/42; relocation 73/73; six skill-format checks PASS; hashes 59/59; command copies identical; `compileall` and `git diff --check` PASS.
+- Corrected manifest-only package: PASS for 59 required files with validator 55/55, workspace 42/42, relocation 73/73, six skill checks, command-copy equality, and English-only public Markdown. Its isolated root remains ignored because host policy still rejects recursive removal before execution.
 
 # Authorized next transitions
 
