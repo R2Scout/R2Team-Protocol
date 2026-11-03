@@ -3,7 +3,7 @@ protocol_version: "2.7"
 id: "TASK-R2TEAM-2.7-RELEASE-001"
 revision: 1
 handoff_seq: 0
-status: REVIEW_READY
+status: DONE
 stage: RELEASE
 owner_executor_id: "r2team-protocol-owner"
 owner_route: "https://github.com/R2Scout/R2Team-Protocol/issues/6"
@@ -34,7 +34,7 @@ openspec_change: null
 base_sha: "9f6656589b68122ff9d67ae9d75edc14dd6118ff"
 candidate_sha: "6cdcb28d063cf2d2cdd11aeac0738d30329c3f9b"
 verified_sha: "6cdcb28d063cf2d2cdd11aeac0738d30329c3f9b"
-merged_sha: null
+merged_sha: "c2dd95dfea5138ec8c7f6757d6125279cb20c470"
 workspace_policy: inherited_from_protocol_2.7
 workspace_inventory_ref: "ignored local inventory for the reused release workspace"
 workspace_exceptions: []
@@ -47,18 +47,25 @@ workspace_leases:
     closure_owner_executor_id: "r2team-protocol-owner"
     base_sha: "9f6656589b68122ff9d67ae9d75edc14dd6118ff"
     candidate_sha: "6cdcb28d063cf2d2cdd11aeac0738d30329c3f9b"
-    head_sha: "6cdcb28d063cf2d2cdd11aeac0738d30329c3f9b"
-    tree_sha: "581f1b5614d759512793717cc3b4973178c54782"
+    head_sha: "c2dd95dfea5138ec8c7f6757d6125279cb20c470"
+    tree_sha: "cb30e9a41afe4d68233993400e767e16c37b928a"
     mutability: mutable
     custody: reused-existing-workspace
-    state: ACTIVE
-    retention_class: release-work
+    state: RETAINED_PROTECTED
+    retention_class: post-release-recovery
     review_date: "2026-11-10"
     recovery_ref: "refs/heads/release/r2team-2.7"
     exception_ref: null
-    close_receipt_ref: null
-workspace_disposition: ACTIVE
-candidate_dispositions: []
+    close_receipt_ref: "receipt-r2team-2.7-release-001-retained"
+workspace_disposition: RETAINED_PROTECTED
+candidate_dispositions:
+  - candidate_sha: "6cdcb28d063cf2d2cdd11aeac0738d30329c3f9b"
+    candidate_tree: "581f1b5614d759512793717cc3b4973178c54782"
+    branch_ref: "refs/heads/release/r2team-2.7"
+    disposition: MERGED_TO_DEFAULT
+    evidence_ref: "https://github.com/R2Scout/R2Team-Protocol/pull/7"
+    owner_executor_id: "r2team-protocol-owner"
+    recorded_at: "2026-11-03T14:29:01Z"
 artifact_manifests: []
 evidence_index:
   - evidence_key: "6cdcb28d|package|validate_package|windows-python|PASS"
@@ -89,13 +96,41 @@ evidence_index:
     environment_class: windows
     outcome: "PASS: hashes 59/59, command copies identical"
     summary_ref: "TASK release checkpoint"
-close_receipts: []
+  - evidence_key: "c2dd95df|publication|annotated-tag-and-github-release|github|PASS"
+    candidate_sha: "c2dd95dfea5138ec8c7f6757d6125279cb20c470"
+    axis: publication
+    normalized_command: "provider read-back of merged PR, origin/main, annotated v2.7 tag, and GitHub Release"
+    environment_class: github
+    outcome: PASS
+    summary_ref: "https://github.com/R2Scout/R2Team-Protocol/releases/tag/v2.7"
+close_receipts:
+  - receipt_ref: "receipt-r2team-2.7-release-001-retained"
+    lease_id: "lease-r2team-2.7-release-001"
+    task_id: "TASK-R2TEAM-2.7-RELEASE-001"
+    owner_executor_id: "r2team-protocol-owner"
+    closer_executor_id: "r2team-protocol-owner"
+    base_sha: "9f6656589b68122ff9d67ae9d75edc14dd6118ff"
+    branch_ref: "refs/heads/release/r2team-2.7"
+    head_sha: "c2dd95dfea5138ec8c7f6757d6125279cb20c470"
+    tree_sha: "cb30e9a41afe4d68233993400e767e16c37b928a"
+    candidate_sha: "6cdcb28d063cf2d2cdd11aeac0738d30329c3f9b"
+    material_classification: "retained clean release workspace with pre-existing ignored validation roots"
+    artifact_manifest_ref: null
+    recovery_route: "refs/heads/release/r2team-2.7"
+    native_resource_disposition: RETAINED_WITH_WORKSPACE
+    branch_disposition: MERGED_TO_DEFAULT
+    retention_class: post-release-recovery
+    closure_method: no-removal-retention
+    actual_result: RETAINED_PROTECTED
+    remaining_owner_executor_id: "r2team-protocol-owner"
+    blocker: "Workspace cleanup, branch deletion, and application archive were excluded from this release TASK."
+    recorded_at: "2026-11-03T14:30:51Z"
 migration_id: null
 executor_fence_ref: null
 writer_epoch: null
 writer_record_ref: null
 relocation_disposition: NOT_APPLICABLE
-next_action: "Merge PR #7 after exact provider read-back, then verify the actual merge commit on the remote default branch."
+next_action: "No further action in this release TASK. Downstream installation/adoption, live relocation/cleanup, branch deletion, and workspace archive require separate authority and evidence."
 questions: []
 ---
 
@@ -126,8 +161,8 @@ Excluded: downstream skill installation or replacement, project adoption or migr
 
 # Current checkpoint
 
-- Completed: exact `origin/main` and existing tags/releases were read back; Issue #6 and the reused release branch/workspace were established; release candidate `6cdcb28d063cf2d2cdd11aeac0738d30329c3f9b`, tree `581f1b5614d759512793717cc3b4973178c54782`, passed the declared local release checks; PR #7 is OPEN, CLEAN, and MERGEABLE with exact base `9f6656589b68122ff9d67ae9d75edc14dd6118ff`.
-- Remaining: PR merge/read-back, tag, GitHub Release, final checkpoint, and tracker close.
+- Completed: release candidate `6cdcb28d063cf2d2cdd11aeac0738d30329c3f9b`, tree `581f1b5614d759512793717cc3b4973178c54782`, passed all declared checks; PR #7 merged as `c2dd95dfea5138ec8c7f6757d6125279cb20c470`, tree `cb30e9a41afe4d68233993400e767e16c37b928a`; annotated tag object `6c9f189aeb6980bff98eb018f46ad9e72e36398d` resolves to that merge; GitHub Release `v2.7` is published, non-draft, non-prerelease, and latest.
+- Remaining: none within this TASK.
 - Blockers: none.
 
 # Evidence
@@ -137,6 +172,9 @@ Excluded: downstream skill installation or replacement, project adoption or migr
 - Sequential checks: package PASS; validator `55/55`; workspace `42/42`; relocation `73/73`; skill format `6/6`; hashes `59/59`; compile, command-copy, English-only, concrete-private-path/thread, stale-release-label, and diff checks PASS.
 - Existing tags: `v2.0` through `v2.3`; `v2.7` absent at intake.
 - Existing GitHub Releases: `v2.0` and `v2.1`; `v2.7` absent at intake.
+- Provider merge read-back: PR #7 `MERGED` at `c2dd95dfea5138ec8c7f6757d6125279cb20c470`; `origin/main` matched before tagging.
+- Annotated tag read-back: tag object `6c9f189aeb6980bff98eb018f46ad9e72e36398d`; peeled target `c2dd95dfea5138ec8c7f6757d6125279cb20c470`.
+- GitHub Release read-back: `v2.7`, `R2Team 2.7`, published `2026-11-03T14:30:51Z`, non-draft, non-prerelease, latest; https://github.com/R2Scout/R2Team-Protocol/releases/tag/v2.7.
 - Limits and NOT_RUN: all excluded scope axes.
 
 # Authorized next transitions
