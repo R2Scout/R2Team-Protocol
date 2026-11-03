@@ -1,10 +1,10 @@
 ---
 protocol_version: "2.6"
 id: "TASK-R2TEAM-2.7-TEAM-CHAT-RELOCATION-001"
-revision: 16
+revision: 17
 handoff_seq: 0
-status: IMPLEMENTING
-stage: IMPLEMENTATION
+status: REVIEW_READY
+stage: QA
 owner_executor_id: "r2team-protocol-pm"
 owner_route: "https://github.com/R2Scout/R2Team-Protocol/issues/3"
 previous_owner_executor_id: null
@@ -27,7 +27,7 @@ pr: "https://github.com/R2Scout/R2Team-Protocol/pull/4"
 openspec_change: null
 base_sha: "7e7a35eaf89726b0850da78aaa176d142d7fc1ce"
 candidate_sha: "1f97207fd671f7838c39fe26383151dbe674ba5e"
-verified_sha: null
+verified_sha: "1f97207fd671f7838c39fe26383151dbe674ba5e"
 merged_sha: null
 workspace_policy: inherited_from_protocol_2.6
 workspace_exceptions: []
@@ -52,7 +52,7 @@ workspace_disposition: ACTIVE
 candidate_dispositions: []
 artifact_manifests: []
 close_receipts: []
-next_action: "Publish a corrected exact candidate that blocks compatible reuse under root-overlap or materialization-key conflict, then obtain fresh independent review."
+next_action: "Obtain protocol-owner review of corrected PR #4; merge, tag, release, installation, adoption, live relocation, and live cleanup require separate explicit authority and evidence."
 questions:
   - id: Q-2.7-SKILL-BOUNDARY
     mode: LOOP
@@ -116,9 +116,9 @@ Excluded:
 
 # Current checkpoint
 
-- Completed: relocation candidate `ef761223685a8e05b2b4ce5cb6f964769a50120b` received independent System Architect `PASS`; bounded-materialization candidate `b3df6062d3c55032a7409d7abc2b7a48ee0e34fb` received independent `AMEND` because compatible reuse bypassed root-overlap and materialization-key conflict gates. Corrected candidate `1f97207fd671f7838c39fe26383151dbe674ba5e`, tree `fa9f84c85af390f29c4c113f320b0d8584682d3d`, has RED-to-GREEN coverage and full local validation.
-- Remaining: publish the corrected candidate and this TASK checkpoint, obtain fresh independent review, then return to protocol-owner review.
-- Blockers: none for bounded implementation. Merge, release, installation, downstream adoption, live cleanup, provider-enforced fencing claims, and live relocation remain separate unauthorized gates.
+- Completed: relocation candidate `ef761223685a8e05b2b4ce5cb6f964769a50120b` received independent System Architect `PASS`; bounded-materialization predecessor `b3df6062d3c55032a7409d7abc2b7a48ee0e34fb` received `AMEND`; corrected candidate `1f97207fd671f7838c39fe26383151dbe674ba5e`, tree `fa9f84c85af390f29c4c113f320b0d8584682d3d`, received fresh independent System Architect `PASS`.
+- Remaining: protocol-owner review and an explicit decision for any later merge/release gate.
+- Blockers: none for owner review. Merge, release, installation, downstream adoption, live cleanup, provider-enforced fencing claims, and live relocation remain separate unauthorized gates.
 
 # Evidence
 
@@ -170,6 +170,8 @@ Excluded:
 - Corrected probes: overlap plus reuse `ALLOCATION_BLOCKED`; materialization-key conflict plus reuse `ALLOCATION_BLOCKED`; clean exact reuse `REUSE_EXISTING`.
 - Corrected validation: package PASS; validator 55/55; workspace 42/42; relocation 73/73; six skill-format checks PASS; hashes 59/59; command copies identical; `compileall` and `git diff --check` PASS.
 - Corrected manifest-only package: PASS for 59 required files with validator 55/55, workspace 42/42, relocation 73/73, six skill checks, command-copy equality, and English-only public Markdown. Its isolated root remains ignored because host policy still rejects recursive removal before execution.
+- Independent corrected-candidate verdict: `PASS`; review receipt `MSG-20261103-042005-1f97207f`, reviewed implementation `1f97207fd671f7838c39fe26383151dbe674ba5e`, tree `fa9f84c85af390f29c4c113f320b0d8584682d3d`, and TASK-only checkpoint `e0ea4ae595ed9ea8fb890dda704887767a6051ce`.
+- Independent reviewer reproduced package 59/59, validator 55/55, workspace 42/42, relocation 73/73, compileall, diff, command equality, clean checkout, and corrected direct probes. External `quick_validate.py` was `NOT_RUN` independently because reviewer Python lacked cached PyYAML; author-side 6/6 result remains recorded and candidate package validation passed.
 
 # Authorized next transitions
 
