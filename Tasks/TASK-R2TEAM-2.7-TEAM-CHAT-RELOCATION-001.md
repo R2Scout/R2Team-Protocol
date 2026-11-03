@@ -26,8 +26,8 @@ branch: "planning/r2team-2.7-team-chat-relocation"
 pr: "https://github.com/R2Scout/R2Team-Protocol/pull/4"
 openspec_change: null
 base_sha: "7e7a35eaf89726b0850da78aaa176d142d7fc1ce"
-candidate_sha: null
-verified_sha: "ef761223685a8e05b2b4ce5cb6f964769a50120b"
+candidate_sha: "b3df6062d3c55032a7409d7abc2b7a48ee0e34fb"
+verified_sha: null
 merged_sha: null
 workspace_policy: inherited_from_protocol_2.6
 workspace_exceptions: []
@@ -39,7 +39,7 @@ workspace_leases:
     owner_executor_id: "r2team-protocol-pm"
     closure_owner_executor_id: "r2team-protocol-pm"
     base_sha: "7e7a35eaf89726b0850da78aaa176d142d7fc1ce"
-    candidate_sha: "ef761223685a8e05b2b4ce5cb6f964769a50120b"
+    candidate_sha: "b3df6062d3c55032a7409d7abc2b7a48ee0e34fb"
     mutability: mutable
     custody: ordinary-canonical
     state: ACTIVE
@@ -116,8 +116,8 @@ Excluded:
 
 # Current checkpoint
 
-- Completed: relocation candidate `ef761223685a8e05b2b4ce5cb6f964769a50120b` received independent System Architect `PASS`; PR #4 remains prepared without merge. Owner amendment adds bounded workspace/evidence materialization after observed project-scale growth.
-- Remaining: validate and publish one new combined exact candidate, obtain fresh independent review, then return to protocol-owner review.
+- Completed: relocation candidate `ef761223685a8e05b2b4ce5cb6f964769a50120b` received independent System Architect `PASS`; owner amendment produced combined candidate `b3df6062d3c55032a7409d7abc2b7a48ee0e34fb`, tree `2a8e261dbf088bc58c13bebe6f6eb8dda5e45b63`, with bounded workspace/evidence materialization and fresh local validation.
+- Remaining: publish the combined candidate and this TASK checkpoint, obtain fresh independent review, then return to protocol-owner review.
 - Blockers: none for bounded implementation. Merge, release, installation, downstream adoption, live cleanup, provider-enforced fencing claims, and live relocation remain separate unauthorized gates.
 
 # Evidence
@@ -161,6 +161,9 @@ Excluded:
 - Predecessor relocation material: read-only architectural input, not accepted authority or copied runtime state.
 - Runtime/live relocation: NOT_RUN and out of scope.
 - Protocol-owner amendment: require 2.7 to minimize repeated worktree and evidence/artifact generation through idempotent materialization and evidence keys; this authorizes bounded protocol/tests/docs implementation and PR refresh, not live cleanup or deletion.
+- Combined candidate: `b3df6062d3c55032a7409d7abc2b7a48ee0e34fb`, tree `2a8e261dbf088bc58c13bebe6f6eb8dda5e45b63`, parent `758a65fc024b91f08e4236074b4b4db5a9f01ad7`.
+- Fresh validation: package PASS; validator 55/55; workspace 40/40; relocation 73/73; six skill-format checks PASS; hashes 59/59; command copies identical; `compileall` and `git diff --check` PASS.
+- Fresh manifest-only package: PASS for 59 required files with validator 55/55, workspace 40/40, relocation 73/73, six skill checks, command-copy equality, and English-only public Markdown. The isolated test root was retained under ignored `.test-tmp` because host policy rejected both attempted PowerShell deletion forms before execution.
 
 # Authorized next transitions
 
