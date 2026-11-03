@@ -9,6 +9,8 @@
 
 - Label the unreleased protocol/package payload as a 2.7 candidate while preserving separate release and downstream-adoption gates.
 - Add relocation identity, bundle, per-executor causal fencing, recoverable source/target substates, partial-team custody, forward rollback, typed append-only receipts, and compatibility rules.
+- Add complete physical workspace inventory, deterministic materialization keys, disjoint workspace/evidence roots, reuse-only hard-cap behavior, and partial-create reconciliation.
+- Add evidence keys, summary-only routine execution, content-hash reuse, and declared artifact consumer/retention/recovery/close-trigger rules.
 - Update AGENTS, Setup, TEAM, TASK, role contracts, commands, scenarios, findings, changelog, verification, and 2.6-to-2.7 migration guide.
 - Add portable `TEAM_RELOCATION.md` and migration-bundle templates without live identifiers.
 
@@ -31,6 +33,8 @@
 - Implement a pure relocation policy model for per-executor state transitions, causal epochs, identity preservation, partial-team custody, readiness/recovery gates, registry authority, workspace custody, and completion.
 - Add safety assertions that two writers can never be valid and liveness assertions that every blocked/frozen state has a permitted recovery transition or terminal accounted disposition.
 - Add the complete A6 adversarial set: same-epoch branch race, offline stale source, partial target activation, post-freeze cancellation, forward rollback, PM/old-writer publication race, in-flight helper, unreachable source, bad activation parent, retained-set ambiguity, registry collision/wrong executor, and correct-candidate/wrong-custody workspace reuse.
+- Add workspace-growth fixtures for incomplete inventory, hard-cap reuse-only behavior, materialization-key reuse/conflict, workspace/evidence root overlap, and partial-create retry blocking.
+- Add evidence-growth fixtures for unchanged-key reuse, summary-only routine results, and complete lifecycle metadata before durable artifact capture.
 
 ## 6. Verify package and migration
 

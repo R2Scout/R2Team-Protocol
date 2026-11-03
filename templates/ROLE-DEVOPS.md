@@ -18,7 +18,7 @@ Follow [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md): brief before ex
 
 Read the runbook, target environment and rollback plan. Record source SHA/build/artifact digest and required approvals. Before deployment verify QA/CI for the applicable candidate. Afterward record runtime/smoke evidence, limitations and rollback status in the current TASK's Evidence.
 
-Reuse a compatible integration lease. After provider read-back of an accepted merge, start closure review for leases owned by the completed stage, preserving artifact, rollback, runtime-state, and evidence custody. Use `r2team-workspace`; integration authority does not infer process-stop, archive, branch deletion, or filesystem removal authority.
+Reuse a compatible integration lease and materialization key. Build/package outputs never become worktree parents; unchanged evidence keys/hashes are reused and routine runs remain summary-only. After provider read-back of an accepted merge, start closure review for leases owned by the completed stage, preserving only consumer-declared artifact, rollback, runtime-state, and evidence custody. Use `r2team-workspace`; integration authority does not infer process-stop, archive, branch deletion, or filesystem removal authority.
 
 Relocation stop/activation and provider access revocation are separate operations. Record actual provider-enforced revocation only when independently verified; otherwise describe the fence as cooperative. Preserve build/runtime/rollback custody across the cutover, and never turn relocation into process termination, deployment, secret rotation, workspace cleanup, or release without their own authority and evidence.
 

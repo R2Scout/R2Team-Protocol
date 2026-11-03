@@ -41,11 +41,13 @@ candidate_sha: null
 verified_sha: null
 merged_sha: null
 workspace_policy: inherited_from_team
+workspace_inventory_ref: null
 workspace_exceptions: []
 workspace_leases: []
 workspace_disposition: NOT_APPLICABLE
 candidate_dispositions: []
 artifact_manifests: []
+evidence_index: []
 close_receipts: []
 migration_id: null
 executor_fence_ref: null
@@ -114,9 +116,9 @@ Keep TASK, candidate, and workspace lease identities separate. Reuse a compatibl
 
 Each `workspace_exceptions[]` item records exact TASK, reason, lease ID, owner, purpose, capacity evidence, review date, current/prior exact base, exact preserved candidate, known custody, disjoint lane, and recovery rule. TASK, lease, bases, candidate, owner, and purpose must match the requested allocation exactly; changed-base, custody-known, disjoint-lane, and candidate-preserved predicates must be boolean true. It cannot bypass the project hard cap, disk floor/reuse-only band, single-writer rule, ownership, containment, or evidence gates.
 
-Each `workspace_leases[]` item records `lease_id`, purpose, class, `owner_executor_id`, `closure_owner_executor_id`, exact base/candidate/HEAD/tree, mutability, custody, state, `retention_class`, `review_date`, `recovery_ref`, exception reference, and `close_receipt_ref`. Put physical paths, sizes, processes, native handles, and host observations only in ignored local state.
+Each `workspace_leases[]` item records `lease_id`, deterministic `materialization_key`, purpose, class, `owner_executor_id`, `closure_owner_executor_id`, exact base/candidate/HEAD/tree, mutability, custody, state, `retention_class`, `review_date`, `recovery_ref`, exception reference, and `close_receipt_ref`. `workspace_inventory_ref` points to a current ignored observation that includes every registered/managed/legacy/unknown/partial root in scope. Put physical paths, sizes, processes, native handles, and host observations only in ignored local state. Workspace and evidence/artifact/message/output/log/tmp/cache roots must be disjoint.
 
-Each `candidate_dispositions[]` item binds candidate SHA/tree and branch ref to exactly one disposition (`MERGED_TO_DEFAULT`, `SUPERSEDED_BY_SHA`, `REJECTED`, or `EVIDENCE_ARCHIVED`), evidence/reference, owner, and recorded time. Each `artifact_manifests[]` item records manifest ref, content hash, retention class, durable recovery location, owner, and access boundary. Each `close_receipts[]` item binds its receipt ref to one lease ID and actual closure result. Append new records; do not overwrite earlier candidate or lease history.
+Each `candidate_dispositions[]` item binds candidate SHA/tree and branch ref to exactly one disposition (`MERGED_TO_DEFAULT`, `SUPERSEDED_BY_SHA`, `REJECTED`, or `EVIDENCE_ARCHIVED`), evidence/reference, owner, and recorded time. Each unique `artifact_manifests[]` item records its evidence key, declared consumer, manifest ref, content hash, retention class, durable recovery location, owner, access boundary, and close trigger. `evidence_index[]` binds candidate, evidence axis, normalized command/scenario, environment class, outcome, and reused manifest/summary reference. An unchanged rerun updates the compact observation summary and reuses the key/hash; it does not append another artifact. Each `close_receipts[]` item binds its receipt ref to one lease ID and actual closure result. Append materially new records; do not overwrite history or duplicate identical evidence.
 
 At each publication boundary update `workspace_exceptions`, `workspace_leases`, `candidate_dispositions`, `artifact_manifests`, `close_receipts`, and the derived `workspace_disposition` as applicable. Administrative completion requires every terminal lease record to include `closure_owner_executor_id`, `retention_class`, `recovery_ref`, `review_date`, and `close_receipt_ref`; a transferred lease also names the next TASK/owner and transfer-custody reference. Bare labels and any blocking/nonterminal lease prevent administrative completion. Workspace closure does not change a product or QA verdict.
 

@@ -61,6 +61,10 @@ provider read-back
 sanitized manifest
 Any blocking or nonterminal lease blocks administrative completion
 explicit removal authority
+`materialization_key`
+`evidence_key`
+`SUMMARY_ONLY`
+must never be used as a worktree parent
 Relocation preserves the registered logical executor and accepted functions.
 Relocation changes only physical execution placement.
 """)
@@ -161,6 +165,10 @@ recovery_ref
 close_receipt_ref
 candidate_dispositions
 artifact_manifests
+workspace_inventory_ref
+evidence_index
+materialization_key
+close trigger
 close_receipts
 """)
         self.put("skills/r2team-coo/SKILL.md", """# COO
@@ -350,6 +358,24 @@ $r2team-workspace close
 """)
         errors = validate(self.root)
         self.assertTrue(any("Missing workspace-skill marker" in e for e in errors))
+
+    def test_protocol_requires_workspace_and_evidence_growth_markers(self):
+        path = self.root / "templates/CODEX_TEAM_PROTOCOL.md"
+        self.put("templates/CODEX_TEAM_PROTOCOL.md",
+                 path.read_text(encoding="utf-8").replace(
+                     "`materialization_key`\n", ""))
+        self.assertTrue(any(
+            "Missing workspace protocol marker: `materialization_key`" in e
+            for e in validate(self.root)))
+
+    def test_task_template_requires_bounded_evidence_index(self):
+        path = self.root / "templates/TASK-TEMPLATE.md"
+        self.put("templates/TASK-TEMPLATE.md",
+                 path.read_text(encoding="utf-8").replace(
+                     "evidence_index\n", ""))
+        self.assertTrue(any(
+            "Missing workspace TASK marker: evidence_index" in e
+            for e in validate(self.root)))
 
     def test_hash_consistent_automatic_force_delete_is_rejected(self):
         path = self.root / "skills/r2team-workspace/SKILL.md"

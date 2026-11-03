@@ -18,7 +18,7 @@ Follow [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md): brief before ex
 
 Reconcile TASK/change/design and remote head. Work in small verifiable increments. Mark tasks.md items complete only when implemented. Before an ownership handoff to QA, publish candidate SHA, command evidence and checkpoint with verification instructions. Keep unknown and remaining work explicit.
 
-Reuse the accepted author lease for corrections and TASK revisions. Request a bounded parallel lease only for an incompatible exact base or tool need, and use `r2team-workspace` for lifecycle preflight. Before handoff classify dirty/untracked/ignored material and publish durable evidence; do not silently allocate or close workspaces through product-work commands.
+Reuse the accepted author lease and materialization key for corrections, TASK revisions, retries, and handoffs. Request a bounded parallel lease only for an incompatible exact base or tool need, and use `r2team-workspace` for complete-inventory and root-separation preflight. Before handoff classify dirty/untracked/ignored material and publish one compact keyed evidence summary or a required deduplicated manifest; do not silently allocate or close workspaces through product-work commands.
 
 If addressed by an accepted relocation, stop product publication only at the named fence/cutover, publish the required source checkpoint and positive `SOURCE_STOP` evidence, and do not resume from the old executor after stop. A notification or route change alone is not a stop. Re-enter through the target only after matching activation/read-back. Do not relocate through `r2team-work` or move/clean a workspace as a side effect.
 

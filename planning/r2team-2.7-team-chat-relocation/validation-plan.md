@@ -59,6 +59,15 @@
 48. COMPLETION rejects an older terminal parent when any executor has a newer stop, preflight, activation, partial disposition, cancellation, or rollback stage.
 49. Mixed RESUMING validates every inactive peer: BLOCKED/FAIL preflight, cancellation, rollback, or partial-disposition latest stages cannot be represented as generic PENDING/INACTIVE.
 50. COMPLETE binds each terminal record tuple to its latest receipt: cancellation uses exact declared source/target plus legal custody; terminal BLOCKED and forward rollback require STOPPED/INACTIVE/SOURCE_STOPPED; contradictory ACTIVE/READY/INACTIVE records reject.
+51. Incomplete physical inventory blocks new materialization even when declared TASK lease counts are below budget.
+52. Project hard-cap state permits an exact compatible lease reuse and rejects every new or exception-backed materialization.
+53. Equal materialization keys reuse one compatible lease; a second root or incompatible lease for that key is rejected.
+54. Workspace and evidence/artifact/message/output/log/tmp/cache roots reject containment in either direction.
+55. A partial create enters inventory and blocks retry until reconciled.
+56. An unchanged candidate/axis/command/environment/outcome evidence key reuses its existing summary/hash without another durable artifact.
+57. Routine new evidence with no declared artifact consumer returns `SUMMARY_ONLY`.
+58. Durable artifact capture rejects missing consumer, owner, retention, recovery, access boundary, content hash, or close trigger.
+59. Materially new required evidence with complete lifecycle metadata permits exactly one durable artifact and later reuses its key/hash.
 
 The pure model must assert both safety (never two accepted writers for one executor/TASK) and liveness/recoverability (no blocked or frozen state is a dead end without a terminal accounted disposition).
 
@@ -69,6 +78,7 @@ The pure model must assert both safety (never two accepted writers for one execu
 - Hash-consistent payload that changes `$r2team migrate <function> to <participant>` into relocation is rejected.
 - Hash-consistent receipt with a duplicate ID, stale/equal-conflicting epoch, missing causal parent, or mismatched accepted parent is rejected.
 - Hash-consistent durable registry evidence containing a populated private value or stable hash is rejected.
+- Hash-consistent instructions that count only declared TASK leases, permit evidence/output worktree parents, or append an artifact for every unchanged run are rejected.
 - Missing sixth skill, relocation templates, migration markers, or exact hashes are rejected.
 - Explicit placeholders remain accepted.
 

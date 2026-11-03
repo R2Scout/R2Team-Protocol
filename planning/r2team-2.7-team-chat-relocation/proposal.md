@@ -4,6 +4,8 @@
 
 R2Team durable state survives in Git and provider records, but physical Codex chats and hosts remain local execution surfaces. Moving work without a protocol can create concurrent writers, orphaned local mappings, implicit ownership changes, transcript dependence, lost workspace custody, or a replacement chat that starts before the old writer stops.
 
+The same identity drift also creates unbounded physical materialization: retries, revisions, handoffs, reviews, and evidence packaging can each allocate another worktree or duplicate artifact even when candidate and purpose are unchanged. TASK lease records alone do not account for Git-registered, application-managed, legacy, unknown, or partial roots, and using output/evidence directories as workspace parents creates recursive growth.
+
 ## Desired outcome
 
 R2Team 2.7 adds an explicit relocation control plane for:
@@ -11,8 +13,11 @@ R2Team 2.7 adds an explicit relocation control plane for:
 1. one physical role chat continuing as the same logical executor;
 2. one executor moving to another Codex host;
 3. a PM-controlled whole-team cutover with ordered resume.
+4. idempotent workspace and evidence materialization across ordinary work and relocation.
 
 The durable unit is the accepted migration bundle, per-executor causal fencing records, and current TASK checkpoints, never a transcript or local thread identifier.
+
+Workspace allocation uses one complete physical inventory and deterministic materialization key. Evidence uses one candidate/axis/command/environment/outcome key. Exact repeats reuse existing custody; routine execution is summary-only; separate artifacts require a declared lifecycle.
 
 ## Identity model
 

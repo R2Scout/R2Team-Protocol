@@ -57,3 +57,9 @@ An activation API cannot outsource PASS-preflight proof to a different optional 
 ## 13. Positive outcomes and barriers are authority facts
 
 A structurally complete SOURCE_STOP with an arbitrary outcome is not stop proof; only the exact typed `SOURCE_STOPPED` outcome can open activation. A team FREEZE must be an explicit referenced ancestor/gate of every target preflight, with consistent identity/epoch and the strict temporal order `SOURCE_STOP < FREEZE < TARGET_PREFLIGHT < ACTIVATION`, not a sibling receipt or a barrier timestamp equal to/later than its stop. Receipt context supplied to aggregate derivation is authoritative for every state, including FROZEN, READY_TO_RESUME, and RESUMING; empty, malformed, unresolved, missing, or extra context returns `INVALID`.
+
+## 14. Workspace and evidence growth are idempotency failures
+
+TASK-level lease limits are insufficient when physical Git registration, application-managed roots, legacy materializations, and partial creates are omitted from the count. Allocation therefore needs a complete physical inventory and one deterministic materialization key. Retries, revisions, handoffs, and unchanged candidate review reuse that key; hard-cap or incomplete-inventory state permits no new placement. Separating workspace roots from evidence/output roots prevents an artifact directory from recursively becoming another worktree parent.
+
+Append-only custody does not require duplicate payloads. One evidence key binds the candidate, axis, normalized command/scenario, environment class, and outcome. Routine runs keep a compact summary; unchanged reruns reuse the key and content hash. A separate durable artifact exists only for a declared consumer with complete retention, recovery, ownership, access, and close-trigger metadata.

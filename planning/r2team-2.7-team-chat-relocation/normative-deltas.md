@@ -66,6 +66,19 @@
 - Relocation MUST reconcile every affected active workspace lease under the adopted 2.6 lifecycle.
 - Workspace reuse on the target MUST require verified owner, exact candidate, mutability, custody, containment, dependency, and local-resource facts.
 - Relocation MUST NOT imply physical workspace movement or cleanup; retain, transfer, close, or allocate through `r2team-workspace` with evidence.
+- Allocation inventory MUST include every authoritative Git-registered, application-managed, external-authorized, legacy, unknown, and partial root in project scope; declared TASK leases alone MUST NOT define the count.
+- Incomplete inventory MUST block new materialization. At or above the hard cap, only exact compatible reuse is permitted; no exception MAY bypass that gate.
+- Every allocation MUST use a deterministic materialization key over repository/project, TASK, purpose, exact base/candidate, mutability, and custody. Exact compatible retries/revisions/handoffs/reviews MUST reuse one lease; conflicting duplicates MUST fail closed.
+- Workspace roots and evidence/artifact/message/output/log/tmp/cache roots MUST be disjoint in both containment directions. An evidence/output root MUST NOT be a worktree parent.
+- A partially created materialization MUST enter inventory and be reconciled before another attempt.
+
+## Evidence and artifact boundedness
+
+- Every durable evidence record MUST use a key over candidate, evidence axis, normalized command/scenario contract, environment class, and outcome.
+- An unchanged rerun MUST reuse the existing evidence key and content hash and MUST NOT create another report, log copy, package, manifest, worktree, or message archive.
+- Routine execution MUST be `SUMMARY_ONLY`, retaining exact identity, command/scenario, outcome/counts, limits, and references in the TASK checkpoint; full stdout/stderr and transcripts MUST remain transient unless a declared consumer requires them.
+- A separate durable artifact MUST be materially required for acceptance, diagnosis, rollback, legal, or release use and MUST declare consumer, owner, retention class, content hash, durable recovery reference, access boundary, and close trigger before capture.
+- Append-only custody MUST preserve materially distinct decisions/results while reusing identical payloads; it MUST NOT be interpreted as append every run.
 
 ## Recovery and rollback
 

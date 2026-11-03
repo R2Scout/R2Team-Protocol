@@ -95,9 +95,9 @@ The current publisher preserves material open questions, decisions, evidence and
 
 `r2team-workspace` is the separate operational entry point. `r2team-work` may route a lifecycle need to it but never silently allocates, relocates, archives, closes, or removes a workspace.
 
-`status` and `doctor` are read-only. `open` verifies the accepted TASK, exact base/candidate, existing compatible leases, project/TASK budgets, destination-filesystem capacity, custody, and authority before mutation. A failed gate returns `ALLOCATION_BLOCKED` and does not start cleanup.
+`status` and `doctor` are read-only. `open` verifies the accepted TASK, deterministic materialization key, exact base/candidate, complete physical Git/application inventory, existing compatible leases, project/TASK budgets, disjoint workspace versus evidence/output roots, destination-filesystem capacity, custody, and authority before mutation. Exact compatible requests reuse one lease; incomplete inventory, duplicate conflicts, root overlap, or a hard-cap count returns `ALLOCATION_BLOCKED` and does not start cleanup.
 
-`close` re-reads ownership, containment, branch/HEAD/tree, dirty/untracked/ignored material, processes, native resources, dependent leases, evidence export, recovery, and authority. Accepted integration carries Git-suitable evidence or a sanitized hash-bound durable manifest. Temporary material is removable only when every protocol gate passes and the closer already has explicit removal authority; otherwise use retained, transferred, or blocked disposition with owner and review date. Codex-managed custody uses application archive, never shell removal.
+`close` re-reads ownership, containment, branch/HEAD/tree, dirty/untracked/ignored material, processes, native resources, dependent leases, evidence export, recovery, and authority. Accepted integration carries a compact evidence summary or one deduplicated hash-bound durable manifest with declared consumer and close trigger. Temporary material is removable only when every protocol gate passes and the closer already has explicit removal authority; otherwise use retained, transferred, or blocked disposition with owner and review date. Codex-managed custody uses application archive, never shell removal.
 
 ## Team/chat relocation
 

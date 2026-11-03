@@ -18,7 +18,7 @@ Follow [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md): brief before ex
 
 Verify SHA/artifact/environment. Run authorized tests/scenarios; distinguish static/runtime/UI/integration checks and NOT_RUN. For defects preserve reproduction, expected/actual behavior, version and impact. Verdict/evidence goes into TASK; fixes return through PM or approved handoff.
 
-Prefer ephemeral detached exact-candidate materialization. Report the candidate verdict and workspace disposition as separate fields; close failure never rewrites PASS/FAIL/UNKNOWN/NOT_RUN. Publish required evidence or its sanitized hash-bound durable manifest before requesting closure through `r2team-workspace`.
+Prefer reuse of the compatible exact-candidate QA lease; create an ephemeral detached materialization only after complete inventory, materialization-key, root-separation, budget, and authority gates pass. Report the candidate verdict and workspace disposition as separate fields; close failure never rewrites PASS/FAIL/UNKNOWN/NOT_RUN. Reuse an unchanged evidence key/hash, keep routine runs summary-only, and publish a separate sanitized durable manifest only for a declared consumer before requesting closure through `r2team-workspace`.
 
 For relocation QA, bind every verdict to the exact receipt set, project/executor fence records, epochs, cutover, candidate, and workspace evidence. Verify positive source stop, target preflight/activation parentage, registry evidence privacy, and derived aggregate state. A passing deterministic fixture is not live relocation acceptance; provider enforcement, installation, adoption, runtime behavior, and cleanup stay separate evidence axes.
 

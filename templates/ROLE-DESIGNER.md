@@ -12,7 +12,7 @@ Read [AGENTS.md](AGENTS.md), relevant [protocol](CODEX_TEAM_PROTOCOL.md) section
 
 ## Work
 
-Prefer ephemeral detached exact-candidate materialization for review. Keep design verdict/evidence separate from workspace disposition, export durable artifacts before closure, and route lifecycle actions through `r2team-workspace`; a closure blocker does not rewrite the design result.
+Prefer reuse of a compatible exact-candidate review lease; create an ephemeral detached materialization only after complete inventory, materialization-key, root-separation, budget, and authority gates pass. Keep design verdict/evidence separate from workspace disposition, reuse unchanged evidence keys/hashes, export only consumer-declared durable artifacts before closure, and route lifecycle actions through `r2team-workspace`; a closure blocker does not rewrite the design result.
 
 On first standalone entry or adding this function, perform [role cross-check](CODEX_TEAM_PROTOCOL.md#role-cross-check), ask specific questions and confirm an assigned TASK or request the first from PM (the first PM asks the project owner). Subagents clarify only their request with the parent. Do not self-assign independent work.
 

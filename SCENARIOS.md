@@ -158,6 +158,13 @@ These fixtures describe expected consuming-agent behavior. They are not executed
 | Evidence cannot enter Git | Sanitized manifest, hash, retention, durable recovery location, owner, access boundary | Chat-only or disposable-worktree evidence |
 | Codex-managed checkout | Application archive lifecycle after authorized preflight | Shell removal |
 | Temporary output has a live process/dependent lease or is shared/retained | Retain/transfer/block with owner and review date | Remove because merge completed or disk is low |
+| Physical Git/application inventory is incomplete | `INVENTORY_INCOMPLETE`; reuse a proven compatible lease only | Create from TASK lease count alone |
+| Project is at/above hard cap | Reuse-only mode and owner-routed reconciliation | Use an exception to create another worktree |
+| Retry, revision, handoff, or unchanged candidate has the same materialization key | Reuse the existing compatible lease | Create a timestamp-, revision-, role-, retry-, or evidence-named worktree |
+| Proposed worktree is under an evidence/output/log/tmp/cache root, or contains one | `ALLOCATION_BLOCKED`; select disjoint canonical roots | Nest workspace and artifact custody |
+| Repeated run has the same candidate/axis/command/environment/outcome key | Reuse evidence key/hash and refresh compact summary | Append another report, log copy, package, manifest, or worktree |
+| Routine verification has no declared artifact consumer | `SUMMARY_ONLY` in the TASK checkpoint | Persist full stdout/stderr or helper transcript by default |
+| Materially new durable artifact is required | Declare consumer, owner, retention, recovery, access boundary, content hash, and close trigger | Generate first and decide custody later |
 | Any lease is `BLOCKED_*`, `REQUESTED`, `ACTIVE`, `CLOSE_PENDING`, or `UNKNOWN` | Preserve candidate verdict; `ADMIN_COMPLETION_BLOCKED` | Mark TASK administratively complete |
 | Terminal state appears without closure owner, retention, recovery, review date, receipt, or required transfer custody | `ADMIN_COMPLETION_BLOCKED` until the full lease record is published | Treat `CLOSED`, `RETAINED_PROTECTED`, or `TRANSFERRED_TO_NEXT_TASK` text as evidence |
 | Transfer to next TASK | Preserve old HEAD/tree, next owner, lease/custody/recovery route | Duplicate mutable ownership |

@@ -1,10 +1,10 @@
 ---
 protocol_version: "2.6"
 id: "TASK-R2TEAM-2.7-TEAM-CHAT-RELOCATION-001"
-revision: 14
+revision: 15
 handoff_seq: 0
-status: REVIEW_READY
-stage: QA
+status: IMPLEMENTING
+stage: IMPLEMENTATION
 owner_executor_id: "r2team-protocol-pm"
 owner_route: "https://github.com/R2Scout/R2Team-Protocol/issues/3"
 previous_owner_executor_id: null
@@ -26,7 +26,7 @@ branch: "planning/r2team-2.7-team-chat-relocation"
 pr: "https://github.com/R2Scout/R2Team-Protocol/pull/4"
 openspec_change: null
 base_sha: "7e7a35eaf89726b0850da78aaa176d142d7fc1ce"
-candidate_sha: "ef761223685a8e05b2b4ce5cb6f964769a50120b"
+candidate_sha: null
 verified_sha: "ef761223685a8e05b2b4ce5cb6f964769a50120b"
 merged_sha: null
 workspace_policy: inherited_from_protocol_2.6
@@ -52,7 +52,7 @@ workspace_disposition: ACTIVE
 candidate_dispositions: []
 artifact_manifests: []
 close_receipts: []
-next_action: "Obtain protocol-owner review of PR #4; merge, tag, release, installation, adoption, and live relocation require separate explicit authority and evidence."
+next_action: "Validate and publish the 2.7 bounded-workspace/evidence amendment as a new exact PR #4 candidate; obtain fresh independent review before owner review."
 questions:
   - id: Q-2.7-SKILL-BOUNDARY
     mode: LOOP
@@ -79,13 +79,15 @@ Included:
 - ignored local thread-registry remapping without committed thread IDs or paths;
 - R2Team 2.6 workspace lease/custody integration;
 - protocol, setup, migration, TEAM/TASK, roles, commands, skills, validator, and fixtures.
+- complete physical workspace inventory, deterministic materialization-key reuse, disjoint workspace/evidence roots, and hard-cap reuse-only behavior;
+- evidence-key/content-hash reuse, summary-only routine verification, and declared lifecycle metadata for separate durable artifacts.
 
 Excluded:
 
 - chat transcript export or copying;
 - implicit participant, executor, function, TASK, or permission transfer;
 - credential copying, account administration, automatic chat creation, heartbeat, deployment, release, or downstream adoption;
-- live team relocation, process stop, branch deletion, installed-skill replacement, application archive, or workspace cleanup;
+- live team relocation, process stop, branch deletion, installed-skill replacement, application archive, historical evidence deletion, or workspace cleanup;
 - concurrent old/new writers for the same executor/TASK.
 
 # Acceptance
@@ -100,6 +102,9 @@ Excluded:
 - Function transfer command semantics remain unchanged.
 - R2Team 2.6 projects remain unchanged until explicit 2.7 adoption.
 - A separate `r2team-relocate` skill is independently reviewed as the sole operational relocation entry point, or the reviewer returns a narrower accepted alternative before implementation.
+- Physical inventory includes Git-registered, application-managed, external, legacy, unknown, and partial roots; incomplete inventory blocks creation and hard-cap state permits compatible reuse only.
+- One deterministic materialization key prevents retry/revision/handoff/review duplication, and evidence/output/message/log/tmp/cache roots cannot contain or be contained by workspace roots.
+- One evidence key prevents unchanged rerun duplication; routine results are summary-only and separate artifacts require consumer, owner, retention, hash, recovery, access, and close-trigger metadata.
 
 # Plan
 
@@ -111,9 +116,9 @@ Excluded:
 
 # Current checkpoint
 
-- Completed: planning revision 2 and exact implementation candidate `ef761223685a8e05b2b4ce5cb6f964769a50120b` received independent System Architect `PASS`; PR #4 is prepared without merge.
-- Remaining: protocol-owner review and an explicit decision for any later merge/release gate.
-- Blockers: none for owner review. Merge, release, installation, downstream adoption, provider-enforced fencing claims, and live relocation remain separate unauthorized gates.
+- Completed: relocation candidate `ef761223685a8e05b2b4ce5cb6f964769a50120b` received independent System Architect `PASS`; PR #4 remains prepared without merge. Owner amendment adds bounded workspace/evidence materialization after observed project-scale growth.
+- Remaining: validate and publish one new combined exact candidate, obtain fresh independent review, then return to protocol-owner review.
+- Blockers: none for bounded implementation. Merge, release, installation, downstream adoption, live cleanup, provider-enforced fencing claims, and live relocation remain separate unauthorized gates.
 
 # Evidence
 
@@ -155,6 +160,7 @@ Excluded:
 - Pull request: `https://github.com/R2Scout/R2Team-Protocol/pull/4`, prepared without merge.
 - Predecessor relocation material: read-only architectural input, not accepted authority or copied runtime state.
 - Runtime/live relocation: NOT_RUN and out of scope.
+- Protocol-owner amendment: require 2.7 to minimize repeated worktree and evidence/artifact generation through idempotent materialization and evidence keys; this authorizes bounded protocol/tests/docs implementation and PR refresh, not live cleanup or deletion.
 
 # Authorized next transitions
 
@@ -166,4 +172,4 @@ Excluded:
 
 # Publication gate
 
-The owner request authorizes the minimum planning checkpoint, Issue #3 updates, bounded implementation on this reused author lease, validation, independent exact-candidate review, and PR preparation. It does not authorize merge, release, installed-skill replacement, downstream adoption, live relocation, chat creation, registry mutation on another host, process stop, branch deletion, or cleanup.
+The owner request authorizes the planning checkpoint, bounded relocation plus workspace/evidence-growth implementation on this reused author lease, validation, independent exact-candidate review, Issue #3/PR #4 refresh, and PR preparation. It does not authorize merge, release, installed-skill replacement, downstream adoption, live relocation, chat creation, registry mutation on another host, process stop, branch deletion, historical evidence deletion, or live cleanup.

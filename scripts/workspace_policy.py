@@ -52,10 +52,14 @@ def allocation_decision(*, active_task, project_active, free_gib,
                         exception=None, today=None,
                         active_mutable_for_purpose=0, task_id=None,
                         lease_id=None, base_sha=None, prior_base_sha=None,
-                        candidate_sha=None, owner=None, purpose=None):
+                        candidate_sha=None, owner=None, purpose=None,
+                        inventory_complete=True, placement_conflict=False,
+                        materialization_key_conflict=False):
     if compatible_lease:
         return "REUSE_EXISTING"
-    if (project_active >= 150 or free_gib < 15 or
+    if (not inventory_complete or placement_conflict or
+            materialization_key_conflict or project_active >= 150 or
+            free_gib < 15 or
             active_mutable_for_purpose >= 1):
         return "ALLOCATION_BLOCKED"
     exception_valid = _valid_exception(exception, today, {
@@ -160,3 +164,31 @@ def evidence_decision(kind, *, content_hash=None, recovery_location=None,
     )):
         return "EVIDENCE_DURABLE"
     return "EVIDENCE_BLOCKED"
+
+
+def evidence_capture_decision(*, evidence_key, existing_keys,
+                              artifact_required=False, content_hash=None,
+                              consumer=None, owner=None,
+                              retention_class=None, recovery_ref=None,
+                              access_boundary=None, close_trigger=None):
+    """Decide whether a verification run may create a durable artifact."""
+    if not isinstance(evidence_key, str) or not evidence_key.strip():
+        return "EVIDENCE_BLOCKED"
+    if evidence_key in existing_keys:
+        return "REUSE_EXISTING_EVIDENCE"
+    if not artifact_required:
+        return "SUMMARY_ONLY"
+    required_text = (
+        consumer,
+        owner,
+        retention_class,
+        recovery_ref,
+        access_boundary,
+        close_trigger,
+    )
+    if (not isinstance(content_hash, str) or
+            not re.fullmatch(r"[0-9a-f]{64}", content_hash) or
+            any(not isinstance(value, str) or not value.strip()
+                for value in required_text)):
+        return "EVIDENCE_BLOCKED"
+    return "ALLOW_DURABLE_ARTIFACT"

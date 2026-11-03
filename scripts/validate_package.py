@@ -316,6 +316,10 @@ def validate(root):
             "close_receipt_ref",
             "candidate_dispositions",
             "artifact_manifests",
+            "workspace_inventory_ref",
+            "evidence_index",
+            "materialization_key",
+            "close trigger",
             "close_receipts",
         ):
             if marker not in task_text:
@@ -334,6 +338,10 @@ def validate(root):
             "sanitized manifest",
             "blocks administrative completion",
             "explicit removal authority",
+            "`materialization_key`",
+            "`evidence_key`",
+            "`SUMMARY_ONLY`",
+            "must never be used as a worktree parent",
         ):
             if marker not in protocol_text:
                 errors.append(f"Missing workspace protocol marker: {marker}")

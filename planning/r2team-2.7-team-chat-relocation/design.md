@@ -49,6 +49,14 @@ Team/Migrations/<migration-id>/
 
 Each role handoff records repository/project identity, executor/functions, current epoch, expected prior epoch, prior accepted fencing record, source/target states, physical-custody class, source checkpoint, active TASK IDs/paths/checkpoints/candidates/next actions, open provider questions, required setup facts, workspace custody summary, stop/activation receipts, and disposition. It references existing records rather than duplicating them.
 
+## Bounded workspace and evidence materialization
+
+Before allocation, `r2team-workspace` reconciles the authoritative Git worktree list with application-managed attachments, configured external roots, legacy roots, TASK leases, and partial/unknown creates. This physical count drives the project target and hard cap. Incomplete inventory blocks creation; hard-cap state permits exact compatible reuse only.
+
+The allocation identity is `materialization_key = repository/project + TASK + purpose + base/candidate + mutability + custody`. Exact compatible requests reuse one lease. A different physical root for the same key is a conflict, not another retry. Workspace roots and evidence/artifact/message/output/log/tmp/cache roots are non-overlapping containment domains. A failed create is recorded and reconciled before retry.
+
+The evidence identity is `evidence_key = candidate + axis + normalized command/scenario + environment class + outcome`. Unchanged reruns reuse the key and content hash. Routine results persist only a compact TASK summary. A durable artifact is created only for a declared consumer and carries owner, retention, recovery, access boundary, content hash, and close trigger. This preserves append-only decisions without multiplying identical payloads.
+
 ## Prepare flow
 
 1. Resolve accepted TASK/TEAM/protocol/provider state and migration authority.

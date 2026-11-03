@@ -14,6 +14,12 @@ Use an owner-approved full commit SHA or trusted bundle manifest. Run the packag
 
 Update project `AGENTS.md`, `TEAM.md`, protocol, TASK/role templates, command help, skill references, and migration policy through the normal protected workflow. Configure portable relocation policy: migration owner/route, control paths, target placement classes, executor fencing records, receipt retention, registry authority classes, and workspace integration.
 
+Before enabling new workspace allocation, build one read-only physical inventory from authoritative Git worktree registration, application-managed attachments, configured external roots, legacy roots, and partial/unknown materializations. Counts are physical, not limited to TASK lease records. If inventory is incomplete or the project is at/above its hard cap, enter reuse-only mode and assign reconciliation ownership; adoption itself grants no cleanup authority.
+
+Configure disjoint canonical workspace and evidence/artifact/message/output/log/tmp/cache roots. Existing overlap is retained and reconciled prospectively; no evidence/output root may receive a new worktree. Add deterministic materialization keys to active leases so retries, revisions, handoffs, and unchanged exact-candidate review reuse one compatible lease.
+
+Create a compact evidence index for active TASKs. Reuse identical candidate/axis/command/environment/outcome keys and existing content hashes. Declare consumer, retention, recovery, owner, access boundary, and close trigger before creating a separate durable artifact; routine verification remains summary-only. Migration does not require bulk conversion or deletion of historical evidence.
+
 Keep populated thread IDs, physical paths, credentials, transcripts, and hashes of private identifiers in ignored local state. Local mapping never grants assignment, identity, permission, epoch, or acceptance.
 
 ## 4. Preserve transfer semantics
