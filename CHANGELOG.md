@@ -1,6 +1,6 @@
 # R2Team change history
 
-## 2.7 — candidate
+## 2.7
 
 - Make workspace materialization idempotent with complete physical inventory, deterministic materialization keys, reuse-only hard-cap behavior, partial-create reconciliation, and disjoint workspace versus evidence/output roots.
 - Make evidence capture idempotent with candidate/axis/command/environment/outcome keys, summary-only routine runs, content-hash reuse, and lifecycle metadata before a separate durable artifact is created.

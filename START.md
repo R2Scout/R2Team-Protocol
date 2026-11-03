@@ -20,6 +20,6 @@ Do not overwrite existing work, install tools or enable automation without autho
 8. Confirm approved communication routes and permissions. Direct working exchanges are optional; provider discussion is a fallback. Heartbeat remains off.
 9. Save material setup state at publication boundaries in the existing organizational TASK, not a new message registry. Local-only output is not a remote-ready handoff.
 
-For this candidate, use the approved full 2.7 candidate commit and inspect `package.json`. No release tag is implied; a branch name or dirty local tree is not sufficient provenance. A 2.6 project remains on 2.6 until its own accepted-main adoption.
+Use the public `v2.7` release and verify its full commit plus `package.json`; a branch name, `main/latest`, or a dirty local tree is not sufficient provenance. A 2.6 project remains on 2.6 until its own accepted-main adoption.
 
 Team/chat relocation is never implied by setup. Use `r2team-relocate` only under an accepted migration TASK and bundle; ordinary setup, skill installation, or registry presence does not create/move chats, stop writers, or prove provider-enforced exclusion.
