@@ -29,7 +29,7 @@ first_task_id: null
 capacity_reserved: false
 requirement_ref: null
 branch: "release/r2team-2.7"
-pr: null
+pr: "https://github.com/R2Scout/R2Team-Protocol/pull/7"
 openspec_change: null
 base_sha: "9f6656589b68122ff9d67ae9d75edc14dd6118ff"
 candidate_sha: "6cdcb28d063cf2d2cdd11aeac0738d30329c3f9b"
@@ -95,7 +95,7 @@ executor_fence_ref: null
 writer_epoch: null
 writer_record_ref: null
 relocation_disposition: NOT_APPLICABLE
-next_action: "Push the verified release branch, open the protected PR, and read back provider state."
+next_action: "Merge PR #7 after exact provider read-back, then verify the actual merge commit on the remote default branch."
 questions: []
 ---
 
@@ -126,8 +126,8 @@ Excluded: downstream skill installation or replacement, project adoption or migr
 
 # Current checkpoint
 
-- Completed: exact `origin/main` and existing tags/releases were read back; Issue #6 and the reused release branch/workspace were established; release candidate `6cdcb28d063cf2d2cdd11aeac0738d30329c3f9b`, tree `581f1b5614d759512793717cc3b4973178c54782`, passed the declared local release checks.
-- Remaining: protected PR, merge/read-back, tag, GitHub Release, final checkpoint, and tracker close.
+- Completed: exact `origin/main` and existing tags/releases were read back; Issue #6 and the reused release branch/workspace were established; release candidate `6cdcb28d063cf2d2cdd11aeac0738d30329c3f9b`, tree `581f1b5614d759512793717cc3b4973178c54782`, passed the declared local release checks; PR #7 is OPEN, CLEAN, and MERGEABLE with exact base `9f6656589b68122ff9d67ae9d75edc14dd6118ff`.
+- Remaining: PR merge/read-back, tag, GitHub Release, final checkpoint, and tracker close.
 - Blockers: none.
 
 # Evidence
