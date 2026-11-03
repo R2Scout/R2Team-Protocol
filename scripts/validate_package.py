@@ -1,4 +1,4 @@
-"""Read-only structural checks for the distributable R2Team 2.7 candidate."""
+"""Read-only structural checks for the distributable R2Team 2.7 release."""
 import argparse
 import hashlib
 import json

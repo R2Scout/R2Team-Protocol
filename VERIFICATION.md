@@ -1,6 +1,6 @@
 # R2Team 2.7 distribution verification
 
-Prepared for the protocol version 2.7 team/chat-relocation and bounded-materialization candidate on 2026-11-03. This is distribution evidence, not acceptance of a user project, live relocation/cleanup authority, provider-enforced exclusion, or downstream adoption.
+Prepared for the protocol version 2.7 team/chat-relocation and bounded-materialization release on 2026-11-03. This is distribution evidence, not acceptance of a user project, live relocation/cleanup authority, provider-enforced exclusion, or downstream adoption.
 
 ## Fresh local checks
 
@@ -18,9 +18,9 @@ Prepared for the protocol version 2.7 team/chat-relocation and bounded-materiali
 
 The exact commands and final outputs are captured during release preparation. Payload hashes cover required files; package.json is excluded from its own hash map.
 
-## Candidate publication gate
+## Release publication gate
 
-Bind the final implementation to an exact commit/tree, push the authorized branch, then obtain independent review of that exact candidate. Main merge, annotated `v2.7` tag, release, installed-skill replacement, downstream adoption, live relocation, and live cleanup remain `NOT_RUN` until separately authorized. Publication proves repository provenance, not live agent/provider behavior.
+Bind the release payload to an exact commit/tree and complete the protected merge before creating the annotated `v2.7` tag. The tag and GitHub Release must resolve to that accepted default-branch commit and pass provider read-back. Installed-skill replacement, downstream adoption, live relocation, and live cleanup remain `NOT_RUN` until separately authorized. Publication proves repository provenance, not live agent/provider behavior.
 
 ## Document-level scenarios
 

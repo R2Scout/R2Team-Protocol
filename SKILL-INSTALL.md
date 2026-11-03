@@ -8,7 +8,7 @@ The distribution repository is public; installation needs no invitation. PM supp
 
 ```text
 $skill-installer Install from R2Scout/R2Team-Protocol
-at ref <verified-full-candidate-commit-SHA>:
+at ref <verified-full-release-commit-SHA>:
 skills/r2team
 skills/r2team-work
 skills/r2team-workspace
@@ -20,7 +20,7 @@ If same-name skills exist, show the differences and ask before replacing them.
 Do not migrate projects or enable automations.
 ```
 
-The installer uses its supported repo/ref/path interface. Pin the full approved 2.7 candidate commit. No `v2.7` release tag is implied. Never include tokens in invitations.
+The installer uses its supported repo/ref/path interface. Resolve the annotated `v2.7` tag and pin its verified full commit; do not substitute `main/latest`. Never include tokens in invitations.
 
 Default destination: $CODEX_HOME/skills or ~/.codex/skills; typically C:\Users\<user>\.codex\skills on Windows. Each participant has their own installation.
 

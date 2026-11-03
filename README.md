@@ -2,9 +2,9 @@
 
 Git-first teamwork for one person, local role chats, remote participants and hybrids. PM is the only mandatory coordinating function. GitHub and generic Azure DevOps Server/TFS Git providers are supported; specialized process profiles are maintained separately.
 
-## Current candidate
+## Current release
 
-Protocol version **2.7 candidate**. The version is the sole release identifier: the major number identifies the protocol generation and the minor number increments for each published protocol revision. Candidate labeling supports exact validation; it does not imply release or downstream adoption.
+Protocol version **2.7**. The version is the sole release identifier: the major number identifies the protocol generation and the minor number increments for each published protocol revision. A protocol release does not imply downstream installation or project adoption.
 
 **OpenSpec stores the product contract. TASK stores recoverable execution state. Direct conversation supports transient coordination.**
 
@@ -12,7 +12,7 @@ Bounded requests inside an existing task need no additional Issue, PR, MSG or ro
 
 ## Start and references
 
-1. Obtain the approved full 2.7 candidate commit or use an approved bundle with a trusted manifest hash. No `v2.7` release tag is claimed by this candidate; do not silently substitute `main/latest`.
+1. Obtain the public `v2.7` release and verify its full commit, or use an approved bundle with a trusted manifest hash. Do not silently substitute `main/latest`.
 2. Verify the payload and local links with `python scripts/validate_package.py`, `python -B scripts/test_validate_package.py`, `python -B scripts/test_workspace_policy.py`, and `python -B scripts/test_relocation_policy.py`.
 3. Read [START.md](START.md). Choose new, migrate, team, join, resume or audit.
 4. Install procedure skills separately using [SKILL-INSTALL.md](SKILL-INSTALL.md) only with machine-owner approval. Updating this repository does not update installed copies or adopted projects.
