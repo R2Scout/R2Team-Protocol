@@ -55,11 +55,11 @@ def allocation_decision(*, active_task, project_active, free_gib,
                         candidate_sha=None, owner=None, purpose=None,
                         inventory_complete=True, placement_conflict=False,
                         materialization_key_conflict=False):
+    if placement_conflict or materialization_key_conflict:
+        return "ALLOCATION_BLOCKED"
     if compatible_lease:
         return "REUSE_EXISTING"
-    if (not inventory_complete or placement_conflict or
-            materialization_key_conflict or project_active >= 150 or
-            free_gib < 15 or
+    if (not inventory_complete or project_active >= 150 or free_gib < 15 or
             active_mutable_for_purpose >= 1):
         return "ALLOCATION_BLOCKED"
     exception_valid = _valid_exception(exception, today, {

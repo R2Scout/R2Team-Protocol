@@ -68,6 +68,8 @@
 57. Routine new evidence with no declared artifact consumer returns `SUMMARY_ONLY`.
 58. Durable artifact capture rejects missing consumer, owner, retention, recovery, access boundary, content hash, or close trigger.
 59. Materially new required evidence with complete lifecycle metadata permits exactly one durable artifact and later reuses its key/hash.
+60. `compatible_lease=True` with workspace/evidence root overlap returns `ALLOCATION_BLOCKED`; compatibility cannot grandfather recursive custody.
+61. `compatible_lease=True` with a materialization-key conflict returns `ALLOCATION_BLOCKED`, while a clean exact compatible key still reuses at hard cap and in reuse-only capacity.
 
 The pure model must assert both safety (never two accepted writers for one executor/TASK) and liveness/recoverability (no blocked or frozen state is a dead end without a terminal accounted disposition).
 

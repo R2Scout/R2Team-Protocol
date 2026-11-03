@@ -98,8 +98,17 @@ class WorkspacePolicyTests(unittest.TestCase):
     def test_exact_materialization_key_reuses_compatible_lease(self):
         self.assertEqual("REUSE_EXISTING", allocation_decision(
             active_task=3, project_active=150, free_gib=10,
-            compatible_lease=True, inventory_complete=False,
-            placement_conflict=True))
+            compatible_lease=True, inventory_complete=False))
+
+    def test_compatible_reuse_cannot_bypass_root_overlap(self):
+        self.assertEqual("ALLOCATION_BLOCKED", allocation_decision(
+            active_task=1, project_active=20, free_gib=100,
+            compatible_lease=True, placement_conflict=True))
+
+    def test_compatible_reuse_cannot_bypass_materialization_key_conflict(self):
+        self.assertEqual("ALLOCATION_BLOCKED", allocation_decision(
+            active_task=1, project_active=20, free_gib=100,
+            compatible_lease=True, materialization_key_conflict=True))
 
     def test_reuse_only_capacity_blocks_new_placement(self):
         self.assertEqual("ALLOCATION_BLOCKED", allocation_decision(
