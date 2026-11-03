@@ -1,10 +1,10 @@
 # TEAM — R2Team configuration
 
-Template for protocol version 2.6. PM fills it during setup; empty configuration is not ready. Never commit real thread IDs, other machines' absolute paths or credentials.
+Template for protocol version 2.7. PM fills it during setup; empty configuration is not ready. Never commit real thread IDs, hashes of private IDs, other machines' absolute paths, transcripts or credentials.
 
 ```yaml
 protocol_name: R2Team
-protocol_version: "2.6"
+protocol_version: "2.7"
 integration_revision: 0
 setup_status: NOT_CONFIGURED
 project:
@@ -47,11 +47,24 @@ workspace_lifecycle:
   retention_classes: []
   closure_methods: []
   reconciliation_owner_executor_id: null
+relocation_policy:
+  owner_executor_id: null
+  authority_route: null
+  migration_root: "Team/Migrations"
+  fencing_mode: cooperative
+  provider_enforced_exclusion: NOT_PROVEN
+  receipt_retention_class: null
+  target_placement_classes: []
+  local_registry_authority_classes: []
+  migration_control_paths:
+    - "Team/Migrations/<migration-id>/**"
 ```
 
 Use a real commit and repository-relative package path, or the trusted hash of an exact bundle. HEAD does not identify a dirty working tree. Increment project integration_revision when adopting changed rules/team configuration.
 
 Workspace policy is portable. `root_aliases` name project-approved placement classes without storing physical paths. Populated path, observed size, process/native-resource, custody, and timestamp data belongs in ignored `.codex-local/` state. Projects may adopt stricter budgets or record exact TASK exceptions; thresholds never grant cleanup, relocation, process-stop, or deletion authority.
+
+Relocation policy is also portable. The accepted bundle under `migration_root` owns per-executor expected epoch, prior accepted record, source/target states, custody and causal receipts. Aggregate team state is derived from those records. Fencing is cooperative unless an independent administrative receipt proves provider enforcement. A populated local registry or its hash never enters TEAM and never grants authority.
 
 ## Participants and executors
 

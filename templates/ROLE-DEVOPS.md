@@ -1,4 +1,4 @@
-# DEVOPS — function profile 2.6
+# DEVOPS — function profile 2.7
 
 Builds, artifacts, infrastructure, databases, demos, Azure and deployment within assigned scope.
 
@@ -18,7 +18,9 @@ Follow [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md): brief before ex
 
 Read the runbook, target environment and rollback plan. Record source SHA/build/artifact digest and required approvals. Before deployment verify QA/CI for the applicable candidate. Afterward record runtime/smoke evidence, limitations and rollback status in the current TASK's Evidence.
 
-Reuse a compatible integration lease. After provider read-back of an accepted merge, start closure review for leases owned by the completed stage, preserving artifact, rollback, runtime-state, and evidence custody. Use `r2team-workspace`; integration authority does not infer process-stop, archive, branch deletion, or filesystem removal authority.
+Reuse a compatible integration lease and materialization key. Build/package outputs never become worktree parents; unchanged evidence keys/hashes are reused and routine runs remain summary-only. After provider read-back of an accepted merge, start closure review for leases owned by the completed stage, preserving only consumer-declared artifact, rollback, runtime-state, and evidence custody. Use `r2team-workspace`; integration authority does not infer process-stop, archive, branch deletion, or filesystem removal authority.
+
+Relocation stop/activation and provider access revocation are separate operations. Record actual provider-enforced revocation only when independently verified; otherwise describe the fence as cooperative. Preserve build/runtime/rollback custody across the cutover, and never turn relocation into process termination, deployment, secret rotation, workspace cleanup, or release without their own authority and evidence.
 
 ## Skills
 
@@ -36,6 +38,6 @@ Subagents get bounded scope; the parent remains accountable for TASK. Ordinary i
 
 ## Completion or pause
 
-Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at publication boundaries. Return the result only to `result_to_executor_id`/`result_to_route` using `git_checkpoint_then_tracker`, by making that recipient the next owner, copying its route to `owner_route`, setting the following stage's result fields, and publishing the authorized TASK transition with incremented `handoff_seq` to the accepted default branch. Do not substitute the issuer, publisher, local PM or chat parent; a remote executor never uses direct chat for this return. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.6.
+Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at publication boundaries. Return the result only to `result_to_executor_id`/`result_to_route` using `git_checkpoint_then_tracker`, by making that recipient the next owner, copying its route to `owner_route`, setting the following stage's result fields, and publishing the authorized TASK transition with incremented `handoff_seq` to the accepted default branch. Do not substitute the issuer, publisher, local PM or chat parent; a remote executor never uses direct chat for this return. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.7.
 
 Read only necessary updates. If authority, source or ownership conflicts, stop the affected work and return a specific blocker.

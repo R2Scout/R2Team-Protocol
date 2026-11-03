@@ -3,6 +3,7 @@ import unittest
 
 from workspace_policy import (
     allocation_decision,
+    evidence_capture_decision,
     closure_decision,
     completion_decision,
     evidence_decision,
@@ -78,6 +79,36 @@ class WorkspacePolicyTests(unittest.TestCase):
     def test_project_hard_cap_blocks_without_cleanup(self):
         self.assertEqual("ALLOCATION_BLOCKED", allocation_decision(
             active_task=1, project_active=150, free_gib=100))
+
+    def test_incomplete_physical_inventory_blocks_new_materialization(self):
+        self.assertEqual("ALLOCATION_BLOCKED", allocation_decision(
+            active_task=1, project_active=20, free_gib=100,
+            inventory_complete=False))
+
+    def test_workspace_and_artifact_roots_must_not_overlap(self):
+        self.assertEqual("ALLOCATION_BLOCKED", allocation_decision(
+            active_task=1, project_active=20, free_gib=100,
+            placement_conflict=True))
+
+    def test_conflicting_materialization_key_blocks_duplicate_workspace(self):
+        self.assertEqual("ALLOCATION_BLOCKED", allocation_decision(
+            active_task=1, project_active=20, free_gib=100,
+            materialization_key_conflict=True))
+
+    def test_exact_materialization_key_reuses_compatible_lease(self):
+        self.assertEqual("REUSE_EXISTING", allocation_decision(
+            active_task=3, project_active=150, free_gib=10,
+            compatible_lease=True, inventory_complete=False))
+
+    def test_compatible_reuse_cannot_bypass_root_overlap(self):
+        self.assertEqual("ALLOCATION_BLOCKED", allocation_decision(
+            active_task=1, project_active=20, free_gib=100,
+            compatible_lease=True, placement_conflict=True))
+
+    def test_compatible_reuse_cannot_bypass_materialization_key_conflict(self):
+        self.assertEqual("ALLOCATION_BLOCKED", allocation_decision(
+            active_task=1, project_active=20, free_gib=100,
+            compatible_lease=True, materialization_key_conflict=True))
 
     def test_reuse_only_capacity_blocks_new_placement(self):
         self.assertEqual("ALLOCATION_BLOCKED", allocation_decision(
@@ -295,6 +326,32 @@ class WorkspacePolicyTests(unittest.TestCase):
 
     def test_chat_only_evidence_is_rejected(self):
         self.assertEqual("EVIDENCE_BLOCKED", evidence_decision("chat"))
+
+    def test_unchanged_evidence_key_reuses_existing_record(self):
+        key = "candidate:axis:command:pass"
+        self.assertEqual("REUSE_EXISTING_EVIDENCE",
+                         evidence_capture_decision(
+                             evidence_key=key, existing_keys={key}))
+
+    def test_new_routine_evidence_is_summary_only(self):
+        self.assertEqual("SUMMARY_ONLY", evidence_capture_decision(
+            evidence_key="candidate:axis:command:pass",
+            existing_keys=set(), artifact_required=False))
+
+    def test_durable_artifact_requires_complete_lifecycle_metadata(self):
+        self.assertEqual("EVIDENCE_BLOCKED", evidence_capture_decision(
+            evidence_key="candidate:axis:command:fail",
+            existing_keys=set(), artifact_required=True,
+            content_hash="a" * 64, owner="qa-main"))
+
+    def test_materially_new_required_artifact_is_allowed_once(self):
+        self.assertEqual("ALLOW_DURABLE_ARTIFACT", evidence_capture_decision(
+            evidence_key="candidate:axis:command:fail",
+            existing_keys=set(), artifact_required=True,
+            content_hash="a" * 64, consumer="TASK-42 acceptance",
+            owner="qa-main", retention_class="release-evidence",
+            recovery_ref="vault:item", access_boundary="team",
+            close_trigger="TASK-42 accepted or superseded"))
 
 
 if __name__ == "__main__":

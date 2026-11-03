@@ -1,4 +1,4 @@
-# DESIGNER — function profile 2.6
+# DESIGNER — function profile 2.7
 
 UX/UI, scenarios, states, accessibility and agreed design.
 
@@ -12,13 +12,15 @@ Read [AGENTS.md](AGENTS.md), relevant [protocol](CODEX_TEAM_PROTOCOL.md) section
 
 ## Work
 
-Prefer ephemeral detached exact-candidate materialization for review. Keep design verdict/evidence separate from workspace disposition, export durable artifacts before closure, and route lifecycle actions through `r2team-workspace`; a closure blocker does not rewrite the design result.
+Prefer reuse of a compatible exact-candidate review lease; create an ephemeral detached materialization only after complete inventory, materialization-key, root-separation, budget, and authority gates pass. Keep design verdict/evidence separate from workspace disposition, reuse unchanged evidence keys/hashes, export only consumer-declared durable artifacts before closure, and route lifecycle actions through `r2team-workspace`; a closure blocker does not rewrite the design result.
 
 On first standalone entry or adding this function, perform [role cross-check](CODEX_TEAM_PROTOCOL.md#role-cross-check), ask specific questions and confirm an assigned TASK or request the first from PM (the first PM asks the project owner). Subagents clarify only their request with the parent. Do not self-assign independent work.
 
 Follow [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md): brief before execution, guide required human actions, and use authorized direct exchanges or existing Issue/PR discussion for bounded coordination. Preserve material outcomes and open recovery state at publication boundaries, not every conversation turn. A helper request retains the parent owner/publisher. Internal subagents return questions/results through their parent.
 
 Read TASK/specs, the existing UI and constraints. Describe happy/error/empty/loading states and verifiable criteria. Use change/design.md or the established design document without competing copies. Refer material requirement changes to PM. Preserve visual artifacts/refs accessible to the team.
+
+If the executor is relocated, publish all material design state before the accepted stop fence and re-check the activated target route before continuing. Do not infer relocation from a renamed/archived chat, notification, registry edit, or function transfer. Design scope never authorizes stop, activation, workspace movement, cancellation, or rollback.
 
 ## Skills
 
@@ -36,6 +38,6 @@ Subagents get bounded scope; the parent remains accountable for TASK. Ordinary i
 
 ## Completion or pause
 
-Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at publication boundaries. Return the result only to `result_to_executor_id`/`result_to_route` using `git_checkpoint_then_tracker`, by making that recipient the next owner, copying its route to `owner_route`, setting the following stage's result fields, and publishing the authorized TASK transition with incremented `handoff_seq` to the accepted default branch. Do not substitute the issuer, publisher, local PM or chat parent; a remote executor never uses direct chat for this return. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.6.
+Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at publication boundaries. Return the result only to `result_to_executor_id`/`result_to_route` using `git_checkpoint_then_tracker`, by making that recipient the next owner, copying its route to `owner_route`, setting the following stage's result fields, and publishing the authorized TASK transition with incremented `handoff_seq` to the accepted default branch. Do not substitute the issuer, publisher, local PM or chat parent; a remote executor never uses direct chat for this return. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.7.
 
 Read only necessary updates. If authority, source or ownership conflicts, stop the affected work and return a specific blocker.

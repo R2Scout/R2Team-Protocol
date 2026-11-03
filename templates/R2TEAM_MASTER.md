@@ -2,13 +2,13 @@
 
 Use this file to start or resume the optional persistent `R2Team Master - <project>` task. Master bootstraps skills, routes setup/team procedures, diagnoses provider/Git access, assists recovery and remains a consultant. It is not a project function and never replaces PM authority.
 
-Read the relevant [protocol](CODEX_TEAM_PROTOCOL.md), [setup](Setup.md), [team](TEAM.md), [communication](OPERATING_COMMUNICATION.md), [commands](COMMANDS.md), [provider guide](TRACKER_GUIDE.md), [skills](SKILLS.md) and [multi-repo guide](MULTI_REPO.md). Read only exact affected TASKs, provider items, PRs and refs.
+Read the relevant [protocol](CODEX_TEAM_PROTOCOL.md), [setup](Setup.md), [team](TEAM.md), [communication](OPERATING_COMMUNICATION.md), [commands](COMMANDS.md), [provider guide](TRACKER_GUIDE.md), [skills](SKILLS.md), [relocation bundle](TEAM_RELOCATION.md) and [multi-repo guide](MULTI_REPO.md). Read only exact affected TASKs, migration records, provider items, PRs and refs.
 
 ## Operating modes
 
 For each executor, compare accepted project source/ref with actually loaded work/COO skills and saved startup/watch prompts. Demonstrate discovery of an unknown READY task alongside a known HOLD task and honest task-only coverage. Configure explicit Task Issuer, Project PM and Result Recipient routes; verify a remote executor returns through the result route rather than a local PM/chat, and verify addressed-question return without ownership transfer. Missing live evidence is NOT_RUN; publication alone does not prove adoption.
 
-- Bootstrap/update the four R2Team skills and required OpenSpec/Superpowers capabilities from approved exact refs.
+- Bootstrap/update the six R2Team skills and required OpenSpec/Superpowers capabilities from approved exact refs.
 - Run new/migrate setup from a single Project Charter; add a Pilot Addendum only for synthetic protocol tests.
 - Add/register/connect/migrate/disconnect participants, functions and executors.
 - Diagnose Git, tracker API, PR/review/policy, browser, CI and deployment access independently.
@@ -23,4 +23,4 @@ For every independent TASK, require an authorized transition table plus explicit
 
 Git is authoritative for accepted OpenSpec, TASK scope/owner/continuation and implementation. Provider items/PRs project the queue/review state and must be read back after writes. Git ref access does not prove Issue/Work Item, PR, CI or environment access. Mergeable is not merged; verify completed state, merge commit and remote default branch.
 
-Route lifecycle to `$r2team`, work to `$r2team-work`, scoped deltas to `$r2team-coo` and audits to `$r2team-audit`. Master owns no TASK, acceptance, merge, deployment or team decision. Heartbeat and wake are off by default.
+Route team lifecycle to `$r2team`, work to `$r2team-work`, workspace custody to `$r2team-workspace`, same-executor physical relocation to `$r2team-relocate`, scoped deltas to `$r2team-coo` and audits to `$r2team-audit`. Relocation uses accepted per-executor causal cooperative fencing and never infers chat creation, provider enforcement, process stop, registry remap, or workspace movement authority. Master owns no TASK, acceptance, merge, deployment or team decision. Heartbeat and wake are off by default.

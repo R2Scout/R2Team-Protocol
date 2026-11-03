@@ -1,6 +1,6 @@
 ---
 name: r2team-workspace
-description: "Inspect and govern R2Team workspace leases: report status, preflight bounded allocation, prepare recoverable closure, or diagnose lifecycle blockers. Use only in an adopted R2Team 2.6 project; it does not grant cleanup, process-stop, merge, relocation, or deletion authority."
+description: "Inspect and govern R2Team workspace leases: report status, preflight bounded allocation, prepare recoverable closure, or diagnose lifecycle blockers. Use only in an adopted R2Team 2.7 project; it does not grant cleanup, process-stop, merge, relocation, or deletion authority."
 ---
 # R2Team — workspace lifecycle
 
@@ -17,7 +17,7 @@ Help, unknown commands, status and doctor are read-only. No command infers mutat
 
 ## Sources and boundaries
 
-Read applicable `AGENTS.md`, accepted `TEAM.md`, the selected TASK/current checkpoint, relevant role instructions, and the workspace-lifecycle section of `CODEX_TEAM_PROTOCOL.md`. Confirm project adoption of 2.6. A 2.5 or older project is not silently upgraded.
+Read applicable `AGENTS.md`, accepted `TEAM.md`, the selected TASK/current checkpoint, relevant role instructions, and the workspace-lifecycle section of `CODEX_TEAM_PROTOCOL.md`. Confirm project adoption of 2.7. An older project is not silently upgraded.
 
 This skill does not administer participants, run product work, relocate teams or chats, replace `r2team-work`, stop processes, delete branches, merge, release, deploy, or modify installed skills. Existing skills may route lifecycle requests here. `r2team-work` remains the TASK execution entry point and must not hide workspace allocation or closure.
 
@@ -40,6 +40,7 @@ Read only. Report:
 - exact project/TASK/candidate scope and local observation time;
 - active leases by owner, purpose, class, mutability, and custody;
 - TASK and project budget use plus destination-filesystem free capacity;
+- complete physical inventory counts from authoritative Git plus application-managed, external, legacy, unknown, and partial roots, not only declared leases;
 - dirty, untracked, ignored, process, native-resource, evidence, branch, retention, and recovery facts as known/unknown;
 - terminal disposition or the smallest blocker and responsible owner.
 
@@ -49,11 +50,13 @@ Never claim a complete inventory when reads fail or when a local registry is abs
 
 Run allocation preflight before mutation:
 
-1. verify the accepted TASK, current owner/purpose, exact base/candidate, permissions, and no compatible existing lease;
-2. enforce one author lease, one reusable integration lease, one ephemeral QA/Design lease, maximum three active leases per TASK, one mutable lease per executor/TASK/purpose, project target 50, and hard cap 150; a bounded default-budget exception must match the requested TASK, lease, current/prior base, preserved candidate, owner, and purpose exactly, include capacity evidence/review date/recovery rule, use boolean true changed-base/custody/disjoint-lane/candidate-preservation predicates, and cannot bypass hard-cap/disk/single-writer/ownership/containment/evidence gates;
-3. measure the destination filesystem, including expected dependency/package expansion: above 50 GiB normal, 30–50 GiB reuse-only, 15–30 GiB owner-approved recovery allocation only, below 15 GiB no new persistent placement;
-4. select ordinary-canonical, codex-managed, external-authorized, or legacy-retained custody and record the logical lease before relying on it;
-5. create only the authorized bounded materialization, then read back path containment, branch/HEAD/tree, mutability, and actual state.
+1. verify the accepted TASK, current owner/purpose, exact base/candidate, permissions, and deterministic materialization key; exact compatible requests reuse the existing lease and conflicting duplicates block;
+2. inventory every physical Git-registered, application-managed, external, legacy, unknown, and partial root in scope; incomplete inventory blocks creation, project count is not limited to declared leases, and hard-cap mode permits compatible reuse only;
+3. enforce one author lease, one reusable integration lease, one ephemeral QA/Design lease, maximum three active leases per TASK, one mutable lease per executor/TASK/purpose, project target 50, and hard cap 150; a bounded default-budget exception must match the requested TASK, lease, current/prior base, preserved candidate, owner, and purpose exactly, include capacity evidence/review date/recovery rule, use boolean true changed-base/custody/disjoint-lane/candidate-preservation predicates, and cannot bypass hard-cap/disk/single-writer/ownership/containment/evidence gates;
+4. reject a destination inside any evidence, artifact, message, output, log, tmp, or cache root and reject any inverse nesting; these roots never serve as worktree parents;
+5. measure the destination filesystem, including expected dependency/package expansion: above 50 GiB normal, 30–50 GiB reuse-only, 15–30 GiB owner-approved recovery allocation only, below 15 GiB no new persistent placement;
+6. select ordinary-canonical, codex-managed, external-authorized, or legacy-retained custody and record the logical lease before relying on it;
+7. create only the authorized bounded materialization, then read back path containment, branch/HEAD/tree, mutability, and actual state; reconcile a partial create before any retry.
 
 If any gate fails, return `ALLOCATION_BLOCKED`; do not clean, relocate, terminate, bypass QA, or mutate existing work.
 
@@ -62,7 +65,7 @@ If any gate fails, return `ALLOCATION_BLOCKED`; do not clean, relocate, terminat
 Run evidence and custody preflight before any recoverable action:
 
 1. re-read lease ownership, path containment, branch/HEAD/tree, dirty/untracked/ignored content, processes, native resources, dependent leases, and exact candidate;
-2. export Git-suitable evidence through the protected checkpoint; represent non-Git evidence by a sanitized manifest, content hash, retention class, durable recovery location, owner, and access boundary;
+2. export Git-suitable evidence through the protected checkpoint; deduplicate by evidence key and content hash, keep routine results as compact summaries, and represent a required non-Git artifact by a sanitized manifest with consumer, content hash, retention class, durable recovery location, owner, access boundary, and close trigger;
 3. record branch disposition as `MERGED_TO_DEFAULT`, `SUPERSEDED_BY_SHA`, `REJECTED`, or `EVIDENCE_ARCHIVED` without deleting a ref;
 4. choose `CLOSED`, `RETAINED_PROTECTED`, `TRANSFERRED_TO_NEXT_TASK`, or a blocking state and record a close receipt;
 5. use the application archive lifecycle for codex-managed custody; never shell-remove an application-managed checkout;

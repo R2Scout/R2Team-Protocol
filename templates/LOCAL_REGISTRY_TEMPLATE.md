@@ -49,3 +49,21 @@ workspace_leases:
 ```
 
 Local observations do not change accepted TASK ownership, candidate identity, authority, retention, or disposition. A missing/stale observation is `UNKNOWN` or `INVENTORY_INCOMPLETE`, never evidence that a workspace is safe to close.
+
+## Relocation routing observations
+
+With local machine-owner authority, the ignored registry may map a logical executor to its current physical chat/host. Detect executor collisions and read the mapping back before reporting it. Never copy the value or a stable hash of it into Git:
+
+```yaml
+executor_routes:
+  - executor_id: "<registered-executor>"
+    physical_thread_id: "<local-private-value>"
+    host_observation: "<local-private-value>"
+    migration_id: "<portable-migration-id>"
+    local_authority: true
+    collision: false
+    read_back: true
+    last_observed_at: "<ISO-8601-or-NOT_RUN>"
+```
+
+Durable relocation evidence records only `NOT_APPLICABLE`, `MAPPING_PRESENT_READ_BACK`, `MAPPING_ABSENT`, or `MAPPING_CONFLICT` plus a portable authority/host class. Registry presence, absence, title, notification, or archive state grants no assignment, identity, permission, writer epoch, source-stop proof, activation, or acceptance. Remote/manual executors do not require a local mapping.

@@ -1,4 +1,4 @@
-# QA — function profile 2.6
+# QA — function profile 2.7
 
 Verify an exact candidate against acceptance, specifications and risks.
 
@@ -18,7 +18,9 @@ Follow [OPERATING_COMMUNICATION.md](OPERATING_COMMUNICATION.md): brief before ex
 
 Verify SHA/artifact/environment. Run authorized tests/scenarios; distinguish static/runtime/UI/integration checks and NOT_RUN. For defects preserve reproduction, expected/actual behavior, version and impact. Verdict/evidence goes into TASK; fixes return through PM or approved handoff.
 
-Prefer ephemeral detached exact-candidate materialization. Report the candidate verdict and workspace disposition as separate fields; close failure never rewrites PASS/FAIL/UNKNOWN/NOT_RUN. Publish required evidence or its sanitized hash-bound durable manifest before requesting closure through `r2team-workspace`.
+Prefer reuse of the compatible exact-candidate QA lease; create an ephemeral detached materialization only after complete inventory, materialization-key, root-separation, budget, and authority gates pass. Report the candidate verdict and workspace disposition as separate fields; close failure never rewrites PASS/FAIL/UNKNOWN/NOT_RUN. Reuse an unchanged evidence key/hash, keep routine runs summary-only, and publish a separate sanitized durable manifest only for a declared consumer before requesting closure through `r2team-workspace`.
+
+For relocation QA, bind every verdict to the exact receipt set, project/executor fence records, epochs, cutover, candidate, and workspace evidence. Verify positive source stop, target preflight/activation parentage, registry evidence privacy, and derived aggregate state. A passing deterministic fixture is not live relocation acceptance; provider enforcement, installation, adoption, runtime behavior, and cleanup stay separate evidence axes.
 
 ## Skills
 
@@ -36,6 +38,6 @@ Subagents get bounded scope; the parent remains accountable for TASK. Ordinary i
 
 ## Completion or pause
 
-Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at the publication boundaries. Return PASS/FAIL/BLOCKED only to `result_to_executor_id`/`result_to_route` using `git_checkpoint_then_tracker`: increment `handoff_seq`, make that recipient the next owner, copy its route to `owner_route`, set the following stage's result fields, publish exact candidate/evidence and next owner/status/role to the accepted default branch, then post its pointer in the new owner route. Do not substitute the issuer, publisher, local PM or chat parent; a remote executor never uses direct chat for this return. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.6.
+Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at the publication boundaries. Return PASS/FAIL/BLOCKED only to `result_to_executor_id`/`result_to_route` using `git_checkpoint_then_tracker`: increment `handoff_seq`, make that recipient the next owner, copy its route to `owner_route`, set the following stage's result fields, publish exact candidate/evidence and next owner/status/role to the accepted default branch, then post its pointer in the new owner route. Do not substitute the issuer, publisher, local PM or chat parent; a remote executor never uses direct chat for this return. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.7.
 
 Read only necessary updates. If authority, source or ownership conflicts, stop the affected work and return a specific blocker.

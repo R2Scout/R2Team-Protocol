@@ -1,4 +1,4 @@
-# Operational communication and durable state — R2Team 2.6
+# Operational communication and durable state — R2Team 2.7
 
 This policy applies equally to local chats, remote participants and authorized subagents. Execution location changes the available communication channel, not the persistence boundary. It becomes effective only through an approved project adoption; it does not override an existing 1.10 project.
 
@@ -105,6 +105,8 @@ OpenSpec tasks.md is the implementation plan, not a message ledger or independen
 - Remaining work, next action and recoverable references.
 
 A URL alone is not enough for a critical fact. Record a concise durable summary and exact references; retain large artifacts through an approved storage/retention policy. Do not store credentials or private transient conversation merely for completeness.
+
+Evidence is material state, not a transcript of every execution. Key it by exact candidate, evidence axis, normalized command/scenario, environment class, and outcome. An unchanged rerun reuses the existing key/hash and updates only the compact observation summary; it does not create another report, package, log copy, message archive, manifest, or worktree. Create a separate durable artifact only for a declared acceptance, diagnosis, rollback, legal, or release consumer, with owner, retention, recovery, access boundary, and close trigger. Routine stdout/stderr and helper conversation remain transient after their material facts are recorded.
 
 ## Four publication boundaries
 

@@ -1,6 +1,6 @@
 # Sources and compatibility
 
-Updated on 2026-10-25. R2Team's role contracts, TASK model, workspace lifecycle, and persistence boundaries are project conventions, not an official OpenAI standard. Version 2.6 retains bounded operational exchanges, executor-scoped discovery, and explicit Route Card baton transitions; adds bounded workspace leases, capacity gates, durable merge evidence, recoverable closure, and a separate `r2team-workspace` skill; keeps team/chat relocation and specialized process profiles outside this change; and uses the protocol version as the sole release identifier.
+Updated on 2026-10-26. R2Team's role contracts, TASK model, workspace lifecycle, relocation fencing, and persistence boundaries are project conventions, not an official OpenAI standard. Version 2.7 retains bounded operational exchanges, executor-scoped discovery, Route Card baton transitions, and the 2.6 workspace lifecycle; adds causally fenced per-executor team/chat relocation, typed receipts, partial recovery, privacy-safe registry evidence, and a separate `r2team-relocate` skill; keeps provider-enforced revocation, live relocation, installation, downstream adoption, merge, and release as separately evidenced gates; and uses the protocol version as the sole release identifier.
 
 ## Reference sources used during setup design
 

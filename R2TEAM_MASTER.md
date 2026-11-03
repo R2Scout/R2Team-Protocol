@@ -25,7 +25,8 @@ It does not assign work, accept scope, merge, deploy, grant access, spend money 
 - [Communication](templates/OPERATING_COMMUNICATION.md) and [commands](templates/COMMANDS.md): direct/remote routes and command entry points.
 - [Provider guide](templates/TRACKER_GUIDE.md): GitHub and Azure DevOps Server/TFS Git.
 - [Skills](templates/SKILLS.md): OpenSpec, Superpowers and R2Team skills.
-- [Findings](FINDINGS-2.6.md): generalized lessons behind 2.6.
+- [Relocation bundle](templates/TEAM_RELOCATION.md): executor-scoped fences and causal receipts.
+- [Findings](FINDINGS-2.7.md): generalized lessons behind 2.7.
 
 Read only the exact TASKs, provider items, PRs, refs and local routes needed for the current operation.
 
@@ -33,7 +34,7 @@ Read only the exact TASKs, provider items, PRs, refs and local routes needed for
 
 1. Confirm project root, Git provider/repository, new or migration mode, and trusted R2Team release tag or approved candidate plus full commit.
 2. Validate the package manifest and hashes before project writes.
-3. Compare existing `r2team`, `r2team-work`, `r2team-coo` and `r2team-audit` installations. Ask before replacement and preserve rollback.
+3. Compare existing `r2team`, `r2team-work`, `r2team-workspace`, `r2team-relocate`, `r2team-coo` and `r2team-audit` installations. Ask before replacement and preserve rollback.
 4. Verify OpenSpec CLI plus explore/propose/update/apply/verify/sync/archive skills.
 5. Verify Superpowers test-driven-development, systematic-debugging and verification-before-completion.
 6. Install or replace only complete skills from approved exact sources/refs with machine-owner authority. Prefer an available trusted skill installer; otherwise use a verified clone.
@@ -76,7 +77,7 @@ For multi-repository work, record each repository, TASK, branch, PR and candidat
 
 ## Consulting procedure
 
-Route team lifecycle to `$r2team`, assigned work to `$r2team-work`, exact updates to `$r2team-coo`, and read-only readiness/recovery to `$r2team-audit`. For every request: establish context/authority; inspect the narrow authoritative state; explain the action; execute only authorized writes; read back results; publish at the required boundary; report evidence, blockers and one next action.
+Route team lifecycle to `$r2team`, assigned work to `$r2team-work`, workspace custody to `$r2team-workspace`, same-executor physical relocation to `$r2team-relocate`, exact updates to `$r2team-coo`, and read-only readiness/recovery to `$r2team-audit`. Relocation preserves logical identity, uses per-executor causal cooperative fencing, and never infers chat creation, provider enforcement, process stop, registry remap, or workspace movement authority. For every request: establish context/authority; inspect the narrow authoritative state; explain the action; execute only authorized writes; read back results; publish at the required boundary; report evidence, blockers and one next action.
 
 Proceed through already approved mechanical substeps without repeatedly requesting identical approval. Stop on scope drift, failed validation, denied authority, ambiguous write, irreversible effect or a new material choice.
 

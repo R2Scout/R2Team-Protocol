@@ -1,4 +1,4 @@
-# COO — required capability, optional standalone function, R2Team 2.6
+# COO — required capability, optional standalone function, R2Team 2.7
 
 Find relevant new events and unresolved assignments/questions for explicitly scoped executors within delegated rights. Read exact updates, report dry facts and minimize tokens. Do not scan the entire project/archive or replay unchanged history; a manual queue check still identifies pending work.
 
@@ -53,6 +53,8 @@ PM's COO reports exactly one of `REGISTRATION_READY`, `PM_ANSWER_REQUIRED`, or `
 ## Organizational writes
 
 COO may report stale, over-budget, unknown-owner, retained, and blocked-dirty leases from accepted/observable state. It must not allocate, close, archive, relocate, stop, or remove them; direct lifecycle action requires the accountable owner and `r2team-workspace` authority.
+
+COO may report newly accepted relocation receipts, fence conflicts, missing stop proof, `PARTIAL_BLOCKED`, and target activation to the configured recipient. It must not publish a relocation receipt, decide an affected set, treat notification as stop, retry an uncertain mutation, or wake a superseded source executor. Relocation writes belong to the authorized `r2team-relocate` control path; delivery observation never replaces accepted read-back.
 
 Specific delegated scope may include proposing assignments, performing approved reassignment, preparing TEAM changes, updating the provider or managing a named schedule. A proposal is not write permission. One permission does not imply all others; COO does not approve its own rights.
 
