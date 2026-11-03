@@ -1,13 +1,13 @@
 ---
 protocol_version: "2.6"
 id: "TASK-R2TEAM-2.7-TEAM-CHAT-RELOCATION-001"
-revision: 17
-handoff_seq: 0
-status: REVIEW_READY
-stage: QA
-owner_executor_id: "r2team-protocol-pm"
+revision: 18
+handoff_seq: 1
+status: DONE
+stage: INTEGRATION
+owner_executor_id: "r2team-protocol-owner"
 owner_route: "https://github.com/R2Scout/R2Team-Protocol/issues/3"
-previous_owner_executor_id: null
+previous_owner_executor_id: "r2team-protocol-pm"
 assigned_by_executor_id: "r2team-protocol-owner"
 task_issuer_executor_id: "r2team-protocol-owner"
 task_issuer_route: "https://github.com/R2Scout/R2Team-Protocol/issues/3"
@@ -28,7 +28,7 @@ openspec_change: null
 base_sha: "7e7a35eaf89726b0850da78aaa176d142d7fc1ce"
 candidate_sha: "1f97207fd671f7838c39fe26383151dbe674ba5e"
 verified_sha: "1f97207fd671f7838c39fe26383151dbe674ba5e"
-merged_sha: null
+merged_sha: "ac76122d771689f9db5e3ac2e71e01fa8ae6a9a9"
 workspace_policy: inherited_from_protocol_2.6
 workspace_exceptions: []
 workspace_leases:
@@ -42,17 +42,45 @@ workspace_leases:
     candidate_sha: "1f97207fd671f7838c39fe26383151dbe674ba5e"
     mutability: mutable
     custody: ordinary-canonical
-    state: ACTIVE
-    retention_class: task-working
-    review_date: "2026-11-09"
+    state: RETAINED_PROTECTED
+    retention_class: post-merge-recovery
+    review_date: "2026-11-10"
     recovery_ref: "refs/heads/planning/r2team-2.7-team-chat-relocation"
     exception_ref: null
-    close_receipt_ref: null
-workspace_disposition: ACTIVE
-candidate_dispositions: []
+    close_receipt_ref: "receipt-r2team-2.7-author-001-retained-after-merge"
+workspace_disposition: RETAINED_PROTECTED
+candidate_dispositions:
+  - candidate_sha: "1f97207fd671f7838c39fe26383151dbe674ba5e"
+    candidate_tree: "fa9f84c85af390f29c4c113f320b0d8584682d3d"
+    branch_ref: "refs/heads/planning/r2team-2.7-team-chat-relocation"
+    disposition: MERGED_TO_DEFAULT
+    evidence_ref: "https://github.com/R2Scout/R2Team-Protocol/pull/4"
+    owner_executor_id: "r2team-protocol-pm"
+    recorded_at: "2026-11-03T12:56:13Z"
 artifact_manifests: []
-close_receipts: []
-next_action: "Obtain protocol-owner review of corrected PR #4; merge, tag, release, installation, adoption, live relocation, and live cleanup require separate explicit authority and evidence."
+close_receipts:
+  - receipt_ref: "receipt-r2team-2.7-author-001-retained-after-merge"
+    lease_id: "lease-r2team-2.7-author-001"
+    task_id: "TASK-R2TEAM-2.7-TEAM-CHAT-RELOCATION-001"
+    owner_executor_id: "r2team-protocol-pm"
+    closer_executor_id: "r2team-protocol-pm"
+    base_sha: "7e7a35eaf89726b0850da78aaa176d142d7fc1ce"
+    branch_ref: "refs/heads/planning/r2team-2.7-team-chat-relocation"
+    head_sha: "7964ccef579a173a80d6ceb4fbd60ffa30f9290c"
+    tree_sha: "1beb703c0d3d0efb22047bf20fcf8a33ff62a95f"
+    candidate_sha: "1f97207fd671f7838c39fe26383151dbe674ba5e"
+    material_classification: retained-clean-source-with-ignored-validation-roots
+    artifact_manifest_ref: null
+    recovery_route: "refs/heads/planning/r2team-2.7-team-chat-relocation"
+    native_resource_disposition: RETAINED_WITH_WORKSPACE
+    branch_disposition: MERGED_TO_DEFAULT
+    retention_class: post-merge-recovery
+    closure_method: no-removal-retention
+    actual_result: RETAINED_PROTECTED
+    remaining_owner_executor_id: "r2team-protocol-pm"
+    blocker: "Live cleanup and application archive were not authorized; ignored validation roots remain protected."
+    recorded_at: "2026-11-03T12:56:13Z"
+next_action: "No further action in this source TASK. Tag, release, installation, adoption, live relocation, workspace cleanup, branch deletion, and application archive require separate explicit TASK authority and evidence."
 questions:
   - id: Q-2.7-SKILL-BOUNDARY
     mode: LOOP
@@ -116,9 +144,9 @@ Excluded:
 
 # Current checkpoint
 
-- Completed: relocation candidate `ef761223685a8e05b2b4ce5cb6f964769a50120b` received independent System Architect `PASS`; bounded-materialization predecessor `b3df6062d3c55032a7409d7abc2b7a48ee0e34fb` received `AMEND`; corrected candidate `1f97207fd671f7838c39fe26383151dbe674ba5e`, tree `fa9f84c85af390f29c4c113f320b0d8584682d3d`, received fresh independent System Architect `PASS`.
-- Remaining: protocol-owner review and an explicit decision for any later merge/release gate.
-- Blockers: none for owner review. Merge, release, installation, downstream adoption, live cleanup, provider-enforced fencing claims, and live relocation remain separate unauthorized gates.
+- Completed: corrected candidate `1f97207fd671f7838c39fe26383151dbe674ba5e`, tree `fa9f84c85af390f29c4c113f320b0d8584682d3d`, received independent System Architect `PASS`; owner instruction authorized the integration gate; PR #4 merged as `ac76122d771689f9db5e3ac2e71e01fa8ae6a9a9` and provider/default-branch read-back matched.
+- Remaining: none for this source TASK. Release, installation, adoption, live relocation, and cleanup are separate work.
+- Blockers: none for source integration. The author workspace is intentionally `RETAINED_PROTECTED` because cleanup/archive was not authorized.
 
 # Evidence
 
@@ -172,15 +200,19 @@ Excluded:
 - Corrected manifest-only package: PASS for 59 required files with validator 55/55, workspace 42/42, relocation 73/73, six skill checks, command-copy equality, and English-only public Markdown. Its isolated root remains ignored because host policy still rejects recursive removal before execution.
 - Independent corrected-candidate verdict: `PASS`; review receipt `MSG-20261103-042005-1f97207f`, reviewed implementation `1f97207fd671f7838c39fe26383151dbe674ba5e`, tree `fa9f84c85af390f29c4c113f320b0d8584682d3d`, and TASK-only checkpoint `e0ea4ae595ed9ea8fb890dda704887767a6051ce`.
 - Independent reviewer reproduced package 59/59, validator 55/55, workspace 42/42, relocation 73/73, compileall, diff, command equality, clean checkout, and corrected direct probes. External `quick_validate.py` was `NOT_RUN` independently because reviewer Python lacked cached PyYAML; author-side 6/6 result remains recorded and candidate package validation passed.
+- Owner integration instruction: authorized protocol-owner review and merge of PR #4; it did not authorize tag, release, installation, downstream adoption, live relocation, cleanup, branch deletion, or archive.
+- Fresh pre-merge gate at PR head `7964ccef579a173a80d6ceb4fbd60ffa30f9290c`: package PASS; validator 55/55; workspace 42/42; relocation 73/73; six skill checks; hashes 59/59; compileall/diff/English/command-copy PASS.
+- Provider read-back: PR #4 state `MERGED` at `2026-11-03T12:56:13Z`; actual merge commit and remote `main` are `ac76122d771689f9db5e3ac2e71e01fa8ae6a9a9`, tree `1beb703c0d3d0efb22047bf20fcf8a33ff62a95f`, parents `7e7a35eaf89726b0850da78aaa176d142d7fc1ce` and `7964ccef579a173a80d6ceb4fbd60ffa30f9290c`.
 
 # Authorized next transitions
 
 | Outcome | Next TASK status | Next owner executor | Next owner route | Next active role | Following result recipient | Following result route | Authorized publisher |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Implementation PASS | REVIEW_READY | r2team-protocol-pm | https://github.com/R2Scout/R2Team-Protocol/issues/3 | PM | r2team-protocol-owner | https://github.com/R2Scout/R2Team-Protocol/issues/3 | r2team-protocol-pm |
+| Owner acceptance and provider-confirmed merge | DONE | r2team-protocol-owner | https://github.com/R2Scout/R2Team-Protocol/issues/3 | PM | r2team-protocol-owner | https://github.com/R2Scout/R2Team-Protocol/issues/3 | r2team-protocol-pm |
 | AMEND | IMPLEMENTING | r2team-protocol-pm | https://github.com/R2Scout/R2Team-Protocol/issues/3 | PM | r2team-protocol-owner | https://github.com/R2Scout/R2Team-Protocol/issues/3 | r2team-protocol-pm |
 | BLOCKED | BLOCKED | r2team-protocol-pm | https://github.com/R2Scout/R2Team-Protocol/issues/3 | PM | r2team-protocol-owner | https://github.com/R2Scout/R2Team-Protocol/issues/3 | r2team-protocol-pm |
 
 # Publication gate
 
-The owner request authorizes the planning checkpoint, bounded relocation plus workspace/evidence-growth implementation on this reused author lease, validation, independent exact-candidate review, Issue #3/PR #4 refresh, and PR preparation. It does not authorize merge, release, installed-skill replacement, downstream adoption, live relocation, chat creation, registry mutation on another host, process stop, branch deletion, historical evidence deletion, or live cleanup.
+The owner request plus the later explicit integration instruction authorized planning, bounded implementation, validation, independent review, PR #4 refresh, owner review, merge, and the post-merge TASK checkpoint. It does not authorize tag, release, installed-skill replacement, downstream adoption, live relocation, chat creation, registry mutation on another host, process stop, branch deletion, historical evidence deletion, application archive, or live cleanup.
