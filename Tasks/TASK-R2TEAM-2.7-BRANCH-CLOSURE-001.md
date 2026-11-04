@@ -29,7 +29,7 @@ first_task_id: null
 capacity_reserved: false
 requirement_ref: null
 branch: "maintenance/r2team-2.7-branch-closure"
-pr: "https://github.com/R2Scout/R2Team-Protocol/pull/10"
+pr: "https://github.com/R2Scout/R2Team-Protocol/pull/11"
 openspec_change: null
 base_sha: "3ac958f056259d413032695ae56d249e34a6aa5b"
 candidate_sha: "5b225be21e1c4c4786c9c4abf3316d6f0dfb4abf"
@@ -176,6 +176,7 @@ Excluded: merging obsolete 2.6 drafts into the 2.7 distribution, merging the sep
 - Completed: both dirty worktrees passed diff/private-route/credential/language scans. The 2.6 predecessor is retained by local recovery commit `8d786f241644fb2559558ccb0b3008524eee9b85`, tree `c70c16d8e466e3110c76bc514c8101db2b6e673a`, and annotated tag `recovery/r2team-2.6-dirty-20261104`. The CMMI worktree is retained by local recovery commit `9505236ffaeb6c119884ee98a8459825570257eb`, tree `7a91466aa0b9b7add33fdef643fe6042a67ab764`, and annotated tag `recovery/r2team-cmmi-1.2-dirty-20261104`.
 - Completed: both retained worktrees are clean and detached; eleven superseded local branches were deleted. Local branches are now `main` plus the closure transport branch; remote branches are only `main`.
 - Completed: task-only PR #10 merged as `bd10a063db313e6e8c0628aa14cb5db9b42d7706`, tree `2063274e62754912381c875f37645233a0a78336`; its remote and local transport branch refs were deleted after provider read-back.
+- Completed: final receipt PR #11 opened from the task-only receipt branch.
 - Remaining: publish this final receipt checkpoint, delete its mechanical transport branch, verify the sole remaining branch is `main`, and close Issue #9.
 - Blockers: none within the authorized recovery-first procedure.
 
