@@ -32,8 +32,8 @@ branch: "maintenance/r2team-2.7-branch-closure"
 pr: null
 openspec_change: null
 base_sha: "3ac958f056259d413032695ae56d249e34a6aa5b"
-candidate_sha: null
-verified_sha: null
+candidate_sha: "5b225be21e1c4c4786c9c4abf3316d6f0dfb4abf"
+verified_sha: "5b225be21e1c4c4786c9c4abf3316d6f0dfb4abf"
 merged_sha: null
 workspace_policy: inherited_from_protocol_2.7
 workspace_inventory_ref: "read-only Git worktree and local/remote branch inventory dated 2026-11-04"
@@ -46,9 +46,9 @@ workspace_leases:
     owner_executor_id: "r2team-protocol-owner"
     closure_owner_executor_id: "r2team-protocol-owner"
     base_sha: "3ac958f056259d413032695ae56d249e34a6aa5b"
-    candidate_sha: null
-    head_sha: "3ac958f056259d413032695ae56d249e34a6aa5b"
-    tree_sha: "499cb12d5bdc3e3072556bb2b77ffb4586563028"
+    candidate_sha: "5b225be21e1c4c4786c9c4abf3316d6f0dfb4abf"
+    head_sha: "5b225be21e1c4c4786c9c4abf3316d6f0dfb4abf"
+    tree_sha: "60a44b0473489284bd423c58017477e332de00fe"
     mutability: mutable
     custody: reused-existing-workspace
     state: ACTIVE
@@ -146,6 +146,7 @@ Excluded: merging obsolete 2.6 drafts into the 2.7 distribution, merging the sep
 # Evidence
 
 - Exact base: `3ac958f056259d413032695ae56d249e34a6aa5b`, tree `499cb12d5bdc3e3072556bb2b77ffb4586563028`.
+- Exact task-only candidate: `5b225be21e1c4c4786c9c4abf3316d6f0dfb4abf`, tree `60a44b0473489284bd423c58017477e332de00fe`.
 - Remote branch inventory at intake: eight non-main branches, all ancestors of `origin/main`; zero non-merged branches.
 - Open PR inventory at intake: zero.
 - Dirty predecessor comparison: applying the old 2.6 working state over current `main` would remove approximately 8,270 lines.
