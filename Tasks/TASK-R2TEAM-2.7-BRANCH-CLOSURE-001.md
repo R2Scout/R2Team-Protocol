@@ -29,7 +29,7 @@ first_task_id: null
 capacity_reserved: false
 requirement_ref: null
 branch: "maintenance/r2team-2.7-branch-closure"
-pr: null
+pr: "https://github.com/R2Scout/R2Team-Protocol/pull/10"
 openspec_change: null
 base_sha: "3ac958f056259d413032695ae56d249e34a6aa5b"
 candidate_sha: "5b225be21e1c4c4786c9c4abf3316d6f0dfb4abf"
@@ -106,7 +106,7 @@ executor_fence_ref: null
 writer_epoch: null
 writer_record_ref: null
 relocation_disposition: NOT_APPLICABLE
-next_action: "Publish the task-only closure checkpoint through a PR, merge it, then delete the closure transport branch and verify only main remains."
+next_action: "Merge PR #10 after exact provider read-back, then delete its transport branch and verify only main remains."
 questions: []
 ---
 
@@ -140,7 +140,8 @@ Excluded: merging obsolete 2.6 drafts into the 2.7 distribution, merging the sep
 - Completed: `origin/main` is `3ac958f056259d413032695ae56d249e34a6aa5b`; all eight non-main remote branch tips were proven ancestors and deleted; no unmerged remote branch or open PR existed.
 - Completed: both dirty worktrees passed diff/private-route/credential/language scans. The 2.6 predecessor is retained by local recovery commit `8d786f241644fb2559558ccb0b3008524eee9b85`, tree `c70c16d8e466e3110c76bc514c8101db2b6e673a`, and annotated tag `recovery/r2team-2.6-dirty-20261104`. The CMMI worktree is retained by local recovery commit `9505236ffaeb6c119884ee98a8459825570257eb`, tree `7a91466aa0b9b7add33fdef643fe6042a67ab764`, and annotated tag `recovery/r2team-cmmi-1.2-dirty-20261104`.
 - Completed: both retained worktrees are clean and detached; eleven superseded local branches were deleted. Local branches are now `main` plus the closure transport branch; remote branches are only `main`.
-- Remaining: task-only checkpoint PR/merge, deletion of its transport branch, final provider/local read-back, and Issue #9 closure.
+- Completed: task-only PR #10 opened from the exact closure checkpoint.
+- Remaining: PR #10 merge/read-back, deletion of its transport branch, final provider/local read-back, and Issue #9 closure.
 - Blockers: none within the authorized recovery-first procedure.
 
 # Evidence
