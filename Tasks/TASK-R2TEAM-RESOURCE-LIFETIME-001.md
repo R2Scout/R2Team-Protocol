@@ -16,10 +16,10 @@ result_to_route: https://github.com/R2Scout/R2Team-Protocol/issues/12
 delivery_policy: git_checkpoint_then_tracker
 tracker_item: https://github.com/R2Scout/R2Team-Protocol/issues/12
 branch: protocol/workspace-lifetime
-pr: null
+pr: https://github.com/R2Scout/R2Team-Protocol/pull/13
 base_sha: 280c62e8e4a6cdf5b96948fdb521678aa7b906a7
-candidate_sha: null
-verified_sha: null
+candidate_sha: 2e9d8b8ee1fc6b426eef4859ef95818023677656
+verified_sha: 2e9d8b8ee1fc6b426eef4859ef95818023677656
 verified_payload_manifest_sha256: "1e5358f9ef5c6950c3995ae6e95805257f39371cb05e13ca451abecf216c18a0"
 next_action: "Verify the 2.8 payload, commit and publish the branch, integrate the exact PR head, then publish and verify annotated v2.8 and its GitHub Release."
 ---
@@ -56,3 +56,7 @@ Current main and historical v2.7 tag remain unchanged. No actual project resourc
 # Authorized publication transitions
 
 PASS publishes the exact verified candidate through PR integration, annotated v2.8, and GitHub Release read-back; the same owner returns the result to Issue #12. FAIL or BLOCKED retains recoverable state and returns the blocker to Issue #12. The repository owner explicitly authorized these publication operations. Source delivery does not authorize downstream migration or PM chat messaging.
+
+# Integration checkpoint
+
+The exact versioned source commit `2e9d8b8ee1fc6b426eef4859ef95818023677656` was published and PR #13 opened against main. All 62 staged payload hashes matched the verified manifest. The following checkpoint changes only this TASK; it does not change the release payload. Merge the exact current PR head, publish annotated v2.8 at the read-back merge commit, then verify the release and record the final receipt.
