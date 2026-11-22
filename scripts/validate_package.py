@@ -1,4 +1,4 @@
-"""Read-only structural checks for the distributable R2Team 2.7 release."""
+"""Read-only package checks, including the R2Team 2.8 resource-lifetime policy."""
 import argparse
 import hashlib
 import json
@@ -19,10 +19,14 @@ def validate(root):
             raise ValueError("template_root must be a path")
     except (OSError, ValueError, KeyError, TypeError) as exc:
         return [f"Invalid package manifest: {exc}"]
-    if manifest.get("protocol_version") != "2.7":
-        errors.append("Expected protocol_version 2.7")
+    if manifest.get("protocol_version") != "2.8":
+        errors.append("Expected protocol_version 2.8")
     if manifest.get("bootstrap") != "R2TEAM_MASTER.md":
         errors.append("Expected bootstrap R2TEAM_MASTER.md")
+    lifetime_policy_path = "templates/RESOURCE_LIFETIME.md"
+    if (manifest.get("resource_lifetime_policy") != lifetime_policy_path or
+            lifetime_policy_path not in required):
+        errors.append("Missing packaged resource lifetime policy")
     if "package_revision" in manifest:
         errors.append("Remove package_revision: protocol_version is the sole release identifier")
     skills = manifest.get("skills", [])
@@ -34,7 +38,7 @@ def validate(root):
         errors.append("Missing packaged relocation skill: r2team-relocate")
     relocation_template_paths = {
         "templates/TEAM_RELOCATION.md",
-        "templates/MIGRATE_TO_2.7.md",
+        "templates/MIGRATE_TO_2.8.md",
     }
     if not relocation_template_paths.issubset(required):
         errors.append("Missing packaged relocation template")
@@ -74,6 +78,13 @@ def validate(root):
                         errors.append(f"SHA-256 mismatch: {name}")
                 except OSError:
                     errors.append(f"Unreadable payload: {name}")
+
+    lifetime_text = required_texts.get(lifetime_policy_path, "")
+    for marker in ("persistent", "task_scoped", "ephemeral", "resource_label",
+                   "close_condition", "review_date", "DECOMMISSION_ACCEPTED",
+                   "TASK_RESULT_ACCEPTED", "USE_COMPLETED"):
+        if marker not in lifetime_text:
+            errors.append(f"Missing resource lifetime marker: {marker}")
 
     unsafe_patterns = (
         re.compile(r"\b(?:automatic(?:ally)?|auto)\s+(?:force[-\s]*)?"
@@ -262,6 +273,8 @@ def validate(root):
                 errors.append(f"Missing mandatory COO configuration marker: {marker}")
         for marker in (
             "workspace_lifecycle",
+            "resource_lifetime_policy",
+            "purpose_is_independent",
             "max_active_per_task",
             "max_mutable_per_executor_task_purpose",
             "project_target_active",
@@ -279,6 +292,10 @@ def validate(root):
     task_template = root / "templates" / "TASK-TEMPLATE.md"
     if task_template.is_file():
         task_text = texts.get(task_template.resolve(), "")
+        for marker in ("resource_records", "resource_label", "lifetime",
+                       "close_condition", "project_slug", "executor_slug"):
+            if marker not in task_text:
+                errors.append(f"Missing resource TASK marker: {marker}")
         for marker in (
             "handoff_seq",
             "owner_route",

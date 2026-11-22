@@ -29,8 +29,9 @@ class PackageTests(unittest.TestCase):
         (self.root / "skills" / "r2team-workspace").mkdir(parents=True)
         (self.root / "skills" / "r2team-relocate").mkdir(parents=True)
         (self.root / "package.json").write_text(json.dumps({
-            "protocol_version": "2.7",
+            "protocol_version": "2.8",
             "bootstrap": "R2TEAM_MASTER.md",
+            "resource_lifetime_policy": "templates/RESOURCE_LIFETIME.md",
             "skills": ["r2team", "r2team-work", "r2team-coo", "r2team-audit", "r2team-workspace", "r2team-relocate"],
             "required_files": [
                 "START.md",
@@ -39,9 +40,10 @@ class PackageTests(unittest.TestCase):
                 "templates/COMMANDS.md",
                 "templates/LOCAL_REGISTRY_TEMPLATE.md",
                 "templates/TEAM_RELOCATION.md",
-                "templates/MIGRATE_TO_2.7.md",
+                "templates/MIGRATE_TO_2.8.md",
                 "templates/TEAM.md",
                 "templates/TASK-TEMPLATE.md",
+                "templates/RESOURCE_LIFETIME.md",
                 "skills/r2team-coo/SKILL.md",
                 "skills/r2team-work/SKILL.md",
                 "skills/r2team-workspace/SKILL.md",
@@ -51,6 +53,11 @@ class PackageTests(unittest.TestCase):
         }), encoding="utf-8")
         self.put("START.md", "[Start](templates/Setup.md#new)\n")
         self.put("templates/Setup.md", '<a id="new"></a>\n# New\n\nReady.\n')
+        self.put("templates/RESOURCE_LIFETIME.md", """# Resource lifetime
+persistent task_scoped ephemeral
+resource_label close_condition review_date
+DECOMMISSION_ACCEPTED TASK_RESULT_ACCEPTED USE_COMPLETED
+""")
         self.put("templates/CODEX_TEAM_PROTOCOL.md", """# Protocol
 TASK identity
 candidate identity
@@ -107,10 +114,10 @@ MAPPING_PRESENT_READ_BACK
 cooperative protocol fencing
 provider-enforced exclusion is NOT_PROVEN
 """)
-        self.put("templates/MIGRATE_TO_2.7.md", """# Migrate to R2Team 2.7
+        self.put("templates/MIGRATE_TO_2.8.md", """# Migrate to R2Team 2.8
 prospective project-local adoption
 accepted-main checkpoint
-R2Team 2.6 remains governing until adoption
+R2Team 2.7 remains governing until adoption
 no live relocation
 provider-enforced exclusion remains NOT_PROVEN
 """)
@@ -125,6 +132,8 @@ coo:
     before_idle: true
     heartbeat_enabled: false
 workspace_lifecycle
+resource_lifetime_policy
+purpose_is_independent
 max_active_per_task
 max_mutable_per_executor_task_purpose
 project_target_active
@@ -155,6 +164,12 @@ QUEUED_AFTER_REGISTRATION
 first_task_id
 READY_FOR_ACTIVATION
 workspace_policy
+resource_records
+resource_label
+lifetime
+close_condition
+project_slug
+executor_slug
 workspace_exceptions
 workspace_leases
 workspace_disposition
@@ -274,7 +289,7 @@ cooperative protocol fencing
         config = json.loads((self.root / "package.json").read_text())
         config["protocol_version"] = "2.1"
         self.put("package.json", json.dumps(config))
-        self.assertTrue(any("Expected protocol_version 2.7" in e for e in validate(self.root)))
+        self.assertTrue(any("Expected protocol_version 2.8" in e for e in validate(self.root)))
 
     def test_workspace_skill_is_required(self):
         config = json.loads((self.root / "package.json").read_text())
@@ -486,6 +501,25 @@ This command directly allocates and closes workspaces.
         self.put("templates/TASK-TEMPLATE.md", "# TASK\nowner_executor_id\n")
         errors = validate(self.root)
         self.assertTrue(any("Missing workspace TASK marker" in e for e in errors))
+
+    def test_lifetime_policy_must_be_declared_and_packaged(self):
+        config = json.loads((self.root / "package.json").read_text(encoding="utf-8"))
+        del config["resource_lifetime_policy"]
+        (self.root / "package.json").write_text(json.dumps(config), encoding="utf-8")
+        self.assertTrue(any("Missing packaged resource lifetime policy" in e
+                            for e in validate(self.root)))
+
+    def test_task_template_cannot_drop_mandatory_resource_classification(self):
+        text = (self.root / "templates/TASK-TEMPLATE.md").read_text(encoding="utf-8")
+        self.put("templates/TASK-TEMPLATE.md", text.replace("close_condition\n", ""))
+        self.assertTrue(any("Missing resource TASK marker: close_condition" in e
+                            for e in validate(self.root)))
+
+    def test_lifetime_policy_cannot_omit_persistent_decommission_gate(self):
+        text = (self.root / "templates/RESOURCE_LIFETIME.md").read_text(encoding="utf-8")
+        self.put("templates/RESOURCE_LIFETIME.md", text.replace("DECOMMISSION_ACCEPTED", ""))
+        self.assertTrue(any("Missing resource lifetime marker: DECOMMISSION_ACCEPTED" in e
+                            for e in validate(self.root)))
 
     def test_task_template_requires_append_only_workspace_history(self):
         text = (self.root / "templates/TASK-TEMPLATE.md").read_text(encoding="utf-8")
