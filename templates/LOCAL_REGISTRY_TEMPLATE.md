@@ -37,6 +37,10 @@ workspace_leases:
     task_id: "<TASK-ID>"
     purpose: "<author|integration|qa|design|recovery>"
     owner_executor_id: "<registered-executor>"
+    resource_label: "<project>-<work-ref>-<perm|task|tmp>-<executor>"
+    lifetime: "<persistent|task_scoped|ephemeral|UNKNOWN>"
+    native_workspace_id: "<existing-local-number-or-ID>"
+    observed_directory_name: "<existing-local-directory-name>"
     physical_path: "<absolute-local-path>"
     custody: "<ordinary-canonical|codex-managed|external-authorized|legacy-retained>"
     observed_head: "<full-sha-or-UNKNOWN>"
@@ -49,6 +53,11 @@ workspace_leases:
 ```
 
 Local observations do not change accepted TASK ownership, candidate identity, authority, retention, or disposition. A missing/stale observation is `UNKNOWN` or `INVENTORY_INCOMPLETE`, never evidence that a workspace is safe to close.
+
+<a id="resource-observations"></a>
+## Resource observations
+
+Observe governed test/build/log/cache/evidence/runtime roots here by portable resource ID and authoritative lease or `resource_records[]` reference. Keep paths, native IDs, current/prior names, processes, consumers, observed close receipts, review dates, and unknown facts local. [Lifetime](RESOURCE_LIFETIME.md) and purpose are separate columns. Group disposable files under governed roots without per-file manifests. Unknown classification is protected; `REVIEW_DUE` never grants deletion or lifetime conversion authority.
 
 ## Relocation routing observations
 

@@ -1,14 +1,15 @@
 # TEAM — R2Team configuration
 
-Template for protocol version 2.7. PM fills it during setup; empty configuration is not ready. Never commit real thread IDs, hashes of private IDs, other machines' absolute paths, transcripts or credentials.
+Template for protocol version 2.8. PM fills it during setup; empty configuration is not ready. Never commit real thread IDs, hashes of private IDs, other machines' absolute paths, transcripts or credentials.
 
 ```yaml
 protocol_name: R2Team
-protocol_version: "2.7"
+protocol_version: "2.8"
 integration_revision: 0
 setup_status: NOT_CONFIGURED
 project:
   name: null
+  slug: null
   purpose: null
 protocol_source:
   repository_url: null
@@ -33,6 +34,13 @@ toolchain:
   superpowers_source_ref: null
   skill_install_method: null
 workspace_lifecycle:
+  resource_lifetime_policy:
+    policy_ref: RESOURCE_LIFETIME.md
+    required_after_accepted_adoption: true
+    lifetimes: [persistent, task_scoped, ephemeral]
+    purpose_is_independent: true
+    label_format: "<project_slug>-<work_ref>-<lifetime_token>-<executor_slug>"
+    max_label_length: 96
   max_active_per_task: 3
   max_mutable_per_executor_task_purpose: 1
   project_target_active: 50
@@ -63,6 +71,8 @@ relocation_policy:
 Use a real commit and repository-relative package path, or the trusted hash of an exact bundle. HEAD does not identify a dirty working tree. Increment project integration_revision when adopting changed rules/team configuration.
 
 Workspace policy is portable. `root_aliases` name project-approved placement classes without storing physical paths. Populated path, observed size, process/native-resource, custody, and timestamp data belongs in ignored `.codex-local/` state. Projects may adopt stricter budgets or record exact TASK exceptions; thresholds never grant cleanup, relocation, process-stop, or deletion authority.
+
+Adopt [resource lifetime and naming](RESOURCE_LIFETIME.md) explicitly from a package containing it. PM defines stable project/executor aliases and reconciles owners. Complete classification includes lifetime, purpose, label, close condition, review date, retention, and recovery. Persistent standing custody does not bypass budgets; tmp is not cleanup permission. Unknown roots stay protected pending reconciliation. Historical `v2.7` installations do not gain this policy automatically.
 
 Relocation policy is also portable. The accepted bundle under `migration_root` owns per-executor expected epoch, prior accepted record, source/target states, custody and causal receipts. Aggregate team state is derived from those records. Fencing is cooperative unless an independent administrative receipt proves provider enforcement. A populated local registry or its hash never enters TEAM and never grants authority.
 

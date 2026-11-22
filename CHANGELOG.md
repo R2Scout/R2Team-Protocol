@@ -1,5 +1,12 @@
 # R2Team change history
 
+## 2.8 — resource lifetime and workspace naming
+
+- Require explicit persistent/task_scoped/ephemeral lifetime, perm/task/tmp labels, owners, bound close conditions, and review dates on new workspaces and governed resource roots after adoption.
+- Keep dev/qa/build/release purpose independent; retain native IDs and lease identity on compatible reuse.
+- Protect standing anchors, require separate decommission authority, and keep unclassified legacy resources protected without automatic rename, removal, or promotion.
+- Add offline naming, allocation, review, completion, and closure fixtures; preserve all existing custody and evidence gates.
+
 ## 2.7
 
 - Make workspace materialization idempotent with complete physical inventory, deterministic materialization keys, reuse-only hard-cap behavior, partial-create reconciliation, and disjoint workspace versus evidence/output roots.

@@ -1,4 +1,4 @@
-# R2Team 2.7
+# R2Team 2.8
 
 Git-first teamwork for one person, local role chats, remote participants, and hybrids. PM is the only mandatory coordinating function. GitHub and generic Azure DevOps Server/TFS Git are supported; specialized process profiles are separate.
 
@@ -152,7 +152,7 @@ Supported modes: one PM with helpers; one person with local role chats; remote p
 Independent work creates/reuses one TASK, provider item, branch, and PR where applicable. Bounded consultation inside an accepted TASK creates no extra mandatory TASK/Issue/PR/MSG. Reuse the TASK across discovery, design, implementation, QA, integration, and handoff. Separate deployment TASK only for an independent lifecycle/owner/authority.
 
 ~~~yaml
-protocol_version: "2.7"
+protocol_version: "2.8"
 task_id: TASK-042
 task_revision: 3
 status: IN_PROGRESS
@@ -252,6 +252,7 @@ Reassignment keeps TASK/item/branch/PR and preserves failures, candidate, questi
 
 One branch can be checked out in only one worktree. Use coordinated checkout, separate branches, or detached inspection.
 
+<a id="workspace-lifecycle"></a>
 ### 9.1 Workspace lifecycle
 
 TASK identity, candidate identity, and workspace lease identity are separate:
@@ -259,6 +260,8 @@ TASK identity, candidate identity, and workspace lease identity are separate:
 - TASK identity carries durable scope, ownership, routes, acceptance, and transitions across revisions and handoffs.
 - Candidate identity is an immutable commit SHA/tree or exact artifact identity and does not depend on a directory.
 - Workspace lease identity names one physical materialization by logical `lease_id`, TASK, purpose, class, owner executor, exact base/candidate, mutability, custody, state, and recovery reference. Physical paths and host observations remain in ignored local state.
+
+The prospective [resource lifetime and naming policy](RESOURCE_LIFETIME.md) requires explicit `lifetime` (`persistent`, `task_scoped`, or `ephemeral`), `resource_label`, owner, bound `close_condition`, and `review_date` for new workspaces and governed roots after accepted adoption. Tokens perm/task/tmp describe lifetime independently of dev/qa/build/release purpose. Keep native IDs and existing lease/materialization identity. Lifetime completion permits preflight, never removal by suffix or age. Persistent anchors need accepted governance purpose and separate decommission authority. Overdue review never changes lifetime; unknown legacy resources stay protected. This lifetime policy is introduced in R2Team 2.8 and requires explicit project adoption.
 
 A TASK revision, correction, handoff, verdict, or evidence checkpoint does not itself require another persistent workspace. Default limits are one author lease, one reusable integration lease, one ephemeral QA/Design lease, maximum three active leases per TASK, one mutable lease per executor/TASK/purpose, project target 50 and hard cap 150. Accepted project policy may be stricter. A bounded default-budget exception records exact TASK, reason, lease ID, owner, purpose, capacity evidence, review date, current/prior exact base, exact preserved candidate, known custody, disjoint lane, and recovery rule. It is valid only for an allocation whose TASK, lease, bases, candidate, owner, and purpose match exactly and whose changed-base, custody-known, disjoint-lane, and candidate-preserved predicates are boolean true. It cannot bypass the hard cap, below-15-GiB freeze, reuse-only band, single-writer rule, ownership, containment, or evidence gates.
 
@@ -296,7 +299,7 @@ Relocation publishes append-only typed receipts: `PREPARE`, `SOURCE_STOP`, `FREE
 
 Freeze default-denies product, TASK, TEAM, and unknown publication classes by affected executors, not the authorized PM control path needed to publish receipts and recovery decisions. That PM exception is limited to canonical declared migration-control paths and the exact governing relocation-TASK status/evidence fields. Remove retained executors from the affected set before freeze. Aggregate states are derived from per-executor records; mixed custody is `PARTIAL_BLOCKED`, not completion. A partial result preserves every executor's last accepted state and explicitly chooses one permitted successor: resume, terminal cancellation where still safe, or forward rollback. A terminal-accounted blocked, cancelled, or forward-rollback disposition requires owner, review date, next action, and receipt. Rollback never rewrites an accepted epoch; it advances each affected executor through a higher epoch and new causal stop/activation receipts.
 
-Every SOURCE_STOP authority path requires exact typed outcome `SOURCE_STOPPED`; an arbitrary nonblank outcome cannot authorize preflight, activation, or completion. Every public activation decision consumes and validates the actual included target-preflight receipt; a nonblank reference or a separate optional graph check is insufficient. Activation requires matching source stop proof, same-identity `PASS` preflight, expected accepted parent, next epoch, exact accepted cutover/commit identity, functions, TASK routes, mapping-result/registry-evidence agreement, local registry read-back where applicable, and workspace/candidate custody evidence. In team mode each target preflight explicitly references the exact full-set FREEZE, matches its lineage/epoch, and the timestamps strictly satisfy `SOURCE_STOP < FREEZE < TARGET_PREFLIGHT < ACTIVATION`; list order, equal instants, or a later sibling FREEZE cannot authorize progress. Remote/manual targets may legitimately have explicit `NOT_APPLICABLE` or `MAPPING_ABSENT` evidence but may not ignore a collision or observed mapping. Candidate and workspace evidence remain separate; relocation never infers movement, cleanup, merge, release, installed-skill replacement, adoption, or runtime acceptance. Completion requires all affected executors to reach one causally consistent accepted state and publishes a `COMPLETION` receipt. Aggregate state uses exactly one legal state/custody record per affected executor and validates supplied minimum receipt context for every state, including FROZEN, READY_TO_RESUME, and RESUMING; malformed, empty, duplicate, missing, extra, impossible, unresolved, ambiguous, or stale aggregate input is `INVALID`. Live relocation remains a separately authorized operation even when protocol 2.7 is adopted.
+Every SOURCE_STOP authority path requires exact typed outcome `SOURCE_STOPPED`; an arbitrary nonblank outcome cannot authorize preflight, activation, or completion. Every public activation decision consumes and validates the actual included target-preflight receipt; a nonblank reference or a separate optional graph check is insufficient. Activation requires matching source stop proof, same-identity `PASS` preflight, expected accepted parent, next epoch, exact accepted cutover/commit identity, functions, TASK routes, mapping-result/registry-evidence agreement, local registry read-back where applicable, and workspace/candidate custody evidence. In team mode each target preflight explicitly references the exact full-set FREEZE, matches its lineage/epoch, and the timestamps strictly satisfy `SOURCE_STOP < FREEZE < TARGET_PREFLIGHT < ACTIVATION`; list order, equal instants, or a later sibling FREEZE cannot authorize progress. Remote/manual targets may legitimately have explicit `NOT_APPLICABLE` or `MAPPING_ABSENT` evidence but may not ignore a collision or observed mapping. Candidate and workspace evidence remain separate; relocation never infers movement, cleanup, merge, release, installed-skill replacement, adoption, or runtime acceptance. Completion requires all affected executors to reach one causally consistent accepted state and publishes a `COMPLETION` receipt. Aggregate state uses exactly one legal state/custody record per affected executor and validates supplied minimum receipt context for every state, including FROZEN, READY_TO_RESUME, and RESUMING; malformed, empty, duplicate, missing, extra, impossible, unresolved, ambiguous, or stale aggregate input is `INVALID`. Live relocation remains a separately authorized operation even when protocol 2.8 is adopted.
 
 Accepted fencing state is an explicit legal `(source_state, target_state, custody)` tuple, not a Cartesian product of known labels. Source ACTIVE requires target INACTIVE and source custody; target ACTIVE requires source STOPPED and target custody. Unknown or non-boolean freeze state fails closed before publication-class handling. Migration and TASK paths are canonical portable paths without control characters, traversal, backslashes, duplicate separators, or leading/trailing segment whitespace.
 
@@ -313,7 +316,7 @@ Disconnect after publishing affected checkpoints and replacement ownership. Pres
 | Discussion | Issue/PR | Work Item/PR |
 | Recovery | Git TASK/spec/code | Git TASK/spec/code |
 
-Tracker is a projection of TASK in R2Team 2.7. Summarize provider-only continuation facts into Git.
+Tracker is a projection of TASK in R2Team 2.8. Summarize provider-only continuation facts into Git.
 
 Verify Git refs/read/push, tracker API, PR/review/policy API, browser UI, CI and environment access independently. Repo/default branch/policies/checks/permissions and merge/deploy effects remain separate facts. For Server also verify version/API, actual Work Item types/states, and tool compatibility; do not assume cloud-only CLI/MCP.
 
@@ -462,11 +465,11 @@ Ready means source/TEAM/rights known, tools verified or blocked, and a safe next
 <a id="migration"></a>
 ## 15. Migration
 
-Use [MIGRATE_TO_2.7.md](MIGRATE_TO_2.7.md). Preserve refs, code, filled specs, active OpenSpec changes/tasks, roles, evidence, dirty/unpublished work, material requests, executor fence history, and unresolved relocation receipts.
+Use [MIGRATE_TO_2.8.md](MIGRATE_TO_2.8.md). Preserve refs, code, filled specs, active OpenSpec changes/tasks, roles, evidence, dirty/unpublished work, material requests, executor fence history, and unresolved relocation receipts.
 
 Existing TASKs remain by default. User-approved fresh organizational queue may retire old message/task artifacts while explicitly preserving product/OpenSpec/current work. Never erase OpenSpec tasks.md.
 
-For 1.10, mandatory MSG rules remain until approved per-task/coordinated cutover. Retained chats individually cross-check/adopt 2.7; replacing files alone is not chat migration or executor relocation. Resolve higher-priority instruction conflicts explicitly.
+For 1.10, mandatory MSG rules remain until approved per-task/coordinated cutover. Retained chats individually cross-check/adopt 2.8; replacing files alone is not chat migration or executor relocation. Resolve higher-priority instruction conflicts explicitly.
 
 <a id="feature-example"></a>
 ## 16. Feature example
@@ -544,7 +547,7 @@ Structural validation does not prove provider integration, behavioral skill qual
 First PM:
 
 ~~~text
-Read START.md from verified R2Team 2.7 and run setup new or migrate for <project>.
+Read START.md from verified R2Team 2.8 and run setup new or migrate for <project>.
 Confirm root, provider, instructions, PM, functions, permissions and specs.
 Show proposed diff before writes. Do not enable automation or start product
 work merely by finishing setup.

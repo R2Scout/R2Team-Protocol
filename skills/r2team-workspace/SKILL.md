@@ -1,6 +1,6 @@
 ---
 name: r2team-workspace
-description: "Inspect and govern R2Team workspace leases: report status, preflight bounded allocation, prepare recoverable closure, or diagnose lifecycle blockers. Use only in an adopted R2Team 2.7 project; it does not grant cleanup, process-stop, merge, relocation, or deletion authority."
+description: "Inspect and govern R2Team workspace leases: report status, preflight bounded allocation, prepare recoverable closure, or diagnose lifecycle blockers. Use only in an adopted R2Team 2.8 project; it does not grant cleanup, process-stop, merge, relocation, or deletion authority."
 ---
 # R2Team — workspace lifecycle
 
@@ -17,7 +17,7 @@ Help, unknown commands, status and doctor are read-only. No command infers mutat
 
 ## Sources and boundaries
 
-Read applicable `AGENTS.md`, accepted `TEAM.md`, the selected TASK/current checkpoint, relevant role instructions, and the workspace-lifecycle section of `CODEX_TEAM_PROTOCOL.md`. Confirm project adoption of 2.7. An older project is not silently upgraded.
+Read applicable `AGENTS.md`, accepted `TEAM.md`, the selected TASK/current checkpoint, relevant role instructions, and the workspace-lifecycle section of `CODEX_TEAM_PROTOCOL.md`. Confirm project adoption of 2.8. An older project is not silently upgraded.
 
 This skill does not administer participants, run product work, relocate teams or chats, replace `r2team-work`, stop processes, delete branches, merge, release, deploy, or modify installed skills. Existing skills may route lifecycle requests here. `r2team-work` remains the TASK execution entry point and must not hide workspace allocation or closure.
 
@@ -31,6 +31,8 @@ Resolve three independent identities:
 2. Candidate: exact commit SHA/tree or immutable artifact identity.
 3. Workspace lease: `lease_id`, TASK, purpose, class, owner executor, exact base/candidate, mutability, custody, state, and recovery reference.
 
+When accepted project policy includes `RESOURCE_LIFETIME.md`, require resource ID, portable project/work/executor aliases, `resource_label`, explicit `lifetime`, owner, typed `close_condition`/reference, review date, retention, and recovery on new leases/governed roots. Lifetimes persistent/task_scoped/ephemeral, named perm/task/tmp, are independent of dev/qa/build/release purpose. Resolve the target project's accepted policy path, not this skill's source repository. Preserve native IDs/paths on reuse. Legacy UNKNOWN stays protected pending reconciliation. Installation does not adopt this policy.
+
 Lease states are `REQUESTED`, `ACTIVE`, `CLOSE_PENDING`, `CLOSED`, `RETAINED_PROTECTED`, `TRANSFERRED_TO_NEXT_TASK`, `BLOCKED_DIRTY`, `BLOCKED_DEPENDENCY`, `BLOCKED_AUTHORITY`, or `UNKNOWN`. A terminal lease record in `CLOSED`, `RETAINED_PROTECTED`, or `TRANSFERRED_TO_NEXT_TASK` requires closure owner, retention, recovery, review-date, and close-receipt evidence; transfer also requires next-TASK/owner/custody evidence. A bare label and every other state prevent administrative completion without rewriting the candidate verdict.
 
 ## Status and doctor
@@ -39,6 +41,7 @@ Read only. Report:
 
 - exact project/TASK/candidate scope and local observation time;
 - active leases by owner, purpose, class, mutability, and custody;
+- resources by lifetime, purpose, owner, close condition, and review date; overdue review is REVIEW_DUE, never removal or promotion;
 - TASK and project budget use plus destination-filesystem free capacity;
 - complete physical inventory counts from authoritative Git plus application-managed, external, legacy, unknown, and partial roots, not only declared leases;
 - dirty, untracked, ignored, process, native-resource, evidence, branch, retention, and recovery facts as known/unknown;
@@ -49,6 +52,8 @@ Never claim a complete inventory when reads fail or when a local registry is abs
 ## Open
 
 Run allocation preflight before mutation:
+
+Under adopted lifetime policy, validate classification and readable label first. Unknown lifetime, missing owner/condition/review, or inconsistent label blocks new allocation. Names never create another materialization key or duplicate lease. Persistent anchors need accepted governance purpose/TASK and count against the same budgets.
 
 1. verify the accepted TASK, current owner/purpose, exact base/candidate, permissions, and deterministic materialization key; exact compatible requests reuse the existing lease and conflicting duplicates block;
 2. inventory every physical Git-registered, application-managed, external, legacy, unknown, and partial root in scope; incomplete inventory blocks creation, project count is not limited to declared leases, and hard-cap mode permits compatible reuse only;
@@ -63,6 +68,8 @@ If any gate fails, return `ALLOCATION_BLOCKED`; do not clean, relocate, terminat
 ## Close
 
 Run evidence and custody preflight before any recoverable action:
+
+Under adopted lifetime policy, read a published condition receipt bound to resource ID, current owner, event, and exact reference. Task-scoped resources require TASK_RESULT_ACCEPTED; ephemeral uses require USE_COMPLETED. Persistent anchors additionally require DECOMMISSION_ACCEPTED and separate decommission authority. Labels, overdue reviews, string booleans, unrelated results, and failed reads prove nothing. Apply existing closure gates afterward. Outputs may outlive their worktree. Administrative completion requires complete policy plus terminal lease evidence.
 
 1. re-read lease ownership, path containment, branch/HEAD/tree, dirty/untracked/ignored content, processes, native resources, dependent leases, and exact candidate;
 2. export Git-suitable evidence through the protected checkpoint; deduplicate by evidence key and content hash, keep routine results as compact summaries, and represent a required non-Git artifact by a sanitized manifest with consumer, content hash, retention class, durable recovery location, owner, access boundary, and close trigger;

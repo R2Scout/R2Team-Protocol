@@ -1,4 +1,4 @@
-"""Pure decision model for R2Team 2.6 workspace lifecycle fixtures."""
+"""Pure workspace decision model, including R2Team 2.8 resource-lifetime fixtures."""
 import re
 from datetime import date
 
@@ -8,6 +8,122 @@ TERMINAL_CUSTODY = {
     "RETAINED_PROTECTED",
     "TRANSFERRED_TO_NEXT_TASK",
 }
+
+LIFETIME_POLICY = {
+    "persistent": ("perm", "DECOMMISSION_ACCEPTED"),
+    "task_scoped": ("task", "TASK_RESULT_ACCEPTED"),
+    "ephemeral": ("tmp", "USE_COMPLETED"),
+}
+
+
+def resource_label(project_slug, work_ref, executor_slug, lifetime):
+    """Return a portable label; native workspace numbers and paths remain separate."""
+    if not isinstance(lifetime, str) or lifetime not in LIFETIME_POLICY:
+        raise ValueError("Unknown resource lifetime")
+    patterns = ((project_slug, r"[a-z0-9]+(?:[.-][a-z0-9]+)*"),
+                (work_ref, r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*"),
+                (executor_slug, r"[a-z0-9]+(?:-[a-z0-9]+)*"))
+    if any(not isinstance(value, str) or not re.fullmatch(pattern, value)
+           for value, pattern in patterns):
+        raise ValueError("Use portable project, typed work, and executor slugs")
+    lifetime_marker = LIFETIME_POLICY[lifetime][0]
+    label = f"{project_slug}-{work_ref}-{lifetime_marker}-{executor_slug}"
+    if len(label) > 96:
+        raise ValueError("Resource label exceeds 96 characters; approve shorter aliases")
+    return label
+
+
+def resource_policy_errors(resource):
+    """Check explicit lifetime metadata without inferring it from role, path, or age."""
+    if not isinstance(resource, dict):
+        return ["Resource classification record required"]
+    errors = []
+    required = ("resource_id", "project_slug", "work_ref", "executor_slug",
+                "owner_executor_id", "resource_label", "lifetime", "purpose",
+                "review_date", "retention_class", "recovery_ref")
+    for field in required:
+        if not isinstance(resource.get(field), str) or not resource[field].strip():
+            errors.append(f"Missing resource field: {field}")
+    try:
+        expected_label = resource_label(resource.get("project_slug"),
+                                        resource.get("work_ref"),
+                                        resource.get("executor_slug"),
+                                        resource.get("lifetime"))
+        if resource.get("resource_label") != expected_label:
+            errors.append("Resource label disagrees with its explicit metadata")
+    except ValueError as error:
+        errors.append(str(error))
+    condition = resource.get("close_condition")
+    lifetime = resource.get("lifetime")
+    expected_event = (LIFETIME_POLICY[lifetime][1]
+                      if isinstance(lifetime, str) and lifetime in LIFETIME_POLICY
+                      else None)
+    if (not isinstance(condition, dict) or expected_event is None or
+            condition.get("event") != expected_event or
+            not isinstance(condition.get("ref"), str) or not condition["ref"].strip()):
+        errors.append("Close condition must name the lifetime event and exact governing reference")
+    try:
+        date.fromisoformat(resource.get("review_date"))
+    except (TypeError, ValueError):
+        errors.append("Resource review_date must be an ISO date")
+    return errors
+
+
+def resource_allocation_decision(resource, **allocation_facts):
+    """Add the adopted lifetime gate to the existing allocation model."""
+    if resource_policy_errors(resource):
+        return "ALLOCATION_BLOCKED"
+    return allocation_decision(**allocation_facts)
+
+
+def resource_closure_decision(resource, *, condition_evidence,
+                              decommission_authorized=False, **closure_facts):
+    """A bound completion event only enables preflight; it never authorizes removal."""
+    if resource_policy_errors(resource):
+        return "RESOURCE_POLICY_BLOCKED"
+    required_facts = ("evidence_exported", "exclusively_owned", "target_contained",
+                      "removal_authorized")
+    optional_flags = ("live_process", "dependent_lease", "shared_immutable_cache",
+                      "retained_recovery_input", "dirty_or_unknown")
+    if (any(type(closure_facts.get(field)) is not bool for field in required_facts) or
+            any(field in closure_facts and type(closure_facts[field]) is not bool
+                for field in optional_flags) or
+            closure_facts.get("custody", "ordinary-canonical") not in (
+                "ordinary-canonical", "codex-managed", "external-authorized", "legacy-retained")):
+        return "RESOURCE_POLICY_BLOCKED"
+    if (resource["lifetime"] == "persistent" and
+            decommission_authorized is not True):
+        return "RETAINED_PROTECTED"
+    condition = resource["close_condition"]
+    expected = dict(condition, resource_id=resource["resource_id"],
+                    owner_executor_id=resource["owner_executor_id"])
+    if (not isinstance(condition_evidence, dict) or
+            any(condition_evidence.get(key) != value for key, value in expected.items()) or
+            condition_evidence.get("satisfied") is not True or
+            not isinstance(condition_evidence.get("receipt_ref"), str) or
+            not condition_evidence["receipt_ref"].strip()):
+        return "RETAINED_PROTECTED"
+    return closure_decision(**closure_facts)
+
+
+def resource_completion_decision(lease_records):
+    """Require adopted lifetime records as well as existing terminal custody evidence."""
+    if (not isinstance(lease_records, list) or
+            any(resource_policy_errors(record) for record in lease_records)):
+        return "ADMIN_COMPLETION_BLOCKED"
+    return completion_decision(lease_records)
+
+
+def resource_review_decision(resource, *, today):
+    """A due review is an observation, never promotion or deletion."""
+    if resource_policy_errors(resource):
+        return "RESOURCE_POLICY_BLOCKED"
+    try:
+        observed_date = date.fromisoformat(today)
+    except (TypeError, ValueError):
+        return "RESOURCE_POLICY_BLOCKED"
+    return ("REVIEW_DUE" if date.fromisoformat(resource["review_date"]) <= observed_date
+            else "REVIEW_SCHEDULED")
 
 
 def _valid_exception(exception, today, expected):

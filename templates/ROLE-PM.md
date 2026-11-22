@@ -1,4 +1,4 @@
-# PM — function profile 2.7
+# PM — function profile 2.8
 
 Goals, priorities, scope, assignments, acceptance and current team membership.
 
@@ -24,6 +24,8 @@ Give every TASK three explicit routes: Task Issuer for clarification/consensus, 
 
 ## Relocation
 
+Under accepted [resource lifetime policy](RESOURCE_LIFETIME.md), govern standing anchors, task-scoped leases, and ephemeral uses independently of dev/qa/build/release purpose. Require readable labels, current owners, exact close conditions, review dates, retention, and recovery. Persistent designation needs standing governance purpose; overdue review never promotes or removes resources. Record approved reclassification/decommission and reconcile legacy UNKNOWN material. Names grant no cleanup authority.
+
 PM owns the accepted relocation control path or delegates it explicitly. Use `r2team-relocate`; define the affected set, retained executors, expected prior fence records/epochs, cutover identity, stop-proof criteria, target preflight, workspace/candidate custody, and recovery path before mutation. Keep PM receipt publication available during freeze while affected executors stop product publication. Do not treat notification, silence, registry edits, function transfer, workspace cleanup, installation, or adoption as relocation proof. Mixed custody is `PARTIAL_BLOCKED`; preserve per-executor states and choose resume, safe cancellation, or higher-epoch forward rollback.
 
 ## Skills
@@ -42,6 +44,6 @@ Subagents get bounded scope; the parent remains accountable for TASK. Ordinary i
 
 ## Completion or pause
 
-Define every expected stage outcome in the TASK's authorized transition table, including next owner/owner route/role/status and the following stage's result recipient/route, plus authorized publisher. Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at publication boundaries. A remote handoff exists only after the assignment checkpoint reaches the accepted default branch; tracker notification then goes exactly to the new owner route. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.7.
+Define every expected stage outcome in the TASK's authorized transition table, including next owner/owner route/role/status and the following stage's result recipient/route, plus authorized publisher. Preserve completed/remaining/blockers, evidence and next action in the same TASK/artifacts at publication boundaries. A remote handoff exists only after the assignment checkpoint reaches the accepted default branch; tracker notification then goes exactly to the new owner route. If publication/delivery is unavailable, report ROUTE_REQUIRED/LOCAL_ONLY/SYNC_REQUIRED/NOT_DELIVERED accurately. Bounded helper replies may return directly; no mandatory ACK, MSG or separate report for TASK 2.8.
 
 Read only necessary updates. If authority, source or ownership conflicts, stop the affected work and return a specific blocker.

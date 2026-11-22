@@ -1,10 +1,10 @@
-# TASK template — R2Team 2.7
+# TASK template — R2Team 2.8
 
 Use the body below for Tasks/TASK-<id>-<name>.md, removing these explanatory instructions. Choose a collision-free ID. Role handoff alone does not create another TASK; bounded helper requests remain inside the parent TASK.
 
 ```yaml
 ---
-protocol_version: "2.7"
+protocol_version: "2.8"
 id: "<unique-task-id>"
 revision: 1
 handoff_seq: 0
@@ -44,6 +44,7 @@ workspace_policy: inherited_from_team
 workspace_inventory_ref: null
 workspace_exceptions: []
 workspace_leases: []
+resource_records: []
 workspace_disposition: NOT_APPLICABLE
 candidate_dispositions: []
 artifact_manifests: []
@@ -117,6 +118,8 @@ Keep TASK, candidate, and workspace lease identities separate. Reuse a compatibl
 Each `workspace_exceptions[]` item records exact TASK, reason, lease ID, owner, purpose, capacity evidence, review date, current/prior exact base, exact preserved candidate, known custody, disjoint lane, and recovery rule. TASK, lease, bases, candidate, owner, and purpose must match the requested allocation exactly; changed-base, custody-known, disjoint-lane, and candidate-preserved predicates must be boolean true. It cannot bypass the project hard cap, disk floor/reuse-only band, single-writer rule, ownership, containment, or evidence gates.
 
 Each `workspace_leases[]` item records `lease_id`, deterministic `materialization_key`, purpose, class, `owner_executor_id`, `closure_owner_executor_id`, exact base/candidate/HEAD/tree, mutability, custody, state, `retention_class`, `review_date`, `recovery_ref`, exception reference, and `close_receipt_ref`. `workspace_inventory_ref` points to a current ignored observation that includes every registered/managed/legacy/unknown/partial root in scope. Put physical paths, sizes, processes, native handles, and host observations only in ignored local state. Workspace and evidence/artifact/message/output/log/tmp/cache roots must be disjoint.
+
+After [resource lifetime policy](RESOURCE_LIFETIME.md) adoption, new leases also record `resource_id` equal to `lease_id`, `project_slug`, `work_ref`, `executor_slug`, `resource_label`, `lifetime`, and typed `close_condition`/governing reference. Lifetimes persistent/task_scoped/ephemeral remain independent of purpose. Use `resource_records[]` for governed non-workspace roots with the same complete policy, owner/review/retention/recovery fields. Artifact manifests reference existing records; evidence may outlive the worktree. Keep numbers/paths local and reconcile legacy resources at their next material checkpoint without deletion or renaming.
 
 Each `candidate_dispositions[]` item binds candidate SHA/tree and branch ref to exactly one disposition (`MERGED_TO_DEFAULT`, `SUPERSEDED_BY_SHA`, `REJECTED`, or `EVIDENCE_ARCHIVED`), evidence/reference, owner, and recorded time. Each unique `artifact_manifests[]` item records its evidence key, declared consumer, manifest ref, content hash, retention class, durable recovery location, owner, access boundary, and close trigger. `evidence_index[]` binds candidate, evidence axis, normalized command/scenario, environment class, outcome, and reused manifest/summary reference. An unchanged rerun updates the compact observation summary and reuses the key/hash; it does not append another artifact. Each `close_receipts[]` item binds its receipt ref to one lease ID and actual closure result. Append materially new records; do not overwrite history or duplicate identical evidence.
 
