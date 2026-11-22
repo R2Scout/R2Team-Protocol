@@ -1,10 +1,11 @@
 ---
 protocol_version: "2.8"
 id: TASK-R2TEAM-RESOURCE-LIFETIME-001
-revision: 1
-status: READY
-stage: INTEGRATION
-publication_state: VERSIONED_CANDIDATE
+revision: 2
+handoff_seq: 0
+status: DONE
+stage: RELEASE
+publication_state: RELEASE_PUBLISHED
 owner_executor_id: r2team-protocol-owner
 owner_route: https://github.com/R2Scout/R2Team-Protocol/issues/12
 task_issuer_executor_id: r2team-protocol-owner
@@ -20,43 +21,46 @@ pr: https://github.com/R2Scout/R2Team-Protocol/pull/13
 base_sha: 280c62e8e4a6cdf5b96948fdb521678aa7b906a7
 candidate_sha: 2e9d8b8ee1fc6b426eef4859ef95818023677656
 verified_sha: 2e9d8b8ee1fc6b426eef4859ef95818023677656
+merged_sha: 3e023e5222b69d7b2bc0b58316d0cc5e2021be2a
+release_commit_sha: 3e023e5222b69d7b2bc0b58316d0cc5e2021be2a
+release_tag: v2.8
+release_tag_object_sha: c41e6bbf896bff6da7ac52ceb6d08971674368eb
+release_url: https://github.com/R2Scout/R2Team-Protocol/releases/tag/v2.8
 verified_payload_manifest_sha256: "1e5358f9ef5c6950c3995ae6e95805257f39371cb05e13ca451abecf216c18a0"
-next_action: "Verify the 2.8 payload, commit and publish the branch, integrate the exact PR head, then publish and verify annotated v2.8 and its GitHub Release."
+next_action: "No further payload change. Publish this task-only receipt, close Issue #12, and close the owned transport branch after read-back. Project PMs adopt the pinned release through their own accepted checkpoint."
 ---
 
 # Outcome
 
-Make resource lifetime explicit independently of dev/qa/build/release purpose. Persistent anchors, task-scoped resources, and ephemeral uses receive readable names, current owners, bound close conditions, review dates, retention, and recovery. The user accepted this scope on 2026-11-22.
+Published R2Team 2.8 resource lifetime and readable workspace naming, explicitly authorized by the repository owner on 2026-11-22. Prepared a portable migration path for project PMs. The new release preserves the historical v2.7 tag and commit.
 
-# Source scope
+# Included contract
 
-- Add templates/RESOURCE_LIFETIME.md and reconcile protocol, TEAM/TASK, local observation, PM, setup/migration, command, and workspace-skill guidance.
-- Add lifetime-aware naming, allocation, closure, completion, and review gates to the offline workspace reference model. No filesystem/provider/process operations are performed by the model.
-- Require the policy in package metadata and structural validation; refresh 62 payload hashes.
-- Preserve historical release provenance. The added policy is untagged/unpublished and is not retroactively part of v2.7. Existing project adoption remains governing until an approved newer-package cutover.
-- Reuse the existing author checkout without new worktrees or resource movement. Leave registered recovery worktrees and local private routing intact. No installed user skills are replaced.
+- Explicit persistent/perm, task_scoped/task, and ephemeral/tmp lifetime, independent of dev/qa/build/release purpose.
+- Stable readable names plus existing native workspace IDs and lease/materialization identity.
+- Current owner, bound close event/reference, review date, retention, and recovery for new workspaces and governed resource roots.
+- Separate decommission authority for standing anchors; no removal or lifetime promotion by name/age/review expiry.
+- Protected UNKNOWN legacy resources, prospective classification, and preservation of evidence/consumer/custody/removal gates.
+- Protocol, TEAM/TASK/role/local-observation templates, six procedure-skill version references, package validator, and migration 2.8 guidance.
 
-# Acceptance and evidence
+# Verification and publication evidence
 
-- PASS: sequential tests on the exact manifest-only package: validator 58/58, workspace 42/42, relocation 73/73, resource-lifetime 16/16; total 189/189.
-- PASS: six official skill-format checks using locally isolated PyYAML 6.0.3; these are format checks, not consuming-agent acceptance.
-- PASS: package hashes/structure, Markdown links/anchors, lifecycle safety/privacy guards, English-only public Markdown, changed Python compilation, command-copy equality, and git diff --check.
-- RED/GREEN: resource-lifetime fixtures first failed for missing behavior; added completion/type gates failed before implementation; three package-policy guards failed before validator changes. All passed after the corresponding changes.
-- Lifetime tests cover independent purpose combinations, stable labels, malformed/unknown metadata, bound resource/owner/event/reference receipts, strict booleans, persistent decommission authority, review-only expiry, terminal-policy evidence, and existing hard-cap/evidence/dirty/dependency/removal/application-custody gates.
-- Source-tree package validation correctly rejects local private routing. Acceptance uses a manifest-only materialization containing package.json plus required_files, with no local routing or runtime data. The owned temporary materialization is disposable after this compact checkpoint; no separate routine evidence archive is required.
+- PASS: four sequential suites on the exact versioned manifest-only package: validator 58/58, workspace 42/42, relocation 73/73, lifetime 16/16; total 189/189.
+- PASS: 6/6 official skill formats using isolated PyYAML 6.0.3; 62/62 payload hashes; package links/anchors and privacy/safety guards; English-only Markdown; Python compilation; command-copy equality; git diff --check.
+- PASS: staged and committed payload bytes matched the verified manifest; the actual PR merge payload matched all 62 hashes and the same manifest bytes.
+- RED/GREEN: lifetime/completion/type fixtures and three package-policy guards failed before their respective implementations and passed afterward.
+- PR #13 head 19bc8f71457dee0137002a63a74dc9021852edce integrated as 3e023e5222b69d7b2bc0b58316d0cc5e2021be2a; provider merged-state and main read-back matched.
+- Annotated v2.8 tag object c41e6bbf896bff6da7ac52ceb6d08971674368eb peels to the accepted release commit 3e023e5222b69d7b2bc0b58316d0cc5e2021be2a.
+- GitHub Release v2.8 is published, non-draft, non-prerelease, and returned by the latest-release endpoint. The versioned manifest reads protocol_version 2.8 and status release.
+- Historical v2.7 tag object 6c9f189aeb6980bff98eb018f46ad9e72e36398d still peels to c2dd95dfea5138ec8c7f6757d6125279cb20c470.
+- This receipt changes only TASK metadata. It may advance main without changing the tagged payload.
 
-# Remaining work and limits
+# Workspace custody and limits
 
-The versioned R2Team 2.8 source candidate passed fresh manifest-only verification: 189/189 tests, 6/6 skill formats, 62/62 payload hashes, links/privacy/safety, English-only Markdown, compilation, and command-copy checks. It is authorized for integration via Issue #12. Issue #12 is the explicit publication route. The repository owner authorized commit, push, integration, release, and preparation of PM update text on 2026-11-22. Revalidate the versioned payload before publication; no downstream adoption or PM chat delivery is implied.
+Reused the existing author checkout without new worktrees or directory movement. Its source state remains recoverable from main and the annotated release; the canonical checkout remains retained for maintenance. Two predecessor recovery worktrees remain registered and detached at their recorded recovery commits; no operation changed them. Private role routing and local validation dependencies remain ignored. The owned manifest-only verification materialization is disposable after this compact result is recorded.
 
-NOT_RUN: independent consuming-agent behavioral review, commit/push/merge/release, installed-skill replacement, downstream adoption, live allocation/cleanup/decommission, directory rename, relocation, and automation.
+NOT_RUN: independent consuming-agent behavior/QA, installed-skill replacement, downstream project adoption, live allocation/cleanup/decommission/rename, relocation, runtime/deployment effects, and PM chat messaging. Update text preparation is not delivery or project adoption.
 
-Current main and historical v2.7 tag remain unchanged. No actual project resource has been classified, removed, or promoted by this source change.
+# Authorized return
 
-# Authorized publication transitions
-
-PASS publishes the exact verified candidate through PR integration, annotated v2.8, and GitHub Release read-back; the same owner returns the result to Issue #12. FAIL or BLOCKED retains recoverable state and returns the blocker to Issue #12. The repository owner explicitly authorized these publication operations. Source delivery does not authorize downstream migration or PM chat messaging.
-
-# Integration checkpoint
-
-The exact versioned source commit `2e9d8b8ee1fc6b426eef4859ef95818023677656` was published and PR #13 opened against main. All 62 staged payload hashes matched the verified manifest. The following checkpoint changes only this TASK; it does not change the release payload. Merge the exact current PR head, publish annotated v2.8 at the read-back merge commit, then verify the release and record the final receipt.
+PASS returns this published checkpoint and exact release references to Issue #12. Publication/versioning were authorized directly by the repository owner; this authority does not grant operations in downstream projects. Each PM publishes its own adoption checkpoint and verifies its executors against the pinned package.
