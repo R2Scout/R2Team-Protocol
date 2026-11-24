@@ -26,7 +26,7 @@ It does not assign work, accept scope, merge, deploy, grant access, spend money 
 - [Provider guide](templates/TRACKER_GUIDE.md): GitHub and Azure DevOps Server/TFS Git.
 - [Skills](templates/SKILLS.md): OpenSpec, Superpowers and R2Team skills.
 - [Relocation bundle](templates/TEAM_RELOCATION.md): executor-scoped fences and causal receipts.
-- [Findings](FINDINGS-2.7.md): generalized lessons behind 2.8.
+- [Findings](FINDINGS-2.7.md): generalized lessons behind 2.9.
 
 Read only the exact TASKs, provider items, PRs, refs and local routes needed for the current operation.
 

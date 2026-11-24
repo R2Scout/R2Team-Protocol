@@ -40,7 +40,10 @@ workspace_leases:
     resource_label: "<project>-<work-ref>-<perm|task|tmp>-<executor>"
     lifetime: "<persistent|task_scoped|ephemeral|UNKNOWN>"
     native_workspace_id: "<existing-local-number-or-ID>"
+    git_worktree_root_alias: "<approved-local-mapping-alias-or-NOT_APPLICABLE>"
+    planned_directory_name: "<ordinary-native-id-plus-resource-label-or-NOT_APPLICABLE>"
     observed_directory_name: "<existing-local-directory-name>"
+    directory_policy_conformity: "<CONFORMS|LEGACY_RETAINED|APPLICATION_LAYOUT|UNKNOWN>"
     physical_path: "<absolute-local-path>"
     custody: "<ordinary-canonical|codex-managed|external-authorized|legacy-retained>"
     observed_head: "<full-sha-or-UNKNOWN>"
@@ -56,6 +59,8 @@ Local observations do not change accepted TASK ownership, candidate identity, au
 
 <a id="resource-observations"></a>
 ## Resource observations
+
+For Git worktrees, [directory formation](GIT_WORKTREE_DIRECTORIES.md) governs new ordinary paths. Keep actual registration, root mapping, native ID, planned/observed name, and conformity here. Application-native or legacy paths can differ from the current readable label without implying rename authority. Broader resource roots do not become Git worktrees merely by being labelled.
 
 Observe governed test/build/log/cache/evidence/runtime roots here by portable resource ID and authoritative lease or `resource_records[]` reference. Keep paths, native IDs, current/prior names, processes, consumers, observed close receipts, review dates, and unknown facts local. [Lifetime](RESOURCE_LIFETIME.md) and purpose are separate columns. Group disposable files under governed roots without per-file manifests. Unknown classification is protected; `REVIEW_DUE` never grants deletion or lifetime conversion authority.
 

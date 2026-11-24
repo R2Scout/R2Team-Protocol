@@ -1,4 +1,4 @@
-# R2Team 2.8 — Command Help
+# R2Team 2.9 — Command Help
 
 Open project `R2TEAM_MASTER.md` in the persistent local `R2Team Master - <project>` task for bootstrap, Project Charter, setup orchestration, provider/Git troubleshooting, team lifecycle changes or protocol consultation. Master routes actual procedures to the skills below and does not replace PM authority.
 
@@ -42,7 +42,7 @@ Confirm the target directory and guide me through setup. This chat will be PM.
 
 This routes to Setup mode `new`. A new project is not expected to have TEAM/TASK yet. The wizard confirms the initial PM and creates the agreed configuration. For an existing MVP or older protocol use Setup mode `migrate`; do not initialize a new project over its files.
 
-The full template package is needed for setup. Installing SKILL.md alone does not copy project templates. Provide a verified package path or repository URL and full commit SHA. The distribution is https://github.com/R2Scout/R2Team-Protocol. Resolve the annotated `v2.8` release tag and verify its full commit; do not substitute `main/latest`.
+The full template package is needed for setup. Installing SKILL.md alone does not copy project templates. Provide a verified package path or repository URL and full commit SHA. The distribution is https://github.com/R2Scout/R2Team-Protocol. Resolve the annotated `v2.9` release tag and verify its full commit; do not substitute `main/latest`.
 
 ## Add → register → connect
 
@@ -91,7 +91,9 @@ At stage completion, use the TASK's authorized transition table. Increment `hand
 
 The current publisher preserves material open questions, decisions, evidence and next_action in Git before handoff/pause. Comments alone are not recoverable from a clone. Human setup or visual confirmation gets step-by-step guidance: purpose, safe action, expected result, response verification, next step until result, explicit pause or handoff.
 
-## Workspace lifecycle
+## Git worktree and resource lifecycle
+
+The command stays `r2team-workspace` for compatibility. Say Git worktree explicitly for Git working-copy directories; resource is the broader lifetime term. Apply GIT_WORKTREE_DIRECTORIES.md: new ordinary linked worktrees are direct children of the approved root, named `<native-id>-<project>-<work-ref>-<perm|task|tmp>-<executor>`. Preserve native IDs, existing compatible paths, and application-controlled hierarchy. Do not create date/revision/chat/retry parent folders or use evidence/output/log/tmp/cache roots as worktree parents.
 
 When adopted policy includes RESOURCE_LIFETIME.md, status groups resources by persistent/task_scoped/ephemeral lifetime (perm/task/tmp), independently of purpose. Open requires complete owner/label/close-condition/review metadata; close requires a bound lifetime-completion receipt and then all existing gates. Persistent anchors require separate decommission authority. Unknown legacy classification stays protected; due review is REVIEW_DUE, never automatic cleanup or promotion. Native workspace IDs and compatible leases are reused.
 

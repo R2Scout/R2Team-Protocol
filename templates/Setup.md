@@ -1,6 +1,6 @@
-# Setup — R2Team 2.8 guided wizard
+# Setup — R2Team 2.9 guided wizard
 
-Protocol version 2.8. Run only when requested; reading/editing the distribution does not start a project. Full rules: [protocol](CODEX_TEAM_PROTOCOL.md). Entry prompts: [CODEX_TEAM_SETUP.md](CODEX_TEAM_SETUP.md).
+Protocol version 2.9. Run only when requested; reading/editing the distribution does not start a project. Full rules: [protocol](CODEX_TEAM_PROTOCOL.md). Entry prompts: [CODEX_TEAM_SETUP.md](CODEX_TEAM_SETUP.md).
 
 ## Wizard rules
 
@@ -133,7 +133,7 @@ Run the audit below. Report ready/NOT_RUN, first TASK, owner and next action. Th
 
 For an approved package containing [resource lifetime policy](RESOURCE_LIFETIME.md), configure it as an explicit prospective adoption: persistent/task_scoped/ephemeral classification, independent purpose, readable aliases, resource owners, bound close conditions, review dates, and protected legacy reconciliation. Installing the skill does not classify or rename resources.
 
-Use [MIGRATE_TO_2.8.md](MIGRATE_TO_2.8.md), then applicable N5-N7. Preserve active work by default. A user-approved fresh organizational queue may retain specs/chats while retiring old tasks/messages; it must not erase OpenSpec tasks.md or falsely mark unfinished work DONE. Each retained role must actually adopt the cutover.
+Use [MIGRATE_TO_2.9.md](MIGRATE_TO_2.9.md), then applicable N5-N7. Preserve active work by default. A user-approved fresh organizational queue may retain specs/chats while retiring old tasks/messages; it must not erase OpenSpec tasks.md or falsely mark unfinished work DONE. Each retained role must actually adopt the cutover.
 
 Adoption defines project workspace budgets, portable root aliases/placement classes, retention classes, closure methods, relocation publisher, executor fence namespace, privacy-safe durable evidence classes, and reconciliation owner. Existing workspaces become `legacy-retained` until a separately authorized reconciliation classifies custody and evidence. Existing executors retain their current routes until a separately authorized relocation publishes causal receipts. Add lifecycle/fence fields at the next material TASK revision or handoff; migration itself does not allocate, relocate, archive, close, stop, or activate anything.
 

@@ -1,5 +1,12 @@
 # R2Team change history
 
+## 2.9 — Git worktree directory formation
+
+- Use Git worktree explicitly for Git working copies and resource for broader lifetime governance; preserve existing command/schema names.
+- Require new ordinary linked Git worktrees as direct children of approved roots, named native-ID plus project/work/lifetime/executor label.
+- Preserve native IDs, compatible existing directories, primary/legacy paths, and application-owned hierarchy without implicit rename or allocation.
+- Add pure directory-name validation fixtures, prospective migration guidance, and a maintained PM update prompt.
+
 ## 2.8 — resource lifetime and workspace naming
 
 - Require explicit persistent/task_scoped/ephemeral lifetime, perm/task/tmp labels, owners, bound close conditions, and review dates on new workspaces and governed resource roots after adoption.

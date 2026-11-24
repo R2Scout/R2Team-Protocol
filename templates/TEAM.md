@@ -1,10 +1,10 @@
 # TEAM — R2Team configuration
 
-Template for protocol version 2.8. PM fills it during setup; empty configuration is not ready. Never commit real thread IDs, hashes of private IDs, other machines' absolute paths, transcripts or credentials.
+Template for protocol version 2.9. PM fills it during setup; empty configuration is not ready. Never commit real thread IDs, hashes of private IDs, other machines' absolute paths, transcripts or credentials.
 
 ```yaml
 protocol_name: R2Team
-protocol_version: "2.8"
+protocol_version: "2.9"
 integration_revision: 0
 setup_status: NOT_CONFIGURED
 project:
@@ -34,6 +34,13 @@ toolchain:
   superpowers_source_ref: null
   skill_install_method: null
 workspace_lifecycle:
+  git_worktree_directories:
+    policy_ref: GIT_WORKTREE_DIRECTORIES.md
+    root_alias: null
+    ordinary_direct_children: true
+    name_format: "<native-id>-<project_slug>-<work_ref>-<lifetime_token>-<executor_slug>"
+    preserve_native_ids: true
+    preserve_application_layout: true
   resource_lifetime_policy:
     policy_ref: RESOURCE_LIFETIME.md
     required_after_accepted_adoption: true
@@ -71,6 +78,8 @@ relocation_policy:
 Use a real commit and repository-relative package path, or the trusted hash of an exact bundle. HEAD does not identify a dirty working tree. Increment project integration_revision when adopting changed rules/team configuration.
 
 Workspace policy is portable. `root_aliases` name project-approved placement classes without storing physical paths. Populated path, observed size, process/native-resource, custody, and timestamp data belongs in ignored `.codex-local/` state. Projects may adopt stricter budgets or record exact TASK exceptions; thresholds never grant cleanup, relocation, process-stop, or deletion authority.
+
+Configure the ordinary Git worktree root alias through [directory formation policy](GIT_WORKTREE_DIRECTORIES.md). Its local physical mapping must be disjoint from evidence/output/log/tmp/cache roots. New ordinary linked Git worktrees are direct children with the prescribed native-ID/name form; existing and application-managed directories retain actual layout. Use Git worktree explicitly in instructions, and preserve technical command/schema names for compatibility.
 
 Adopt [resource lifetime and naming](RESOURCE_LIFETIME.md) explicitly from a package containing it. PM defines stable project/executor aliases and reconciles owners. Complete classification includes lifetime, purpose, label, close condition, review date, retention, and recovery. Persistent standing custody does not bypass budgets; tmp is not cleanup permission. Unknown roots stay protected pending reconciliation. Historical `v2.7` installations do not gain this policy automatically.
 
