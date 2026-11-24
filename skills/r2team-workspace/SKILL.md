@@ -1,8 +1,10 @@
 ---
 name: r2team-workspace
-description: "Inspect and govern R2Team workspace leases: report status, preflight bounded allocation, prepare recoverable closure, or diagnose lifecycle blockers. Use only in an adopted R2Team 2.8 project; it does not grant cleanup, process-stop, merge, relocation, or deletion authority."
+description: "Inspect and govern Git worktree and resource leases: report status, preflight bounded allocation, prepare recoverable closure, or diagnose lifecycle blockers. Use only in an adopted R2Team 2.9 project; it does not grant cleanup, process-stop, merge, relocation, or deletion authority."
 ---
-# R2Team — workspace lifecycle
+# R2Team — Git worktree and resource lifecycle
+
+Keep the `r2team-workspace` command and `workspace_leases` schema compatible. In user-facing instructions, say Git worktree for Git working copies and their directories; resource is the broader lifetime term. Resolve the target project's accepted GIT_WORKTREE_DIRECTORIES.md policy. New ordinary linked worktrees are direct children of its approved root, named `<native-id>-<project>-<work-ref>-<perm|task|tmp>-<executor>`. Preserve native IDs and application-managed layout; if app display-name support is absent, report that fact and keep the label locally.
 
 Use the accepted project `TEAM.md`, selected TASK, repository state, and ignored local registry. The durable contract is in Git; physical paths, host observations, process IDs, and native application handles stay in `.codex-local/`.
 
@@ -17,7 +19,7 @@ Help, unknown commands, status and doctor are read-only. No command infers mutat
 
 ## Sources and boundaries
 
-Read applicable `AGENTS.md`, accepted `TEAM.md`, the selected TASK/current checkpoint, relevant role instructions, and the workspace-lifecycle section of `CODEX_TEAM_PROTOCOL.md`. Confirm project adoption of 2.8. An older project is not silently upgraded.
+Read applicable `AGENTS.md`, accepted `TEAM.md`, the selected TASK/current checkpoint, relevant role instructions, and the workspace-lifecycle section of `CODEX_TEAM_PROTOCOL.md`. Confirm project adoption of 2.9. An older project is not silently upgraded.
 
 This skill does not administer participants, run product work, relocate teams or chats, replace `r2team-work`, stop processes, delete branches, merge, release, deploy, or modify installed skills. Existing skills may route lifecycle requests here. `r2team-work` remains the TASK execution entry point and must not hide workspace allocation or closure.
 
@@ -62,6 +64,8 @@ Under adopted lifetime policy, validate classification and readable label first.
 5. measure the destination filesystem, including expected dependency/package expansion: above 50 GiB normal, 30–50 GiB reuse-only, 15–30 GiB owner-approved recovery allocation only, below 15 GiB no new persistent placement;
 6. select ordinary-canonical, codex-managed, external-authorized, or legacy-retained custody and record the logical lease before relying on it;
 7. create only the authorized bounded materialization, then read back path containment, branch/HEAD/tree, mutability, and actual state; reconcile a partial create before any retry.
+
+For a genuinely new ordinary Git worktree, verify the approved root mapping and planned leaf name after compatible-reuse checks and before creation. Reject unsafe/missing native IDs and conflicting occupied targets; never guess a new ID or append a retry suffix to bypass a collision. Do not create parent folders by revision/chat/date/batch/verdict or place worktrees under evidence/output/log/tmp/cache roots. Read back actual Git registration and directory identity. Existing/application-managed paths use their supported custody mechanism, not the ordinary naming helper; label changes do not rename them.
 
 If any gate fails, return `ALLOCATION_BLOCKED`; do not clean, relocate, terminate, bypass QA, or mutate existing work.
 

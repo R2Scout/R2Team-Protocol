@@ -1,10 +1,10 @@
-# TASK template — R2Team 2.8
+# TASK template — R2Team 2.9
 
 Use the body below for Tasks/TASK-<id>-<name>.md, removing these explanatory instructions. Choose a collision-free ID. Role handoff alone does not create another TASK; bounded helper requests remain inside the parent TASK.
 
 ```yaml
 ---
-protocol_version: "2.8"
+protocol_version: "2.9"
 id: "<unique-task-id>"
 revision: 1
 handoff_seq: 0
@@ -42,6 +42,7 @@ verified_sha: null
 merged_sha: null
 workspace_policy: inherited_from_team
 workspace_inventory_ref: null
+git_worktree_directory_policy: inherited_from_team
 workspace_exceptions: []
 workspace_leases: []
 resource_records: []
@@ -120,6 +121,8 @@ Each `workspace_exceptions[]` item records exact TASK, reason, lease ID, owner, 
 Each `workspace_leases[]` item records `lease_id`, deterministic `materialization_key`, purpose, class, `owner_executor_id`, `closure_owner_executor_id`, exact base/candidate/HEAD/tree, mutability, custody, state, `retention_class`, `review_date`, `recovery_ref`, exception reference, and `close_receipt_ref`. `workspace_inventory_ref` points to a current ignored observation that includes every registered/managed/legacy/unknown/partial root in scope. Put physical paths, sizes, processes, native handles, and host observations only in ignored local state. Workspace and evidence/artifact/message/output/log/tmp/cache roots must be disjoint.
 
 After [resource lifetime policy](RESOURCE_LIFETIME.md) adoption, new leases also record `resource_id` equal to `lease_id`, `project_slug`, `work_ref`, `executor_slug`, `resource_label`, `lifetime`, and typed `close_condition`/governing reference. Lifetimes persistent/task_scoped/ephemeral remain independent of purpose. Use `resource_records[]` for governed non-workspace roots with the same complete policy, owner/review/retention/recovery fields. Artifact manifests reference existing records; evidence may outlive the worktree. Keep numbers/paths local and reconcile legacy resources at their next material checkpoint without deletion or renaming.
+
+For Git working copies, say Git worktree and apply [directory formation](GIT_WORKTREE_DIRECTORIES.md). The inherited policy names the approved root alias and ordinary leaf-name form. Keep native ID, planned/observed directory name, conformity, and actual path local. Reuse existing compatible leases before forming a new name; changed TASK/owner/label does not allocate or rename a worktree. Application and legacy custody retain their actual directories.
 
 Each `candidate_dispositions[]` item binds candidate SHA/tree and branch ref to exactly one disposition (`MERGED_TO_DEFAULT`, `SUPERSEDED_BY_SHA`, `REJECTED`, or `EVIDENCE_ARCHIVED`), evidence/reference, owner, and recorded time. Each unique `artifact_manifests[]` item records its evidence key, declared consumer, manifest ref, content hash, retention class, durable recovery location, owner, access boundary, and close trigger. `evidence_index[]` binds candidate, evidence axis, normalized command/scenario, environment class, outcome, and reused manifest/summary reference. An unchanged rerun updates the compact observation summary and reuses the key/hash; it does not append another artifact. Each `close_receipts[]` item binds its receipt ref to one lease ID and actual closure result. Append materially new records; do not overwrite history or duplicate identical evidence.
 

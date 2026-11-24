@@ -1,6 +1,6 @@
 ---
 name: r2team-relocate
-description: "Prepare, inspect, resume, cancel, or roll forward an authorized R2Team logical-executor relocation with per-executor cooperative fencing and durable causal receipts. Use only in an adopted R2Team 2.8 project; it does not create chats, transfer functions, stop processes, move workspaces, or prove provider-enforced exclusion."
+description: "Prepare, inspect, resume, cancel, or roll forward an authorized R2Team logical-executor relocation with per-executor cooperative fencing and durable causal receipts. Use only in an adopted R2Team 2.9 project; it does not create chats, transfer functions, stop processes, move workspaces, or prove provider-enforced exclusion."
 ---
 # R2Team — relocation
 
@@ -19,7 +19,7 @@ The status and doctor are read-only. Prepare and resume perform only their decla
 
 ## Sources and authority
 
-Read applicable `AGENTS.md`, accepted default-branch `TEAM.md`, governing relocation TASK, `Team/Migrations/<migration-id>/MIGRATION.md`, the selected executor record, current product TASKs, workspace records, and relevant protocol/role instructions. Verify exact repository/provider identity and adopted protocol 2.8.
+Read applicable `AGENTS.md`, accepted default-branch `TEAM.md`, governing relocation TASK, `Team/Migrations/<migration-id>/MIGRATION.md`, the selected executor record, current product TASKs, workspace records, and relevant protocol/role instructions. Verify exact repository/provider identity and adopted protocol 2.9.
 
 The durable route is Git/provider state, never chat history, notification delivery, a title, or local registry presence. This skill does not create or move chats, change access, copy credentials/transcripts, stop processes, archive/delete workspaces, install skills, merge, release, deploy, or adopt another project. Those require their own authority and evidence.
 

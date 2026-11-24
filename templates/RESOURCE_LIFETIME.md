@@ -1,10 +1,12 @@
-# Resource lifetime and workspace naming
+# Resource lifetime and Git worktree naming
 
-This R2Team 2.8 policy becomes mandatory through accepted project adoption from a package containing it. It does not amend an already published release. Existing [workspace](CODEX_TEAM_PROTOCOL.md#workspace-lifecycle) identities, budgets, custody, publication, and closure gates remain applicable.
+This R2Team 2.9 policy becomes mandatory through accepted project adoption from a package containing it. It does not amend an already published release. Existing [workspace](CODEX_TEAM_PROTOCOL.md#workspace-lifecycle) identities, budgets, custody, publication, and closure gates remain applicable.
 
 ## Lifetime is independent of purpose
 
-Every new workspace and governed test-data, build-output, log, cache, evidence, or runtime root has an explicit `lifetime`. Group disposable files under their governed root; do not create individual TASKs, manifests, or reports for each temporary file.
+Say **Git worktree** explicitly for Git working copies and their directories. Resource is the broader term for worktrees and other governed roots; workspace is a broader execution environment. Technical names such as `workspace_leases` remain compatible. [Git worktree directory formation](GIT_WORKTREE_DIRECTORIES.md) defines the approved root, mandatory ordinary leaf name, reuse, and application-custody exceptions.
+
+Every new Git worktree and governed test-data, build-output, log, cache, evidence, or runtime root has an explicit `lifetime`. Group disposable files under their governed root; do not create individual TASKs, manifests, or reports for each temporary file.
 
 | Lifetime | Name token | Use | Required close event |
 | --- | --- | --- | --- |
@@ -18,7 +20,7 @@ All lifetimes have current owners, close conditions, and review dates. Persisten
 
 ## Required record
 
-Add this policy to each `workspace_leases[]` row, with `resource_id` equal to stable `lease_id`. Use `resource_records[]` only for separately governed non-workspace roots. Artifact manifests reference existing records. Outputs do not automatically inherit worktree lifetime: rollback and acceptance evidence may outlive ephemeral workspaces.
+Add this policy to each `workspace_leases[]` row, with `resource_id` equal to stable `lease_id`. Use `resource_records[]` only for separately governed non-workspace roots. Artifact manifests reference existing records. Outputs do not automatically inherit worktree lifetime: rollback and acceptance evidence may outlive ephemeral Git worktrees.
 
 ```yaml
 resource_id: lease-author-42
@@ -41,7 +43,7 @@ Owner/alias must agree with accepted TEAM. Close references resolve to existing 
 
 ## Readable name
 
-The portable label is `<project_slug>-<work_ref>-<lifetime_token>-<executor_slug>`. Ordinary Git worktrees may prefix their existing native ID:
+The portable resource label is `<project_slug>-<work_ref>-<lifetime_token>-<executor_slug>`. A newly allocated ordinary linked Git worktree uses `<native-id>-<resource-label>` as a direct child of its approved Git worktree root. The existing native ID is mandatory; preserve existing/application-managed directories as the directory policy specifies:
 
 ```text
 ws0042-crm.ai-base-perm-devops
@@ -61,7 +63,7 @@ Group status by perm/task/tmp, purpose, and owner. Names select review candidate
 
 Then apply evidence export, dirty/unpublished/unknown material, recovery, exclusive ownership, containment, live-process, dependency/consumer, custody, and removal-authority gates. Lifetime completion permits preflight only. Codex-managed resources still require application archive. Retain/transfer protected material with owner/review evidence when gates are missing. Complete policy and terminal lease evidence are both required for administrative completion; a standing anchor may remain `RETAINED_PROTECTED` without decommissioning it.
 
-The offline model exposes `resource_label`, `resource_policy_errors`, `resource_allocation_decision`, `resource_closure_decision`, `resource_completion_decision`, and `resource_review_decision` in `scripts/workspace_policy.py`. After adoption, use lifetime-aware gates alongside existing behavior. They make no filesystem, provider, process, or scheduling changes. The operating executor verifies receipts at authoritative sources.
+The offline model exposes `resource_label`, `git_worktree_directory_name`, `resource_policy_errors`, `resource_allocation_decision`, `resource_closure_decision`, `resource_completion_decision`, and `resource_review_decision` in `scripts/workspace_policy.py`. After adoption, use lifetime-aware gates alongside existing behavior. The Git worktree helper forms ordinary leaf names only; all functions make no filesystem, provider, process, or scheduling changes. The operating executor verifies receipts and actual placement at authoritative sources.
 
 ## Prospective adoption
 

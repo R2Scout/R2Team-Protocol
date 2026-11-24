@@ -208,6 +208,46 @@ class ResourceLifetimeTests(unittest.TestCase):
             resource(state="ACTIVE")]))
         self.assertEqual("ADMIN_COMPLETION_BLOCKED", complete(None))
 
+    def test_git_worktree_directory_includes_native_id_and_readable_label(self):
+        name = self.function("git_worktree_directory_name")
+        self.assertEqual("ws0044-crm.ai-task3244-tmp-qa2", name(
+            "ws0044", "crm.ai", "task3244", "qa2", "ephemeral"))
+        self.assertEqual("ws0042-crm.ai-base-perm-devops", name(
+            "ws0042", "crm.ai", "base", "devops", "persistent"))
+
+    def test_git_worktree_directory_preserves_an_existing_numeric_id(self):
+        name = self.function("git_worktree_directory_name")
+        self.assertEqual("0043-crm.ai-task3244-task-dev10", name(
+            "0043", "crm.ai", "task3244", "dev10", "task_scoped"))
+        self.assertEqual("slot_0043-crm.ai-task3244-task-dev10", name(
+            "slot_0043", "crm.ai", "task3244", "dev10", "task_scoped"))
+
+    def test_git_worktree_directory_cannot_escape_its_parent_or_guess_a_missing_id(self):
+        name = self.function("git_worktree_directory_name")
+        for native_id in (None, "", "../ws0044", "ws/0044", "ws\\0044",
+                          "C:ws0044", "ws0044 ", "ws0044.", "x" * 65):
+            with self.subTest(native_id=native_id), self.assertRaises(ValueError):
+                name(native_id, "crm.ai", "task3244", "qa2", "ephemeral")
+
+    def test_git_worktree_directory_does_not_fabricate_application_or_legacy_paths(self):
+        name = self.function("git_worktree_directory_name")
+        for custody in ("codex-managed", "legacy-retained", "UNKNOWN", None):
+            with self.subTest(custody=custody), self.assertRaises(ValueError):
+                name("ws0044", "crm.ai", "task3244", "qa2", "ephemeral",
+                     custody=custody)
+        self.assertEqual("ws0044-crm.ai-task3244-tmp-qa2", name(
+            "ws0044", "crm.ai", "task3244", "qa2", "ephemeral",
+            custody="external-authorized"))
+
+    def test_git_worktree_directory_keeps_resource_label_validation(self):
+        name = self.function("git_worktree_directory_name")
+        for args in (("../crm", "task3244", "qa2", "ephemeral"),
+                     ("crm.ai", "3244", "qa2", "ephemeral"),
+                     ("crm.ai", "task3244", "QA Chat", "ephemeral"),
+                     ("crm.ai", "task3244", "qa2", "qa")):
+            with self.subTest(args=args), self.assertRaises(ValueError):
+                name("ws0044", *args)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
