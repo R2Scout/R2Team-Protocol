@@ -1,5 +1,12 @@
 # R2Team change history
 
+## 2.10 — Git-reference worktree names
+
+- Remove extra physical/native ID prefixes from ordinary Git worktree directory names; use the accepted primary Issue/TASK/PR/Work Item reference.
+- Retain technical IDs in registry/custody records and preserve existing/application-managed paths.
+- Allow a declared purpose suffix for authorized same-work/owner lanes, without counters or collision bypass.
+- Update naming fixtures, migration guidance, and the maintained PM prompt.
+
 ## 2.9 — Git worktree directory formation
 
 - Use Git worktree explicitly for Git working copies and resource for broader lifetime governance; preserve existing command/schema names.

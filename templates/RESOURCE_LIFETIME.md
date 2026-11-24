@@ -1,6 +1,6 @@
 # Resource lifetime and Git worktree naming
 
-This R2Team 2.9 policy becomes mandatory through accepted project adoption from a package containing it. It does not amend an already published release. Existing [workspace](CODEX_TEAM_PROTOCOL.md#workspace-lifecycle) identities, budgets, custody, publication, and closure gates remain applicable.
+This R2Team 2.10 policy becomes mandatory through accepted project adoption from a package containing it. It does not amend an already published release. Existing [workspace](CODEX_TEAM_PROTOCOL.md#workspace-lifecycle) identities, budgets, custody, publication, and closure gates remain applicable.
 
 ## Lifetime is independent of purpose
 
@@ -43,12 +43,12 @@ Owner/alias must agree with accepted TEAM. Close references resolve to existing 
 
 ## Readable name
 
-The portable resource label is `<project_slug>-<work_ref>-<lifetime_token>-<executor_slug>`. A newly allocated ordinary linked Git worktree uses `<native-id>-<resource-label>` as a direct child of its approved Git worktree root. The existing native ID is mandatory; preserve existing/application-managed directories as the directory policy specifies:
+The portable resource label is `<project_slug>-<work_ref>-<lifetime_token>-<executor_slug>`. A newly allocated ordinary linked Git worktree uses its Git-reference resource label as a direct child of its approved root, with an optional declared purpose suffix. No additional physical/native ID is included in its ordinary directory name; preserve existing/application-managed directories as the directory policy specifies:
 
 ```text
-ws0042-crm.ai-base-perm-devops
-ws0043-crm.ai-task3244-task-dev10
-ws0044-crm.ai-task3244-tmp-qa2
+crm.ai-task42-perm-devops
+crm.ai-task3244-task-dev10
+crm.ai-issue3244-tmp-qa2
 ```
 
 Keep native IDs and logical leases; introduce no global counter. Labels are metadata, not uniqueness, candidate, or ownership proof. Different IDs may share a label. Compatible reuse preserves ID/path; revisions, chat titles, owner/lifetime changes, and labels never require another worktree or alter the materialization key.

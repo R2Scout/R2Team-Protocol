@@ -41,7 +41,7 @@ workspace_leases:
     lifetime: "<persistent|task_scoped|ephemeral|UNKNOWN>"
     native_workspace_id: "<existing-local-number-or-ID>"
     git_worktree_root_alias: "<approved-local-mapping-alias-or-NOT_APPLICABLE>"
-    planned_directory_name: "<ordinary-native-id-plus-resource-label-or-NOT_APPLICABLE>"
+    planned_directory_name: "<git-reference-label-with-optional-purpose-or-NOT_APPLICABLE>"
     observed_directory_name: "<existing-local-directory-name>"
     directory_policy_conformity: "<CONFORMS|LEGACY_RETAINED|APPLICATION_LAYOUT|UNKNOWN>"
     physical_path: "<absolute-local-path>"

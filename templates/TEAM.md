@@ -1,10 +1,10 @@
 # TEAM — R2Team configuration
 
-Template for protocol version 2.9. PM fills it during setup; empty configuration is not ready. Never commit real thread IDs, hashes of private IDs, other machines' absolute paths, transcripts or credentials.
+Template for protocol version 2.10. PM fills it during setup; empty configuration is not ready. Never commit real thread IDs, hashes of private IDs, other machines' absolute paths, transcripts or credentials.
 
 ```yaml
 protocol_name: R2Team
-protocol_version: "2.9"
+protocol_version: "2.10"
 integration_revision: 0
 setup_status: NOT_CONFIGURED
 project:
@@ -38,7 +38,8 @@ workspace_lifecycle:
     policy_ref: GIT_WORKTREE_DIRECTORIES.md
     root_alias: null
     ordinary_direct_children: true
-    name_format: "<native-id>-<project_slug>-<work_ref>-<lifetime_token>-<executor_slug>"
+    name_format: "<project_slug>-<git-work-ref>-<lifetime_token>-<executor_slug>[-<purpose>]"
+    extra_id_in_ordinary_name: false
     preserve_native_ids: true
     preserve_application_layout: true
   resource_lifetime_policy:
