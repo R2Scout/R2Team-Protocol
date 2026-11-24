@@ -1,4 +1,4 @@
-# Startup and re-entry prompts — R2Team 2.9
+# Startup and re-entry prompts — R2Team 2.10
 
 [Setup.md](Setup.md) is the single wizard. Select its mode in natural language. Use the verified protocol version; installing skills alone does not adopt project rules.
 
@@ -17,10 +17,10 @@ Do not bypass the selected OpenSpec approval gate to start implementation.
 
 ## Existing MVP / legacy protocol
 
-Use [MIGRATE_TO_2.9.md](MIGRATE_TO_2.9.md). Preserve active work, executor routes, accepted fence history, and Git worktree/resource custody by default. A fresh organizational queue while retaining specs/chats needs explicit approval and per-chat adoption, not just file replacement.
+Use [MIGRATE_TO_2.10.md](MIGRATE_TO_2.10.md). Preserve active work, executor routes, accepted fence history, and Git worktree/resource custody by default. A fresh organizational queue while retaining specs/chats needs explicit approval and per-chat adoption, not just file replacement.
 
 ```text
-Read Setup.md, mode migrate, and MIGRATE_TO_2.9.md.
+Read Setup.md, mode migrate, and MIGRATE_TO_2.10.md.
 Start read-only: verify source package/ref, actual source version, current rules,
 branches, active TASKs/messages/PRs, OpenSpec and unpublished work.
 Show a minimal diff, state mapping and cutover.
@@ -67,7 +67,7 @@ Local routing may point to a verified current local TASK and expected commit wit
 See [the common rule](CODEX_TEAM_PROTOCOL.md#role-cross-check). Fill with actual facts, not automatic assertions:
 
 ```text
-R2Team 2.9 adopted: executor <id>, functions <list>, TEAM <ref>, fence <accepted-record-or-NONE>.
+R2Team 2.10 adopted: executor <id>, functions <list>, TEAM <ref>, fence <accepted-record-or-NONE>.
 Loaded work/COO skills and saved entry/watch prompt: <verified source/ref and compatibility>.
 Duties/output: <understanding>.
 Boundaries: <permissions, helpers and approvals>.

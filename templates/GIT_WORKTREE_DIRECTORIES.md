@@ -1,52 +1,50 @@
 # Git worktree directory formation and naming
 
-## Exact terminology
+Use Git worktree explicitly for Git working copies and their directories. Resource is the broader lifetime term. Existing r2team-workspace, workspace_leases, and compatibility anchors keep their technical names. A plain archive/output directory is not a registered Git worktree.
 
-Use **Git worktree** when describing a Git working copy, its directory, creation, reuse, or closure. Use **resource** for the broader lifetime policy covering Git worktrees, test data, build output, logs, caches, evidence, and runtime resources. Workspace is a broader execution environment; it is not an unqualified synonym for Git worktree. A plain archive or output directory is not a registered Git worktree.
+## Approved root and Git-reference name
 
-The existing command `r2team-workspace`, schema field `workspace_leases`, and lifecycle anchor remain compatible technical names. User-facing instructions about Git working copies explicitly say Git worktree. Their names do not require a command/schema rename or another worktree.
-
-## Approved root and flat placement
-
-The project declares one ordinary Git worktree root via an accepted portable root alias in TEAM. Its physical mapping is kept locally. A newly allocated ordinary linked Git worktree is a direct child of that approved root:
+New ordinary linked Git worktrees are direct children of the project's approved root, mapped locally from an accepted TEAM root alias:
 
 ```text
-<approved-git-worktree-root>/<native-id>-<project>-<work-ref>-<perm|task|tmp>-<executor>
+<root>/<project>-<git-work-ref>-<perm|task|tmp>-<executor>[-<purpose>]
 ```
 
-For example:
+Examples:
 
 ```text
 <approved-git-worktree-root>/
-  ws0042-crm.ai-base-perm-devops/
-  ws0043-crm.ai-task3244-task-dev10/
-  ws0044-crm.ai-task3244-tmp-qa2/
+  crm.ai-issue3244-task-devops/
+  crm.ai-issue3244-tmp-qa2/
+  crm.ai-pr3250-tmp-dev20/
+  crm.ai-issue3244-task-devops-build/
+  crm.ai-issue3244-task-devops-integration/
 ```
 
-Do not add parent folders for chat titles, TASK revisions, dates, retry numbers, test batches, or verdicts. Existing project-approved root placement is preserved; do not move it just to match an example. Worktree roots and evidence/artifact/output/log/tmp/cache roots must be disjoint, with neither containing the other. A tmp lifetime token belongs in the worktree leaf name; it does not authorize placement in a disposable output or system Temp root.
+Do not add a separate physical/native ID, counter, date, retry, chat title, revision, or verdict to the ordinary name or its parent hierarchy. Keep technical lease/resource/native IDs in registry/custody records; they are not another public folder number. Existing IDs and actual paths remain stable on reuse.
 
-Separately authorized external placement still requires its own approved root/containment evidence. It follows the ordinary leaf-name rule but does not silently expand the project's configured roots. Validate the full resolved target and filesystem path limits before creation, including links/junctions that could escape the approved target.
+The project-approved root remains disjoint from evidence/artifact/output/log/tmp/cache roots, with neither containing the other. A tmp lifetime token does not authorize placement in output or system Temp roots. External placement needs its own accepted root/containment evidence. Resolve the actual target and filesystem limits, including links/junctions, before creation.
 
-## Directory components
+## Match the accepted Git work identifier
 
-Preserve the existing native worktree number/ID. Do not introduce a second global counter or guess an ID from a TASK number. The approved allocator supplies a new ID once for a genuinely new lease. The name adds the stable project alias, typed work reference, lifetime token, and executor alias from [RESOURCE_LIFETIME.md](RESOURCE_LIFETIME.md).
+Use the primary work reference recorded in the accepted TASK and its authoritative Git/tracker route. If an Issue or Work Item governs the work, use its actual number as issue3244 or wi3244. Use task3244 or the approved canonical TASK-ID slug when TASK itself is the primary identifier. Use pr3250 when the PR is the governing work reference and no earlier Issue/TASK reference should be retained. Do not choose arbitrary numbers or derive a new ID from a title/branch.
 
-Native IDs use lowercase ASCII letters/digits with internal hyphens or underscores and at most 64 characters. Reject missing IDs, path separators, drive prefixes, leading/trailing separators, dots, spaces, and wildcard/control characters; never silently normalize an existing unsafe name. The readable resource label keeps its existing 96-character limit. Native IDs and physical directory observations remain local, not public TASK identity.
+Explicit issue/task/pr/wi types distinguish equal numbers. Standing anchors still reference an actual governance Issue/TASK; base is not a new Git work identifier. Keep full identifiers/routes in the TASK even when the directory uses their approved lowercase portable slug. Labels remain metadata, not unique candidate, ownership, or deletion proof.
 
-Lifetime tokens mean persistent/perm, task_scoped/task, and ephemeral/tmp. Purpose such as dev/qa/build/release remains separate; do not derive lifetime from the owner's role. Labels describe the allocation context and are not current ownership, candidate, or deletion proof.
+Use lowercase ASCII letters, digits, and hyphens; dots are allowed inside the project alias. Directory names, including any purpose suffix, are at most 96 characters. Reject missing/non-Git references, separators, drive prefixes, spaces, wildcard/control characters, and unsafe aliases. Shorten only through approved aliases; never silently truncate identity. Apply [resource lifetime policy](RESOURCE_LIFETIME.md) independently of dev/qa/build/release purpose.
 
-## Reuse before creation
+## Reuse and declared purpose lanes
 
-First inspect the accepted TASK, complete physical inventory, deterministic materialization key, and compatible existing lease. Exact compatible reuse keeps the ID and actual directory, even if its historical leaf name does not match a newer label. A new TASK revision, handoff, chat title, owner, lifetime label, or review result never creates another worktree by itself.
+First inspect the accepted TASK, complete physical inventory, deterministic materialization key, and compatible lease. Exact compatible requests reuse the existing ID and actual path, including older prefixed directories. A revision, handoff, owner/lifetime label, or naming-policy change never allocates another worktree by itself.
 
-Before an authorized new allocation, form the planned leaf name under the approved root. An occupied target is reconciled: reuse the exact compatible lease or return ALLOCATION_BLOCKED on conflict. Do not append another date, counter, or retry suffix to bypass a collision. A partial create is inventoried and reconciled before retry. After creation, read back the real Git registration, path, branch/HEAD/tree, owner, custody, and lease identity.
+For legitimately separate allocations with the same work reference, lifetime, and executor, a suffix such as build or integration names the already declared purpose/lane in the accepted TASK/lease. Declare it before allocation; it is not an automatic collision fallback or authorization to create another copy. Existing budgets, exceptions, single-writer, and key-conflict gates still apply. An occupied target is reconciled as exact reuse or ALLOCATION_BLOCKED; do not append another counter/date/retry. Reconcile partial creation before retry and read back actual Git registration, path, branch/HEAD/tree, owner, and custody.
 
-The pure reference function `git_worktree_directory_name` in `scripts/workspace_policy.py` checks ordinary/external leaf names only. It performs no allocation, root selection, filesystem containment, process stop, or rename. Operators still apply all existing allocation and closure gates.
+The pure helper git_worktree_directory_name accepts project_slug, work_ref, executor_slug, lifetime, and optional purpose/custody; it no longer takes a native ID for ordinary naming. It validates leaf names only, without allocation, root selection, filesystem containment, or mutation. Operators verify the accepted Git reference and purpose at authoritative sources.
 
-## Application and existing-directory custody
+## Application and legacy custody
 
-Codex-managed Git worktrees retain the application's native root, hierarchy, ID, and repository-folder layout. Use supported application controls for creation/archive and any supported display-name field. If no supported name field exists, record the readable label in the local registry and report that limitation; never fabricate a renamed directory. The ordinary leaf-name helper rejects application-managed and legacy custody.
+Application-managed Git worktrees preserve the application's native root, hierarchy, ID, and repository-folder layout. Use supported app controls and display-name fields; if a name field is absent, keep the readable label locally and report the limit. Removing an ordinary extra-ID prefix does not authorize removing application-native path layers. The ordinary naming helper rejects application and legacy custody.
 
-Existing primary checkouts and legacy Git worktrees are inventoried and labelled without forced relocation or rename. Retain their actual paths/IDs and record whether the old directory conforms, plus reconciliation ownership. Updating a current owner/lifetime label does not rename a live path. Renaming or moving a directory is a separate authorized operation using its custody owner's supported mechanism, with Git-registration, containment, process, dependency, and recovery checks. Adoption alone performs none of these operations.
+Existing primary and legacy directories remain inventoried and protected, even if their historical names contain ws numbers or other prefixes. Updating labels/owners does not rename a live path. Rename/movement requires separate authority, supported custody mechanisms, and Git registration, containment, process/dependency, and recovery checks. Adoption alone performs no rename, cleanup, relocation, or decommission.
 
-Close eligibility remains governed by bound lifetime-completion receipts, evidence preservation, dependencies, custody, and removal authority. Naming and folder placement never make a resource disposable.
+Close eligibility still requires bound lifetime-completion receipts, evidence preservation, dependencies, custody, and removal authority. Neither a matching Git number nor a directory name makes material disposable.

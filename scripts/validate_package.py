@@ -1,4 +1,4 @@
-"""Read-only package checks, including the R2Team 2.9 resource-lifetime policy."""
+"""Read-only package checks, including the R2Team 2.10 resource-lifetime policy."""
 import argparse
 import hashlib
 import json
@@ -19,8 +19,8 @@ def validate(root):
             raise ValueError("template_root must be a path")
     except (OSError, ValueError, KeyError, TypeError) as exc:
         return [f"Invalid package manifest: {exc}"]
-    if manifest.get("protocol_version") != "2.9":
-        errors.append("Expected protocol_version 2.9")
+    if manifest.get("protocol_version") != "2.10":
+        errors.append("Expected protocol_version 2.10")
     if manifest.get("bootstrap") != "R2TEAM_MASTER.md":
         errors.append("Expected bootstrap R2TEAM_MASTER.md")
     lifetime_policy_path = "templates/RESOURCE_LIFETIME.md"
@@ -38,7 +38,7 @@ def validate(root):
         errors.append("Missing packaged relocation skill: r2team-relocate")
     relocation_template_paths = {
         "templates/TEAM_RELOCATION.md",
-        "templates/MIGRATE_TO_2.9.md",
+        "templates/MIGRATE_TO_2.10.md",
     }
     if not relocation_template_paths.issubset(required):
         errors.append("Missing packaged relocation template")

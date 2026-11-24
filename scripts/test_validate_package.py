@@ -29,7 +29,7 @@ class PackageTests(unittest.TestCase):
         (self.root / "skills" / "r2team-workspace").mkdir(parents=True)
         (self.root / "skills" / "r2team-relocate").mkdir(parents=True)
         (self.root / "package.json").write_text(json.dumps({
-            "protocol_version": "2.9",
+            "protocol_version": "2.10",
             "bootstrap": "R2TEAM_MASTER.md",
             "resource_lifetime_policy": "templates/RESOURCE_LIFETIME.md",
             "skills": ["r2team", "r2team-work", "r2team-coo", "r2team-audit", "r2team-workspace", "r2team-relocate"],
@@ -40,7 +40,7 @@ class PackageTests(unittest.TestCase):
                 "templates/COMMANDS.md",
                 "templates/LOCAL_REGISTRY_TEMPLATE.md",
                 "templates/TEAM_RELOCATION.md",
-                "templates/MIGRATE_TO_2.9.md",
+                "templates/MIGRATE_TO_2.10.md",
                 "templates/TEAM.md",
                 "templates/TASK-TEMPLATE.md",
                 "templates/RESOURCE_LIFETIME.md",
@@ -114,10 +114,10 @@ MAPPING_PRESENT_READ_BACK
 cooperative protocol fencing
 provider-enforced exclusion is NOT_PROVEN
 """)
-        self.put("templates/MIGRATE_TO_2.9.md", """# Migrate to R2Team 2.9
+        self.put("templates/MIGRATE_TO_2.10.md", """# Migrate to R2Team 2.10
 prospective project-local adoption
 accepted-main checkpoint
-R2Team 2.8 remains governing until adoption
+R2Team 2.9 remains governing until adoption
 no live relocation
 provider-enforced exclusion remains NOT_PROVEN
 """)
@@ -289,7 +289,7 @@ cooperative protocol fencing
         config = json.loads((self.root / "package.json").read_text())
         config["protocol_version"] = "2.1"
         self.put("package.json", json.dumps(config))
-        self.assertTrue(any("Expected protocol_version 2.9" in e for e in validate(self.root)))
+        self.assertTrue(any("Expected protocol_version 2.10" in e for e in validate(self.root)))
 
     def test_workspace_skill_is_required(self):
         config = json.loads((self.root / "package.json").read_text())

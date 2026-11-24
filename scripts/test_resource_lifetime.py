@@ -208,45 +208,61 @@ class ResourceLifetimeTests(unittest.TestCase):
             resource(state="ACTIVE")]))
         self.assertEqual("ADMIN_COMPLETION_BLOCKED", complete(None))
 
-    def test_git_worktree_directory_includes_native_id_and_readable_label(self):
-        name = self.function("git_worktree_directory_name")
-        self.assertEqual("ws0044-crm.ai-task3244-tmp-qa2", name(
-            "ws0044", "crm.ai", "task3244", "qa2", "ephemeral"))
-        self.assertEqual("ws0042-crm.ai-base-perm-devops", name(
-            "ws0042", "crm.ai", "base", "devops", "persistent"))
+    def directory_name(self, *args, **kwargs):
+        try:
+            return self.function("git_worktree_directory_name")(*args, **kwargs)
+        except TypeError as error:
+            self.fail("Git reference naming must not require an additional ID: " + str(error))
 
-    def test_git_worktree_directory_preserves_an_existing_numeric_id(self):
-        name = self.function("git_worktree_directory_name")
-        self.assertEqual("0043-crm.ai-task3244-task-dev10", name(
-            "0043", "crm.ai", "task3244", "dev10", "task_scoped"))
-        self.assertEqual("slot_0043-crm.ai-task3244-task-dev10", name(
-            "slot_0043", "crm.ai", "task3244", "dev10", "task_scoped"))
+    def test_git_worktree_directory_matches_git_work_reference_without_extra_id(self):
+        self.assertEqual("crm.ai-issue3244-task-devops", self.directory_name(
+            "crm.ai", "issue3244", "devops", "task_scoped"))
+        self.assertEqual("crm.ai-task42-perm-devops", self.directory_name(
+            "crm.ai", "task42", "devops", "persistent"))
 
-    def test_git_worktree_directory_cannot_escape_its_parent_or_guess_a_missing_id(self):
-        name = self.function("git_worktree_directory_name")
-        for native_id in (None, "", "../ws0044", "ws/0044", "ws\\0044",
-                          "C:ws0044", "ws0044 ", "ws0044.", "x" * 65):
-            with self.subTest(native_id=native_id), self.assertRaises(ValueError):
-                name(native_id, "crm.ai", "task3244", "qa2", "ephemeral")
+    def test_git_worktree_directory_distinguishes_issue_task_pr_and_work_item_numbers(self):
+        for reference in ("issue3244", "task3244", "pr3244", "wi3244"):
+            with self.subTest(reference=reference):
+                self.assertEqual("crm.ai-" + reference + "-tmp-qa2", self.directory_name(
+                    "crm.ai", reference, "qa2", "ephemeral"))
+        self.assertEqual("r2team-task-release-001-task-pm", self.directory_name(
+            "r2team", "task-release-001", "pm", "task_scoped"))
+
+    def test_git_worktree_directory_rejects_unsafe_missing_or_non_git_references(self):
+        for reference in (None, "", "../issue3244", "issue/3244", "issue\\3244",
+                          "3244", "base", "run3244", "C:issue3244", "issue3244 "):
+            with self.subTest(reference=reference), self.assertRaises(ValueError):
+                self.directory_name("crm.ai", reference, "qa2", "ephemeral")
 
     def test_git_worktree_directory_does_not_fabricate_application_or_legacy_paths(self):
-        name = self.function("git_worktree_directory_name")
         for custody in ("codex-managed", "legacy-retained", "UNKNOWN", None):
             with self.subTest(custody=custody), self.assertRaises(ValueError):
-                name("ws0044", "crm.ai", "task3244", "qa2", "ephemeral",
-                     custody=custody)
-        self.assertEqual("ws0044-crm.ai-task3244-tmp-qa2", name(
-            "ws0044", "crm.ai", "task3244", "qa2", "ephemeral",
-            custody="external-authorized"))
+                self.directory_name("crm.ai", "issue3244", "qa2", "ephemeral",
+                                    custody=custody)
+        self.assertEqual("crm.ai-issue3244-tmp-qa2", self.directory_name(
+            "crm.ai", "issue3244", "qa2", "ephemeral", custody="external-authorized"))
 
     def test_git_worktree_directory_keeps_resource_label_validation(self):
-        name = self.function("git_worktree_directory_name")
-        for args in (("../crm", "task3244", "qa2", "ephemeral"),
-                     ("crm.ai", "3244", "qa2", "ephemeral"),
-                     ("crm.ai", "task3244", "QA Chat", "ephemeral"),
-                     ("crm.ai", "task3244", "qa2", "qa")):
+        for args in (("../crm", "issue3244", "qa2", "ephemeral"),
+                     ("crm.ai", "issue3244", "QA Chat", "ephemeral"),
+                     ("crm.ai", "issue3244", "qa2", "qa")):
             with self.subTest(args=args), self.assertRaises(ValueError):
-                name("ws0044", *args)
+                self.directory_name(*args)
+
+    def test_approved_purposes_distinguish_same_work_and_owner_without_counters(self):
+        for purpose in ("build", "integration"):
+            with self.subTest(purpose=purpose):
+                self.assertEqual("crm.ai-issue3244-task-devops-" + purpose,
+                                 self.directory_name("crm.ai", "issue3244", "devops",
+                                                     "task_scoped", purpose=purpose))
+        self.assertEqual("crm.ai-issue3244-task-devops", self.directory_name(
+            "crm.ai", "issue3244", "devops", "task_scoped"))
+
+    def test_purpose_suffix_cannot_escape_or_silently_truncate_directory_identity(self):
+        for purpose in ("", "../build", "build/2", "Build", "x" * 97, 1):
+            with self.subTest(purpose=purpose), self.assertRaises(ValueError):
+                self.directory_name("crm.ai", "issue3244", "devops", "task_scoped",
+                                    purpose=purpose)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-"""Pure workspace decision model, including R2Team 2.9 resource-lifetime fixtures."""
+"""Pure workspace decision model, including R2Team 2.10 resource-lifetime fixtures."""
 import re
 from datetime import date
 
@@ -33,15 +33,23 @@ def resource_label(project_slug, work_ref, executor_slug, lifetime):
     return label
 
 
-def git_worktree_directory_name(native_id, project_slug, work_ref, executor_slug,
-                                lifetime, *, custody="ordinary-canonical"):
-    """Form one ordinary Git worktree leaf name; never select or mutate its root."""
+def git_worktree_directory_name(project_slug, work_ref, executor_slug, lifetime,
+                                *, purpose=None, custody="ordinary-canonical"):
+    """Name an ordinary worktree by its Git reference, without an extra physical ID."""
     if custody not in ("ordinary-canonical", "external-authorized"):
         raise ValueError("Application and legacy directory paths must be preserved")
-    if (not isinstance(native_id, str) or len(native_id) > 64 or
-            not re.fullmatch(r"[a-z0-9]+(?:[-_][a-z0-9]+)*", native_id)):
-        raise ValueError("An existing safe native worktree ID is required")
-    return native_id + "-" + resource_label(project_slug, work_ref, executor_slug, lifetime)
+    if (not isinstance(work_ref, str) or not re.fullmatch(
+            r"(?:(?:issue|pr|wi)[0-9]+|task(?:[0-9]+|-[a-z0-9]+(?:-[a-z0-9]+)*))",
+            work_ref)):
+        raise ValueError("An explicit Git Issue, TASK, PR, or Work Item reference is required")
+    name = resource_label(project_slug, work_ref, executor_slug, lifetime)
+    if purpose is not None:
+        if not isinstance(purpose, str) or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", purpose):
+            raise ValueError("Use the declared portable purpose, not a collision counter")
+        name += "-" + purpose
+    if len(name) > 96:
+        raise ValueError("Directory name exceeds 96 characters; approve shorter aliases")
+    return name
 
 
 def resource_policy_errors(resource):
